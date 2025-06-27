@@ -183,7 +183,7 @@ const WINE_VARIETALS = [
   { name: "Baco Noir", country: "USA" },
   { name: "Cascade", country: "USA" },
   { name: "De Chaunac", country: "USA" },
-  { name: "Marechal Foch", country: "USA" },
+  { name: "Marechal Foch", country": "USA" },
   { name: "Leon Millot", country: "USA" },
 ];
 
@@ -205,7 +205,7 @@ const WINE_QUIZ_QUESTIONS = [
       "A winemaking technique",
       "A wine tasting term"
     ],
-    correctAnswer: "The complete natural environment in which a wine is produced, including factors suchs as soil, topography, and climate.",
+    correctAnswer: "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate.",
     explanation: "Terroir refers to the unique combination of environmental factors that affect a crop's phenotype, including climate, soil, and topography, and how they influence the wine's character."
   },
   {
@@ -1523,7 +1523,48 @@ const App = () => {
           </button>
         </div>
       );
-    } else if (mode === 'multiplayer' && activeGameId) {
+    } else if (mode === 'multiplayer' && !activeGameId) {
+      return (
+        <div className="text-center space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
+          <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
+          <button
+            onClick={createNewGame}
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+          >
+            Create New Game (Proctor Mode)
+          </button>
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="text"
+              placeholder="Enter 4-character Game ID"
+              className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+              value={gameCodeInput}
+              onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
+              maxLength={4}
+            />
+            <button
+              onClick={joinExistingGame}
+              disabled={gameCodeInput.length !== 4}
+              className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
+                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                 focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Join Game (Player Mode)
+            </button>
+          </div>
+          <button
+            onClick={() => setMode('initial')}
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
+          >
+            Back to Mode Selection
+          </button>
+        </div>
+      );
+    } else if (mode === 'multiplayer' && activeGameId && gameData) {
       const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
       const isHost = gameData.hostId === userId;
       const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
@@ -1641,213 +1682,213 @@ const App = () => {
               <p className="text-gray-700 mt-2">
                 <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
               </p>
-                  {isVarietalAnswer && ( // Only show if it's a varietal
-                    <button
-                      onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
-                      disabled={llmLoading}
-                    >
-                      {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {isHost && !gameData.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
+              {isVarietalAnswer && ( // Only show if it's a varietal
                 <button
-                  onClick={handleMultiplayerNextQuestion}
-                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                 focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                >
-                  {gameData.currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'End Game'}
-                </button>
-              )}
-
-              {isHost && ( // Proctor-only button for generating new questions
-                <button
-                  onClick={() => setShowGenerateQuestionModal(true)}
-                  className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold mt-6
-                                 hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl
-                                 focus:outline-none focus:ring-4 focus:ring-indigo-300 active:bg-[#486D3E]"
+                  onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
+                  className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
+                             hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
                   disabled={llmLoading}
                 >
-                  {llmLoading ? 'Generating...' : '✨ Generate New Question'}
+                  {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
                 </button>
               )}
+            </div>
+          )}
 
-              <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
-                <ul className="space-y-2">
-                  {sortedPlayers.map(player => ( // Use sortedPlayers here
-                    <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
-                      <span className="font-semibold">
-                        {player.userName}
-                        {player.id === gameData.hostId ? (
-                          <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
-                        ) : (
-                          <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
-                        )}
-                      </span>
-                      <span className="font-bold text-[#6b2a58]">{player.score}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {gameData.quizEnded && (
-                <div className="text-center space-y-6 mt-8">
-                  <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
-                  {winners.length === 1 ? (
-                    <p className="text-3xl font-extrabold text-green-700">
-                      Winner: {winners[0].userName}!
-                    </p>
-                  ) : (
-                    <p className="text-3xl font-extrabold text-green-700">
-                      It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
-                    </p>
-                  )}
-                  {/* Only show player's score if they are a Player */}
-                  {!isHost && (
-                    <p className="text-2xl text-gray-700">
-                      Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                    </p>
-                  )}
-                  {isHost && (
-                    <button
-                      onClick={restartMultiplayerQuiz}
-                      className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
+          {isHost && !gameData.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
+            <button
+              onClick={handleMultiplayerNextQuestion}
+              className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
                                  hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
                                  focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                    >
-                      Restart Game
-                    </button>
-                  )}
-                  <a
-                    href="https://www.vineyardvoyages.com/tours"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
+            >
+              {gameData.currentQuestionIndex < gameData.questions.length - 1 ? 'Next Question' : 'End Game'}
+            </button>
+          )}
+
+          {isHost && ( // Proctor-only button for generating new questions
+            <button
+              onClick={() => setShowGenerateQuestionModal(true)}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold mt-6
+                                 hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl
+                                 focus:outline-none focus:ring-4 focus:ring-indigo-300 active:bg-[#486D3E]"
+              disabled={llmLoading}
+            >
+              {llmLoading ? 'Generating...' : '✨ Generate New Question'}
+            </button>
+          )}
+
+          <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
+            <ul className="space-y-2">
+              {sortedPlayers.map(player => ( // Use sortedPlayers here
+                <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
+                  <span className="font-semibold">
+                    {player.userName}
+                    {player.id === gameData.hostId ? (
+                      <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
+                    ) : (
+                      <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
+                    )}
+                  </span>
+                  <span className="font-bold text-[#6b2a58]">{player.score}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {gameData.quizEnded && (
+            <div className="text-center space-y-6 mt-8">
+              <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
+              {winners.length === 1 ? (
+                <p className="text-3xl font-extrabold text-green-700">
+                  Winner: {winners[0].userName}!
+                </p>
+              ) : (
+                <p className="text-3xl font-extrabold text-green-700">
+                  It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
+                </p>
+              )}
+              {/* Only show player's score if they are a Player */}
+              {!isHost && (
+                <p className="text-2xl text-gray-700">
+                  Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+                </p>
+              )}
+              {isHost && (
+                <button
+                  onClick={restartMultiplayerQuiz}
+                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
+                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                 focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                >
+                  Restart Game
+                </button>
+              )}
+              <a
+                href="https://www.vineyardvoyages.com/tours"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
                                  hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
                                  focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-                  >
-                    Book a Tour Now!
-                  </a>
-                </div>
-              )}
-              <button
-                onClick={() => {
-                  setMode('initial');
-                  setActiveGameId(null); // Clear active game ID when leaving
-                  setGameData(null);
-                }}
-                className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
               >
-                Leave Game
-              </button>
+                Book a Tour Now!
+              </a>
             </div>
-          );
-        }
-      };
-
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
-          style={{
-            backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, // Example wine-themed image
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}>
-          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
-            {/* Logo Integration */}
-            <div className="flex justify-center mb-4">
-              <img
-                src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
-                alt="Vineyard Voyages Logo"
-                className="h-24 w-auto object-contain"
-                onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
-              />
-            </div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
-              <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
-            </h1>
-            {renderContent()}
-
-            {/* Varietal Elaboration Modal */}
-            {showVarietalModal && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Varietal Insight</h3>
-                  {llmLoading ? (
-                    <p className="text-gray-700">Generating elaboration...</p>
-                  ) : (
-                    <p className="text-gray-800">{varietalElaboration}</p>
-                  )}
-                  <button
-                    onClick={() => setShowVarietalModal(false)}
-                    className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Generate Question Modal (Proctor only) */}
-            {showGenerateQuestionModal && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-                  <input
-                    type="text"
-                    placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-                    className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                    value={newQuestionTopic}
-                    onChange={(e) => setNewQuestionTopic(e.target.value)}
-                  />
-                  <button
-                    onClick={handleGenerateQuestion}
-                    className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
-                    disabled={llmLoading || !newQuestionTopic.trim()}
-                  >
-                    {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-                  </button>
-                  <button
-                    onClick={() => setShowGenerateQuestionModal(false)}
-                    className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
+          <button
+            onClick={() => {
+              setMode('initial');
+              setActiveGameId(null); // Clear active game ID when leaving
+              setGameData(null);
+            }}
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
+          >
+            Leave Game
+          </button>
         </div>
       );
-    };
+    }
+  };
 
-    // Ensure Tailwind CSS is loaded
-    const tailwindScript = document.createElement('script');
-    tailwindScript.src = "https://cdn.tailwindcss.com";
-    document.head.appendChild(tailwindScript);
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
+      style={{
+        backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, // Example wine-themed image
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}>
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
+        {/* Logo Integration */}
+        <div className="flex justify-center mb-4">
+          <img
+            src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
+            alt="Vineyard Voyages Logo"
+            className="h-24 w-auto object-contain"
+            onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
+          />
+        </div>
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
+          <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
+        </h1>
+        {renderContent()}
 
-    // Add Inter font
-    const fontLink = document.createElement('link');
-    fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap";
-    document.head.appendChild(fontLink);
+        {/* Varietal Elaboration Modal */}
+        {showVarietalModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
+              <h3 className="text-2xl font-bold text-gray-900">Varietal Insight</h3>
+              {llmLoading ? (
+                <p className="text-gray-700">Generating elaboration...</p>
+              ) : (
+                <p className="text-gray-800">{varietalElaboration}</p>
+              )}
+              <button
+                onClick={() => setShowVarietalModal(false)}
+                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
+                                 hover:bg-[#496E3E] transition-colors duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
 
-    // Apply font to body
-    const styleTag = document.createElement('style');
-    styleTag.innerHTML = `
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-    `;
-    document.head.appendChild(styleTag);
+        {/* Generate Question Modal (Proctor only) */}
+        {showGenerateQuestionModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
+              <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
+              <input
+                type="text"
+                placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
+                className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+                value={newQuestionTopic}
+                onChange={(e) => setNewQuestionTopic(e.target.value)}
+              />
+              <button
+                onClick={handleGenerateQuestion}
+                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
+                                 hover:bg-[#496E3E] transition-colors duration-200"
+                disabled={llmLoading || !newQuestionTopic.trim()}
+              >
+                {llmLoading ? 'Generating...' : '✨ Generate New Question'}
+              </button>
+              <button
+                onClick={() => setShowGenerateQuestionModal(false)}
+                className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                                 hover:bg-gray-600 transition-colors duration-200"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-    export default App;}
+// Ensure Tailwind CSS is loaded
+const tailwindScript = document.createElement('script');
+tailwindScript.src = "https://cdn.tailwindcss.com";
+document.head.appendChild(tailwindScript);
+
+// Add Inter font
+const fontLink = document.createElement('link');
+fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap";
+document.head.appendChild(fontLink);
+
+// Apply font to body
+const styleTag = document.createElement('style');
+styleTag.innerHTML = `
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+`;
+document.head.appendChild(styleTag);
+
+export default App;
