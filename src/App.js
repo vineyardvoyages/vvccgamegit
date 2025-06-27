@@ -1850,4 +1850,4 @@ const App = () => {
     `;
     document.head.appendChild(styleTag);
 
-    export default App;
+    export default App;}
