@@ -5,7 +5,7 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, q
 
 // Firebase Configuration (will read from Netlify Environment Variable)
 const firebaseConfig = {
-   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyAYbcAShHOyxRZkB59E1B9i9R_nzrjNIjY"
+   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyAYbcAShHOyxRZkB59E1B9i9R_nzrjNIjY",
   authDomain: "vineyardvoyagesquiz.firebaseapp.com",
   projectId: "vineyardvoyagesquiz",
   storageBucket: "vineyardvoyagesquiz.appspot.com",
