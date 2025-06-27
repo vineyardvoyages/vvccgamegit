@@ -5,7 +5,7 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, q
 
 // Firebase Configuration (will read from Netlify Environment Variable)
 const firebaseConfig = {
-   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyAYbcAShHOyxRZkB59E1B9i9R_nzrjNIjY",
+   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "REACT_APP_FIREBASE_API_KEY",
   authDomain: "vineyardvoyagesquiz.firebaseapp.com",
   projectId: "vineyardvoyagesquiz",
   storageBucket: "vineyardvoyagesquiz.appspot.com",
@@ -1212,7 +1212,7 @@ const App = () => {
     }
 
     // This will be read from Netlify Environment Variable during deployment
-    onst apiKey = process.env.REACT_APP_GEMINI_API_KEY || "AIzaSyBF-81JoGdjKt8bUTfus_mZeEYLFRdRIeY";
+    onst apiKey = process.env.REACT_APP_GEMINI_API_KEY || REACT_APP_GEMINI_API_KEY;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
