@@ -183,7 +183,7 @@ const WINE_VARIETALS = [
   { name: "Baco Noir", country: "USA" },
   { name: "Cascade", country: "USA" },
   { name: "De Chaunac", country: "USA" },
-  { name: "Marechal Foch", country": "USA" },
+  { name: "Marechal Foch", country: "USA" },
   { name: "Leon Millot", country: "USA" },
 ];
 
