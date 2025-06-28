@@ -758,7 +758,7 @@ const WINE_QUIZ_QUESTIONS = [
       {
         question: "What is a common challenge for Virginia vineyards during hurricane season?",
         options: ["Too much sun", "Excessive rainfall and wind damage", "Drought", "Early frost"],
-        correctAnswer: "Excessive rainfall and wind damage",
+        correctAnswer: "Excessive rainfall",
         explanation: "Hurricane season can bring heavy rains and strong winds, posing risks of rot and physical damage to vines and crops."
       },
       {
@@ -1778,19 +1778,32 @@ const WINE_QUIZ_QUESTIONS = [
                     Book a Tour Now!
                   </a>
                 </div>
-              );
-            }
-          };
+              )}
+              <button
+                onClick={() => {
+                  setMode('initial');
+                  setActiveGameId(null); // Clear active game ID when leaving
+                  setGameData(null);
+                }}
+                className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                             hover:bg-gray-600 transition-colors duration-200 shadow-md"
+              >
+                Leave Game
+              </button>
+            </div>
+          );
+        }
+      };
 
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
-              style={{
-                backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, // Example wine-themed image
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}>
-              <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
+          style={{
+            backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, // Example wine-themed image
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}>
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
                 {/* Logo Integration */}
                 <div className="flex justify-center mb-4">
                   <img
