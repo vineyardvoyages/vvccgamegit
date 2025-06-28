@@ -810,7 +810,7 @@ const WINE_QUIZ_QUESTIONS = [
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let result = '';
       for (let i = 0; i < 4; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters));
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
       }
       return result;
     };
@@ -1315,11 +1315,17 @@ const WINE_QUIZ_QUESTIONS = [
       // Render based on mode
       const renderContent = () => {
         // These need to be read from gameData for multiplayer
+        // Add a null check for gameData before trying to access players
         const currentPlayerGameData = gameData?.players?.find(p => p.id === userId);
         // eslint-disable-next-line no-unused-vars
         const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
         // eslint-disable-next-line no-unused-vars
         const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
+
+        // If gameData is null, return loading or error message for multiplayer mode
+        if (mode === 'multiplayer' && !gameData) {
+          return <p className="text-center text-gray-700 text-xl">Loading multiplayer game data...</p>;
+        }
 
 
         if (loading || !isAuthReady) {
@@ -1574,7 +1580,7 @@ const WINE_QUIZ_QUESTIONS = [
                                    WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
 
           // Calculate player rank and winner
-          const sortedPlayers = [...(gameData.players || [])].sort((a, b) => b.score - a.score);
+          const sortedPlayers = gameData.players ? [...gameData.players].sort((a, b) => b.score - a.score) : []; // Safely initialize sortedPlayers
           const currentPlayerRank = sortedPlayers.findIndex(p => p.id === userId) + 1;
 
           const getWinners = () => {
@@ -1783,118 +1789,4 @@ const WINE_QUIZ_QUESTIONS = [
                 </div>
               )}
               <button
-                onClick={() => {
-                  setMode('initial');
-                  setActiveGameId(null); // Clear active game ID when leaving
-                  setGameData(null);
-                }}
-                className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                             hover:bg-gray-600 transition-colors duration-200 shadow-md"
-              >
-                Leave Game
-              </button>
-            </div>
-          );
-        }
-      };
-
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
-          style={{
-            backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, // Example wine-themed image
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}>
-          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
-                {/* Logo Integration */}
-                <div className="flex justify-center mb-4">
-                  <img
-                    src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
-                    alt="Vineyard Voyages Logo"
-                    className="h-24 w-auto object-contain"
-                    onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
-                  />
-                </div>
-                <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
-                  <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
-                </h1>
-                {renderContent()}
-
-                {/* Varietal Elaboration Modal */}
-                {showVarietalModal && (
-                  <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                      <h3 className="text-2xl font-bold text-gray-900">Varietal Insight</h3>
-                      {llmLoading ? (
-                        <p className="text-gray-700">Generating elaboration...</p>
-                      ) : (
-                        <p className="text-gray-800">{varietalElaboration}</p>
-                      )}
-                      <button
-                        onClick={() => setShowVarietalModal(false)}
-                        className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                         hover:bg-[#496E3E] transition-colors duration-200"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Generate Question Modal (Proctor only) */}
-                {showGenerateQuestionModal && (
-                  <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                      <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-                      <input
-                        type="text"
-                        placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-                        className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                        value={newQuestionTopic}
-                        onChange={(e) => setNewQuestionTopic(e.target.value)}
-                      />
-                      <button
-                        onClick={handleGenerateQuestion}
-                        className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                         hover:bg-[#496E3E] transition-colors duration-200"
-                        disabled={llmLoading || !newQuestionTopic.trim()}
-                      >
-                        {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-                      </button>
-                      <button
-                        onClick={() => setShowGenerateQuestionModal(false)}
-                        className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                                         hover:bg-gray-600 transition-colors duration-200"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        };
-
-        // Ensure Tailwind CSS is loaded
-        const tailwindScript = document.createElement('script');
-        tailwindScript.src = "https://cdn.tailwindcss.com";
-        document.head.appendChild(tailwindScript);
-
-        // Add Inter font
-        const fontLink = document.createElement('link');
-        fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap";
-        document.head.appendChild(fontLink);
-
-        // Apply font to body
-        const styleTag = document.createElement('style');
-        styleTag.innerHTML = `
-          body {
-            font-family: 'Inter', sans-serif;
-          }
-        `;
-        document.head.appendChild(styleTag);
-
-        export default App;
-        
+                onClick={()
