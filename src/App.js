@@ -1212,7 +1212,7 @@ const App = () => {
     }
 
     // This will be read from Netlify Environment Variable during deployment
-    onst apiKey = process.env.REACT_APP_GEMINI_API_KEY || REACT_APP_GEMINI_API_KEY;
+   const apiKey = process.env.REACT_APP_GEMINI_API_KEY || "YOUR_ACTUAL_GEMINI_API_KEY_HERE"; // TEMPORARY FOR GITPOD PREVIEW ONLY
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
