@@ -1,4 +1,4 @@
-import React, { useState, useEffect } => 'react';
+import React, { useState, useEffect } from 'react'; // CORRECTED SYNTAX
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'; // Removed unused: collection, query, where, getDocs
@@ -650,6 +650,138 @@ const WINE_QUIZ_QUESTIONS = [
         options: ["Blind tasting only", "Self-service wine dispensing", "Guided tastings with knowledgeable staff", "Only full bottle sales"],
         correctAnswer: "Guided tastings with knowledgeable staff",
         explanation: "Virginia wineries pride themselves on offering personalized, educational tasting experiences, often led by winemakers or passionate staff."
+      },
+      {
+        question: "What is a popular event often hosted by Northern Virginia wineries in the fall?",
+        options: ["Spring Blossom Festival", "Summer Jazz Concerts", "Harvest Festivals and Grape Stomps", "Winter Sledding Competitions"],
+        correctAnswer: "Harvest Festivals and Grape Stomps",
+        explanation: "Fall is harvest season, and many wineries celebrate with festivals, grape stomps, and other family-friendly events."
+      },
+      {
+        question: "Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?",
+        options: ["Sandy soil", "Clay soil", "Loamy soil", "Slate or rocky soil"],
+        correctAnswer: "Slate or rocky soil",
+        explanation: "Some areas of Northern Virginia, particularly in the foothills, have rocky or slate-rich soils that can impart distinct minerality to the wines."
+      },
+      {
+        question: "Which of these is a hybrid grape varietal sometimes grown in Virginia, known for its disease resistance?",
+        options: ["Cabernet Sauvignon", "Chardonnay", "Chambourcin", "Merlot"],
+        correctAnswer: "Chambourcin",
+        explanation: "Chambourcin is a French-American hybrid grape that offers good disease resistance, making it suitable for Virginia's humid climate."
+      },
+      {
+        question: "True or False: Virginia is one of the oldest wine-producing states in the United States.",
+        options: ["True", "False"],
+        correctAnswer: "True",
+        explanation: "Virginia has a long history of winemaking, dating back to the early colonial period, making it one of the oldest wine states."
+      },
+      {
+        question: "What is the name of the largest wine festival in Virginia, often held annually?",
+        options: ["Virginia Grape Fest", "Taste of Virginia Wine", "Virginia Wine Festival", "Commonwealth Crush"],
+        correctAnswer: "Virginia Wine Festival",
+        explanation: "The Virginia Wine Festival is one of the largest and longest-running wine festivals in the state, showcasing numerous Virginia wineries."
+      },
+      {
+        question: "Which type of wine is Virginia increasingly gaining recognition for, besides its still wines?",
+        options: ["Fortified wines", "Dessert wines", "Sparkling wines", "Organic wines"],
+        correctAnswer: "Sparkling wines",
+        explanation: "Virginia's terroir and winemaking expertise are increasingly producing high-quality sparkling wines, often made using the traditional method."
+      },
+      {
+        question: "Many Northern Virginia wineries are family-owned and operated. What benefit does this often bring?",
+        options: ["Mass production", "Lower prices", "Personalized service and unique character", "Limited wine selection"],
+        correctAnswer: "Personalized service and unique character",
+        explanation: "Family-owned wineries often offer a more personal touch, unique wines, and a strong connection to the land and their craft."
+      },
+      {
+        question: "What is a common challenge for Virginia winemakers related to bird damage?",
+        options: ["Birds eating grapes", "Birds nesting in barrels", "Birds spreading disease", "Birds damaging trellises"],
+        correctAnswer: "Birds eating grapes",
+        explanation: "Birds can cause significant damage to ripening grape crops, leading to the use of netting or other deterrents in vineyards."
+      },
+      {
+        question: "What is a common food pairing for Virginia ham?",
+        options: ["Light white wine", "Sweet dessert wine", "Dry Rosé or light-bodied red like Cabernet Franc", "Sparkling wine"],
+        correctAnswer: "Dry Rosé or light-bodied red like Cabernet Franc",
+        explanation: "The saltiness and richness of Virginia ham pair well with a crisp dry rosé or a fruit-forward, slightly herbal Cabernet Franc."
+      },
+      {
+        question: "True or False: All grapes grown in Northern Virginia are native American varietals.",
+        options: ["True", "False"],
+        correctAnswer: "False",
+        explanation: "While some native and hybrid varietals are grown, European (Vitis vinifera) grapes like Viognier, Cabernet Franc, and Chardonnay are widely cultivated and form the backbone of Virginia's fine wine industry."
+      },
+      {
+        question: "What is an 'AVA' in the context of Virginia wine?",
+        options: ["American Vineyard Association", "Appellation of Virginia Award", "American Viticultural Area", "Agricultural Vintner Alliance"],
+        correctAnswer: "American Viticultural Area",
+        explanation: "An AVA (American Viticultural Area) is a designated wine grape-growing region in the United States distinguishable by geographic features."
+      },
+      {
+        question: "Which of these is a common characteristic of Virginia's climate that influences its wines?",
+        options: ["Very dry summers", "High humidity", "Consistently cold temperatures", "Volcanic soil"],
+        correctAnswer: "High humidity",
+        explanation: "Virginia's humid summers can lead to challenges like fungal diseases but also contribute to the unique character of its wines."
+      },
+      {
+        question: "Many Northern Virginia wineries offer scenic views. What kind of landscape is typical?",
+        options: ["Coastal beaches", "Flat plains", "Rolling hills and mountains", "Dense urban cityscape"],
+        correctAnswer: "Rolling hills and mountains",
+        explanation: "Northern Virginia's wine country is characterized by picturesque rolling hills and proximity to the Blue Ridge Mountains."
+      },
+      {
+        question: "What is a common practice in Virginia vineyards to manage humidity and promote air circulation?",
+        options: ["Dense planting", "Leaf pulling (canopy management)", "Deep irrigation", "Using plastic covers"],
+        correctAnswer: "Leaf pulling (canopy management)",
+        explanation: "Canopy management, including leaf pulling, helps improve air circulation around grape clusters, reducing disease risk in humid climates."
+      },
+      {
+        question: "Which white grape varietal, known for its crispness, is gaining popularity in Virginia?",
+        options: ["Pinot Grigio", "Riesling", "Albariño", "Gewürztraminer"],
+        correctAnswer: "Albariño",
+        explanation: "Albariño, a Spanish white grape, is showing promise in Virginia, producing vibrant, aromatic wines with good acidity."
+      },
+      {
+        question: "What kind of events do many Northern Virginia wineries often facilitate for groups?",
+        options: ["Cooking classes", "Corporate team building and private celebrations", "Extreme sports adventures", "Art workshops"],
+        correctAnswer: "Corporate team building and private celebrations",
+        explanation: "Many Northern Virginia wineries offer tailored events for various group needs, including corporate outings and special celebrations."
+      },
+      {
+        question: "True or False: Virginia is the second-largest wine-producing state on the East Coast.",
+        options: ["True", "False"],
+        correctAnswer: "True",
+        explanation: "Virginia is indeed the second-largest wine-producing state on the East Coast, after New York."
+      },
+      {
+        question: "What is a common challenge for Virginia vineyards during hurricane season?",
+        options: ["Too much sun", "Excessive rainfall and wind damage", "Drought", "Early frost"],
+        correctAnswer: "Excessive rainfall",
+        explanation: "Hurricane season can bring heavy rains and strong winds, posing risks of rot and physical damage to vines and crops."
+      },
+      {
+        question: "Which grape varietal is often blended with Cabernet Franc in Virginia to create Bordeaux-style red blends?",
+        options: ["Pinot Noir", "Merlot", "Riesling", "Viognier"],
+        correctAnswer: "Merlot",
+        explanation: "Merlot is a common blending partner with Cabernet Franc (and sometimes Cabernet Sauvignon and Petit Verdot) in Virginia's Bordeaux-style red wines."
+      },
+      {
+        question: "What is a common wine tourism experience emphasized in Northern Virginia?",
+        options: ["Budget-friendly travel", "Luxury and personalized attention", "Self-guided tours with no interaction", "Large group parties only"],
+        correctAnswer: "Luxury and personalized attention",
+        explanation: "Northern Virginia's wine tourism often emphasizes a premium experience with comfortable amenities and tailored itineraries."
+      },
+      {
+        question: "Which of these is a well-known wine region in Virginia, south of Northern Virginia?",
+        options: ["Finger Lakes", "Willamette Valley", "Monticello AVA", "Sonoma County"],
+        correctAnswer: "Monticello AVA",
+        explanation: "The Monticello AVA, centered around Charlottesville, is another significant and historic wine region in Virginia."
+      },
+      {
+        question: "What is the purpose of 'netting' in Virginia vineyards?",
+        options: ["To support the vines", "To protect grapes from birds and animals", "To provide shade", "To collect rainwater"],
+        correctAnswer: "To protect grapes from birds and animals",
+        explanation: "Netting is a common solution used by vineyards to prevent birds and other wildlife from consuming ripening grapes."
       }
     ];
 
@@ -1182,7 +1314,7 @@ const WINE_QUIZ_QUESTIONS = [
       // Render based on mode
       const renderContent = () => {
         // Initialize gameData with safe defaults if it's null or undefined
-        const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostName: '' }; // Added hostName default
+        const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '' };
         
         // Ensure gameData.players is an array before attempting spread and sort
         const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
