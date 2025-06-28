@@ -1588,7 +1588,7 @@ const WINE_QUIZ_QUESTIONS = [
 
           // Calculate player rank and winner
           // Ensure gameData.players is an array before attempting spread and sort
-          const sortedPlayers = Array.isArray(gameData.players) ? [...gameData.players].sort((a, b) => b.score - a.score) : [];
+          const sortedPlayers = Array.isArray(gameData?.players) ? [...gameData.players].sort((a, b) => b.score - a.score) : [];
           const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
 
           const getWinners = () => {
@@ -1610,7 +1610,7 @@ const WINE_QUIZ_QUESTIONS = [
             <div className="space-y-6">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
               <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
-              <p className="text-gray-700 text-lg text-center">
+              <p className="text-700 text-lg text-center">
                 Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
                 {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
               </p>
@@ -1656,7 +1656,7 @@ const WINE_QUIZ_QUESTIONS = [
                       </div>
                     ))}
                     <p className="text-gray-700 text-center col-span-2">
-                      <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
+                      <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.answer}
                     </p>
                     <p className="text-gray-700 text-center col-span-2">
                       <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
@@ -1912,3 +1912,4 @@ const WINE_QUIZ_QUESTIONS = [
         document.head.appendChild(styleTag);
 
         export default App;
+        
