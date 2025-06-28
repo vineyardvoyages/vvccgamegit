@@ -1313,11 +1313,15 @@ const WINE_QUIZ_QUESTIONS = [
 
       // Render based on mode
       const renderContent = () => {
-        // These need to be read from gameData for multiplayer
-        // Ensure gameData and gameData.players are valid before attempting to sort or filter
-        const currentPlayersArray = Array.isArray(gameData?.players) ? gameData.players : [];
+        // Ensure gameData is an object to prevent null/undefined access
+        const safeGameData = gameData || {}; 
+        
+        // Ensure gameData.players is an array before attempting spread and sort
+        const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
 
+        // eslint-disable-next-line no-unused-vars
         const sortedPlayers = [...currentPlayersArray].sort((a, b) => b.score - a.score);
+        // eslint-disable-next-line no-unused-vars
         const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
 
         const getWinners = () => {
@@ -1325,10 +1329,12 @@ const WINE_QUIZ_QUESTIONS = [
           const topScore = sortedPlayers[0].score;
           return sortedPlayers.filter(player => player.score === topScore);
         };
+        // eslint-disable-next-line no-unused-vars
         const winners = getWinners();
 
         // Find the current player's answers/feedback for highlighting
-        const currentPlayerGameData = currentPlayersArray.find(p => p.id === userId); // Use currentPlayersArray
+        // Ensure currentPlayersArray is used and find method is safe
+        const currentPlayerGameData = currentPlayersArray.find(p => p.id === userId) || {}; 
         // eslint-disable-next-line no-unused-vars
         const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
         // eslint-disable-next-line no-unused-vars
@@ -1581,14 +1587,19 @@ const WINE_QUIZ_QUESTIONS = [
             </div>
           );
         } else if (mode === 'multiplayer' && activeGameId && gameData) {
-          const currentQuestion = questions[currentQuestionIndex]; // Changed to use 'questions' state directly
-          const isHost = gameData.hostId === userId;
+          // Initialize gameData with safe defaults if it's null or undefined
+          const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false };
+
+          const currentQuestion = questions[safeGameData.currentQuestionIndex]; // Use safeGameData here
+
+          const isHost = safeGameData.hostId === userId;
           const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
                                    WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
 
           // Calculate player rank and winner
-          // Ensure gameData.players is an array before attempting spread and sort
-          const sortedPlayers = Array.isArray(gameData?.players) ? [...gameData.players].sort((a, b) => b.score - a.score) : [];
+          // Ensure safeGameData.players is an array before attempting spread and sort
+          const sortedPlayers = Array.isArray(safeGameData.players) ? [...safeGameData.players].sort((a, b) => b.score - a.score) : [];
+          // eslint-disable-next-line no-unused-vars
           const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
 
           const getWinners = () => {
@@ -1596,10 +1607,12 @@ const WINE_QUIZ_QUESTIONS = [
             const topScore = sortedPlayers[0].score;
             return sortedPlayers.filter(player => player.score === topScore);
           };
+          // eslint-disable-next-line no-unused-vars
           const winners = getWinners();
 
           // Find the current player's answers/feedback for highlighting
-          const currentPlayerGameData = Array.isArray(gameData.players) ? gameData.players.find(p => p.id === userId) : undefined; // Ensure gameData.players is an array
+          // Ensure currentPlayersArray is used and find method is safe
+          const currentPlayerGameData = Array.isArray(safeGameData.players) ? safeGameData.players.find(p => p.id === userId) : undefined;
           // eslint-disable-next-line no-unused-vars
           const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
           // eslint-disable-next-line no-unused-vars
@@ -1610,20 +1623,20 @@ const WINE_QUIZ_QUESTIONS = [
             <div className="space-y-6">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
               <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
-              <p className="text-700 text-lg text-center">
+              <p className="text-gray-700 text-lg text-center">
                 Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
                 {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
               </p>
 
               {/* Display Proctor's Name */}
-              {!isHost && gameData?.hostName && ( // Added optional chaining for hostName
+              {!isHost && safeGameData.hostName && ( // Changed to use safeGameData
                 <p className="text-gray-700 text-lg text-center">
-                  Proctor: <span className="font-mono text-[#6b2a58] break-all">{gameData.hostName}</span>
+                  Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
                 </p>
               )}
 
               {/* New: Display running score and rank */}
-              {!gameData?.quizEnded && !isHost && ( // Added optional chaining for quizEnded
+              {!safeGameData.quizEnded && !isHost && ( // Changed to use safeGameData
                 <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
                   <p className="text-lg font-semibold text-gray-800">
                     Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
@@ -1639,7 +1652,7 @@ const WINE_QUIZ_QUESTIONS = [
 
               <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
                 <p className="text-lg font-semibold text-gray-700 mb-2">
-                  Question {gameData?.currentQuestionIndex + 1} of {gameData?.questions?.length} {/* Added optional chaining */}
+                  Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length} {/* Changed to use safeGameData */}
                 </p>
                 <p className="text-xl text-gray-800 font-medium">
                   {currentQuestion.question}
@@ -1656,7 +1669,7 @@ const WINE_QUIZ_QUESTIONS = [
                       </div>
                     ))}
                     <p className="text-gray-700 text-center col-span-2">
-                      <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.answer}
+                      <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
                     </p>
                     <p className="text-gray-700 text-center col-span-2">
                       <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
@@ -1667,7 +1680,7 @@ const WINE_QUIZ_QUESTIONS = [
                     <button
                       key={index}
                       onClick={() => handleMultiplayerAnswerClick(option)}
-                      disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || gameData?.quizEnded} // Added optional chaining
+                      disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || safeGameData.quizEnded} // Changed to use safeGameData
                       className={`
                         w-full p-4 rounded-lg text-left text-lg font-medium
                         transition-all duration-200 ease-in-out
@@ -1714,14 +1727,14 @@ const WINE_QUIZ_QUESTIONS = [
                 </div>
               )}
 
-              {isHost && !gameData?.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
+              {isHost && !safeGameData.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
                 <button
                   onClick={handleMultiplayerNextQuestion}
                   className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
                                          hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
                                          focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
                 >
-                  {gameData?.currentQuestionIndex < gameData?.questions?.length - 1 ? 'Next Question' : 'End Game'} {/* Added optional chaining */}
+                  {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'} {/* Changed to use safeGameData */}
                 </button>
               )}
 
@@ -1740,12 +1753,12 @@ const WINE_QUIZ_QUESTIONS = [
               <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
                 <ul className="space-y-2">
-                  {/* Ensure gameData.players exists and is array before mapping */}
-                  {gameData?.players && Array.isArray(gameData.players) && sortedPlayers.map(player => (
+                  {/* Ensure safeGameData.players exists and is array before mapping */}
+                  {safeGameData.players && Array.isArray(safeGameData.players) && sortedPlayers.map(player => (
                     <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
                       <span className="font-semibold">
                         {player.userName}
-                        {player.id === gameData.hostId ? (
+                        {player.id === safeGameData.hostId ? (
                           <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
                         ) : (
                           <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
@@ -1757,7 +1770,7 @@ const WINE_QUIZ_QUESTIONS = [
                 </ul>
               </div>
 
-              {gameData?.quizEnded && ( // Added optional chaining for quizEnded
+              {safeGameData.quizEnded && ( // Changed to use safeGameData
                 <div className="text-center space-y-6 mt-8">
                   <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
                   {winners.length === 1 ? (
