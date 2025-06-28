@@ -1897,4 +1897,3 @@ const WINE_QUIZ_QUESTIONS = [
         document.head.appendChild(styleTag);
 
         export default App;
-        
