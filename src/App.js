@@ -1317,7 +1317,9 @@ const WINE_QUIZ_QUESTIONS = [
       const renderContent = () => {
         // These need to be read from gameData for multiplayer
         const currentPlayerGameData = gameData?.players?.find(p => p.id === userId);
+        // eslint-disable-next-line no-unused-vars
         const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
+        // eslint-disable-next-line no-unused-vars
         const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
 
 
@@ -1585,7 +1587,9 @@ const WINE_QUIZ_QUESTIONS = [
 
           // Find the current player's answers/feedback for highlighting
           const currentPlayerGameData = gameData.players?.find(p => p.id === userId);
+          // eslint-disable-next-line no-unused-vars
           const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
+          // eslint-disable-next-line no-unused-vars
           const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
 
 
