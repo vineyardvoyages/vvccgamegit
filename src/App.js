@@ -1789,4 +1789,5 @@ const WINE_QUIZ_QUESTIONS = [
                 </div>
               )}
               <button
-                onClick={
+                onClick={()
+export default App;
