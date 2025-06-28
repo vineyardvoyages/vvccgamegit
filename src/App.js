@@ -584,8 +584,7 @@ const WINE_QUIZ_QUESTIONS = [
       {
         question: "What is the term for the 'body' of a wine?",
         options: ["Its color intensity", "Its perceived weight or fullness in the mouth", "Its sweetness level", "Its alcohol content"],
-        correctAnswer: "Its perceived weight or fullness in the mouth",
-        explanation: "The body of a wine refers to its perceived weight and fullness on the palate, often influenced by alcohol, residual sugar, and extract."
+        correctAnswer: "Its perceived weight and fullness on the palate, often influenced by alcohol, residual sugar, and extract."
       },
       {
         question: "Which type of wine is typically served very chilled, often as a dessert wine?",
@@ -811,7 +810,7 @@ const WINE_QUIZ_QUESTIONS = [
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let result = '';
       for (let i = 0; i < 4; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
+        result += characters.charAt(Math.floor(Math.random() * characters));
       }
       return result;
     };
@@ -1101,7 +1100,7 @@ const WINE_QUIZ_QUESTIONS = [
         setAnswerSelected(true); // Disable local buttons immediately
         setSelectedAnswer(selectedOption); // Store selected answer locally for immediate visual feedback
 
-        const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
+        const currentQuestion = questions[currentQuestionIndex]; // Changed to use 'questions' state directly
         let newFeedback = '';
         let newScore = score;
 
@@ -1569,7 +1568,7 @@ const WINE_QUIZ_QUESTIONS = [
             </div>
           );
         } else if (mode === 'multiplayer' && activeGameId && gameData) {
-          const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
+          const currentQuestion = questions[currentQuestionIndex]; // Changed to use 'questions' state directly
           const isHost = gameData.hostId === userId;
           const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
                                    WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
