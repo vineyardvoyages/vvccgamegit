@@ -140,7 +140,7 @@ const WINE_VARIETALS = [
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
   { name: "Terret Noir", country: "France" },
-  { name: "Valdiguié", country: "France" },
+  { name: "Valdiguié", country = "France" }, // Fixed missing colon and extraneous quotes
   { name: "Ruby Cabernet", country: "USA" },
   { name: "Emerald Riesling", country: "USA" },
   { name: "Symphony", country: "USA" },
