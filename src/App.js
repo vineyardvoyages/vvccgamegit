@@ -1317,11 +1317,16 @@ const WINE_QUIZ_QUESTIONS = [
         const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '' };
         
         // Define isHost and isVarietalAnswer at the top of renderContent's scope
-        const isHost = safeGameData.hostId === userId; // Defined here
-        const currentQuestion = questions[currentQuestionIndex]; // Use questions state for current question
-
+        // This ensures they are always defined and accessible throughout the entire renderContent function and its JSX.
+        const isHost = safeGameData.hostId === userId; 
         const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
-                                 WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim()); // Defined here
+                                 WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
+          
+        // Ensure questions array is safe before accessing currentQuestionIndex
+        const currentQuestion = Array.isArray(questions) && questions.length > currentQuestionIndex
+                                ? questions[currentQuestionIndex]
+                                : { options: [], correctAnswer: '', question: '', explanation: '' }; 
+
 
         // Ensure gameData.players is an array before attempting spread and sort
         const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
@@ -1435,8 +1440,8 @@ const WINE_QUIZ_QUESTIONS = [
             </div>
           );
         } else if (mode === 'singlePlayer') {
+          // Define isVarietalAnswer locally for singlePlayer mode as well
           const currentQuestion = questions[currentQuestionIndex];
-          // Determine if the correct answer is a varietal from our list for elaboration
           const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
                                    WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
 
