@@ -1316,6 +1316,13 @@ const WINE_QUIZ_QUESTIONS = [
         // Initialize gameData with safe defaults if it's null or undefined
         const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '' };
         
+        // Define isHost and isVarietalAnswer at the top of renderContent's scope
+        const isHost = safeGameData.hostId === userId; // Defined here
+        const currentQuestion = questions[currentQuestionIndex]; // Use questions state for current question
+
+        const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
+                                 WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim()); // Defined here
+
         // Ensure gameData.players is an array before attempting spread and sort
         const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
 
@@ -1332,11 +1339,6 @@ const WINE_QUIZ_QUESTIONS = [
         };
         // eslint-disable-next-line no-unused-vars
         const winners = getWinners();
-
-        // Ensure safeGameData.questions and currentQuestionIndex are valid before accessing
-        const currentQuestion = safeGameData.questions && safeGameData.questions.length > safeGameData.currentQuestionIndex 
-                                ? safeGameData.questions[safeGameData.currentQuestionIndex] 
-                                : { options: [], correctAnswer: '', question: '', explanation: '' }; // Provide a very safe default question structure
 
 
         // Find the current player's answers/feedback for highlighting
@@ -1604,6 +1606,15 @@ const WINE_QUIZ_QUESTIONS = [
             hostName: '' // Default for hostName
           }; 
 
+          // Define isHost and isVarietalAnswer at the top of renderContent's multiplayer return block's scope
+          const isHost = safeGameData.hostId === userId; 
+          const currentQuestion = safeGameData.questions && safeGameData.questions.length > safeGameData.currentQuestionIndex 
+                                  ? safeGameData.questions[safeGameData.currentQuestionIndex] 
+                                  : { options: [], correctAnswer: '', question: '', explanation: '' }; // Provide a very safe default question structure
+
+          const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
+                                   WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
+          
           // Ensure gameData.players is an array before attempting spread and sort
           const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
 
@@ -1620,11 +1631,6 @@ const WINE_QUIZ_QUESTIONS = [
           };
           // eslint-disable-next-line no-unused-vars
           const winners = getWinners();
-
-          // Ensure safeGameData.questions and currentQuestionIndex are valid before accessing
-          const currentQuestion = safeGameData.questions && safeGameData.questions.length > safeGameData.currentQuestionIndex 
-                                  ? safeGameData.questions[safeGameData.currentQuestionIndex] 
-                                  : { options: [], correctAnswer: '', question: '', explanation: '' }; // Provide a very safe default question structure
 
 
           // Find the current player's answers/feedback for highlighting
