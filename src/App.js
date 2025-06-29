@@ -1319,15 +1319,13 @@ const WINE_QUIZ_QUESTIONS = [
         // Define isHost and isVarietalAnswer at the top of renderContent's scope
         // This ensures they are always defined and accessible throughout the entire renderContent function and its JSX.
         const isHost = safeGameData.hostId === userId; 
-        const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
-                                 WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
-          
-        // Ensure questions array is safe before accessing currentQuestionIndex
         const currentQuestion = Array.isArray(questions) && questions.length > currentQuestionIndex
                                 ? questions[currentQuestionIndex]
                                 : { options: [], correctAnswer: '', question: '', explanation: '' }; 
 
-
+        const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
+                                 WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
+          
         // Ensure gameData.players is an array before attempting spread and sort
         const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
 
