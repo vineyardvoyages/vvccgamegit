@@ -1242,19 +1242,19 @@ const WINE_QUIZ_QUESTIONS = [
           setLlmLoading(false);
           console.error("Error calling Gemini API:", e);
           setError("Failed to communicate with the AI. Please try again.");
-          return null;
-        }
-      };
+            return null;
+          }
+        };
 
-      const handleGenerateQuestion = async () => {
-        if (!newQuestionTopic.trim()) {
-          setError("Please enter a topic for the new question.");
-          return;
-        }
-        setShowGenerateQuestionModal(false); // Close the input modal
-        setError('');
+        const handleGenerateQuestion = async () => {
+          if (!newQuestionTopic.trim()) {
+            setError("Please enter a topic for the new question.");
+            return;
+          }
+          setShowGenerateQuestionModal(false); // Close the input modal
+          setError('');
 
-        const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
+          const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
     {
       "question": "...",
       "options": ["...", "...", "...", "..."],
@@ -1262,338 +1262,57 @@ const WINE_QUIZ_QUESTIONS = [
       "explanation": "..."
     }`;
 
-        const schema = {
-          type: "OBJECT",
-          properties: {
-            question: { type: "STRING" },
-            options: {
-              type: "ARRAY",
-              items: { type: "STRING" }
+          const schema = {
+            type: "OBJECT",
+            properties: {
+              question: { type: "STRING" },
+              options: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              correctAnswer: { type: "STRING" },
+              explanation: { type: "STRING" }
             },
-            correctAnswer: { type: "STRING" },
-            explanation: { type: "STRING" }
-          },
-          required: ["question", "options", "correctAnswer", "explanation"]
-        };
+            required: ["question", "options", "correctAnswer", "explanation"]
+          };
 
-        const generatedQuestion = await callGeminiAPI(prompt, schema);
+          const generatedQuestion = await callGeminiAPI(prompt, schema);
 
-        if (generatedQuestion) {
-          // Add the new question to the local state
-          setQuestions(prevQuestions => [...prevQuestions, generatedQuestion]);
-          // If in multiplayer, update the game data in Firestore
-          if (mode === 'multiplayer' && activeGameId) {
-            const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-            try {
-              await updateDoc(gameDocRef, {
-                questions: [...gameData.questions, generatedQuestion]
-              });
-            } catch (e) {
-              console.error("Error updating questions in Firestore:", e);
-              setError("Failed to save the new question to the game.");
+          if (generatedQuestion) {
+            // Add the new question to the local state
+            setQuestions(prevQuestions => [...prevQuestions, generatedQuestion]);
+            // If in multiplayer, update the game data in Firestore
+            if (mode === 'multiplayer' && activeGameId) {
+              const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+              try {
+                await updateDoc(gameDocRef, {
+                  questions: [...gameData.questions, generatedQuestion]
+                });
+              } catch (e) {
+                console.error("Error updating questions in Firestore:", e);
+                setError("Failed to save the new question to the game.");
+              }
             }
+            setNewQuestionTopic(''); // Clear topic input
           }
-          setNewQuestionTopic(''); // Clear topic input
-        }
-      };
-
-      const handleElaborateVarietal = async (varietalName) => {
-        setShowVarietalModal(true);
-        setVarietalElaboration(''); // Clear previous elaboration
-        setError('');
-
-        const prompt = `Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.`;
-        const elaboration = await callGeminiAPI(prompt);
-        if (elaboration) {
-          setVarietalElaboration(elaboration);
-        } else {
-          setVarietalElaboration("Could not retrieve elaboration for this varietal.");
-        }
-      };
-
-      // Render based on mode
-      const renderContent = () => {
-        // Initialize gameData with safe defaults if it's null or undefined
-        const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '' };
-        
-        // Ensure gameData.players is an array before attempting spread and sort
-        const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
-
-        // eslint-disable-next-line no-unused-vars
-        const sortedPlayers = [...currentPlayersArray].sort((a, b) => b.score - a.score);
-        // eslint-disable-next-line no-unused-vars
-        const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
-
-        const getWinners = () => {
-          // Ensure sortedPlayers is also safe before using
-          if (!Array.isArray(sortedPlayers) || sortedPlayers.length === 0) return [];
-          const topScore = sortedPlayers[0].score;
-          return sortedPlayers.filter(player => player.score === topScore);
         };
-        // eslint-disable-next-line no-unused-vars
-        const winners = getWinners();
 
-        // Ensure safeGameData.questions and currentQuestionIndex are valid before accessing
-        const currentQuestion = safeGameData.questions && safeGameData.questions.length > safeGameData.currentQuestionIndex 
-                                ? safeGameData.questions[safeGameData.currentQuestionIndex] 
-                                : { options: [], correctAnswer: '', question: '', explanation: '' }; // Provide a very safe default question structure
+        const handleElaborateVarietal = async (varietalName) => {
+          setShowVarietalModal(true);
+          setVarietalElaboration(''); // Clear previous elaboration
+          setError('');
 
+          const prompt = `Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.`;
+          const elaboration = await callGeminiAPI(prompt);
+          if (elaboration) {
+            setVarietalElaboration(elaboration);
+          } else {
+            setVarietalElaboration("Could not retrieve elaboration for this varietal.");
+          }
+        };
 
-        // Find the current player's answers/feedback for highlighting
-        // Ensure currentPlayersArray is used and find method is safe
-        const currentPlayerGameData = Array.isArray(safeGameData.players) ? safeGameData.players.find(p => p.id === userId) : undefined;
-        // eslint-disable-next-line no-unused-vars
-        const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
-        // eslint-disable-next-line no-unused-vars
-        const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
-
-
-        if (loading || !isAuthReady) {
-          return <p className="text-center text-gray-700 text-xl">Loading...</p>;
-        }
-
-        if (error) {
-          return (
-            <div className="text-center space-y-4 text-red-600 text-lg">
-              <p>{error}</p>
-              <button
-                onClick={() => {
-                  setError('');
-                  setMode('initial');
-                  setActiveGameId(null);
-                  setGameData(null);
-                }}
-                className="mt-4 bg-[#6b2a58] text-white py-2 px-4 rounded-lg hover:bg-[#496E3E] transition-colors"
-              >
-                Go Back
-              </button>
-            </div>
-          );
-        }
-
-        if (mode === 'enterName') {
-          return (
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
-              <input
-                type="text"
-                placeholder="Your Name"
-                className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSetName();
-                  }
-                }}
-              />
-              <button
-                onClick={handleSetName}
-                className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                             hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                             focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                disabled={!nameInput.trim()}
-              >
-                Continue
-              </button>
-            </div>
-          );
-        } else if (mode === 'initial') {
-          return (
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">Choose Your Mode</h2>
-              <p className="text-gray-700 text-lg">Welcome, <span className="font-mono text-[#6b2a58]">{userName}</span>!</p>
-              <button
-                onClick={() => {
-                  setMode('singlePlayer');
-                  setQuestions(getTenRandomQuestions()); // Load questions when entering single player
-                }}
-                className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                             hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                             focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-              >
-                Single Player
-              </button>
-              <button
-                onClick={() => setMode('multiplayer')}
-                className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold
-                             hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                             focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-              >
-                Multiplayer
-              </button>
-              {/* New: Edit Name Button */}
-              <button
-                onClick={() => setMode('enterName')}
-                className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                             hover:bg-gray-600 transition-colors duration-200 shadow-md"
-              >
-                Edit Name
-              </button>
-            </div>
-          );
-        } else if (mode === 'singlePlayer') {
-          const currentQuestion = questions[currentQuestionIndex];
-          // Determine if the correct answer is a varietal from our list for elaboration
-          const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
-                                   WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
-
-          return (
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900 text-center">Single Player Quiz</h2>
-              {!quizEnded ? (
-                <>
-                  <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
-                    <p className="text-lg font-semibold text-gray-700 mb-2">
-                      Question {currentQuestionIndex + 1} of {questions.length}
-                    </p>
-                    <p className="text-xl text-gray-800 font-medium">
-                      {currentQuestion.question}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {currentQuestion.options.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSinglePlayerAnswerClick(option)}
-                        disabled={answerSelected}
-                        className={`
-                          w-full p-4 rounded-lg text-left text-lg font-medium
-                          transition-all duration-200 ease-in-out
-                          ${answerSelected
-                            ? option === currentQuestion.correctAnswer
-                              ? 'bg-green-100 text-green-800 ring-2 ring-green-500' // Using default green for correct
-                              : option === selectedAnswer
-                                ? 'bg-red-100 text-red-800 ring-2 ring-red-500' // Using default red for incorrect
-                                : 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                            : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
-                          }
-                          ${!answerSelected && 'hover:scale-[1.02]'}
-                        `}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-
-                  {feedback && (
-                    <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-                      <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                        {feedback}
-                      </p>
-                      {feedback === 'Incorrect.' && (
-                        <p className="text-gray-700 mt-2">
-                          <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                        </p>
-                      )}
-                      <p className="text-gray-700 mt-2">
-                        <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                      </p>
-                      {isVarietalAnswer && ( // Only show if it's a varietal
-                        <button
-                          onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                          className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
-                          disabled={llmLoading}
-                        >
-                          {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {answerSelected && (
-                    <button
-                      onClick={handleSinglePlayerNextQuestion}
-                      className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                    >
-                      {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
-                    </button>
-                  )}
-                </>
-              ) : (
-                <div className="text-center space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
-                  <p className="text-2xl text-gray-700">
-                    You scored <span className="font-extrabold text-[#6b2a58]">{score}</span> out of <span className="font-extrabold text-[#6b2a58]">{questions.length}</span>!
-                  </p>
-                  <p className="text-lg text-gray-600">
-                    Ready to explore more wines?
-                  </p>
-                  <button
-                    onClick={restartSinglePlayerQuiz}
-                    className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                  >
-                    Play Again
-                  </button>
-                  <a
-                    href="https://www.vineyardvoyages.com/tours"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-                  >
-                    Book a Tour Now!
-                  </a>
-                </div>
-              )}
-              <button
-                onClick={() => setMode('initial')}
-                className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                             hover:bg-gray-600 transition-colors duration-200 shadow-md"
-              >
-                Back to Mode Selection
-              </button>
-            </div>
-          );
-        } else if (mode === 'multiplayer' && !activeGameId) {
-          return (
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
-              <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
-              <button
-                onClick={createNewGame}
-                className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                             hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                             focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-              >
-                Create New Game (Proctor Mode)
-              </button>
-              <div className="flex flex-col md:flex-row gap-4">
-                <input
-                  type="text"
-                  placeholder="Enter 4-character Game ID"
-                  className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                  value={gameCodeInput}
-                  onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
-                  maxLength={4}
-                />
-                <button
-                  onClick={joinExistingGame}
-                  disabled={gameCodeInput.length !== 4}
-                  className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Join Game (Player Mode)
-                </button>
-              </div>
-              <button
-                onClick={() => setMode('initial')}
-                className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                             hover:bg-gray-600 transition-colors duration-200 shadow-md"
-              >
-                Back to Mode Selection
-              </button>
-            </div>
-          );
-        } else if (mode === 'multiplayer' && activeGameId) { // Only render if activeGameId is present
+        // Render based on mode
+        const renderContent = () => {
           // Initialize gameData with safe defaults if it's null or undefined
           const safeGameData = gameData || { 
             players: [], 
@@ -1603,7 +1322,7 @@ const WINE_QUIZ_QUESTIONS = [
             hostId: '', // Default for hostId
             hostName: '' // Default for hostName
           }; 
-
+          
           // Ensure gameData.players is an array before attempting spread and sort
           const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
 
@@ -1636,208 +1355,499 @@ const WINE_QUIZ_QUESTIONS = [
           const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
 
 
-          return (
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
-              <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
-              <p className="text-gray-700 text-lg text-center">
-                Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
-                {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
-              </p>
+          if (loading || !isAuthReady) {
+            return <p className="text-center text-gray-700 text-xl">Loading...</p>;
+          }
 
-              {/* Display Proctor's Name */}
-              {!isHost && safeGameData.hostName && ( // Changed to use safeGameData
-                <p className="text-gray-700 text-lg text-center">
-                  Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
-                </p>
-              )}
+          if (error) {
+            return (
+              <div className="text-center space-y-4 text-red-600 text-lg">
+                <p>{error}</p>
+                <button
+                  onClick={() => {
+                    setError('');
+                    setMode('initial');
+                    setActiveGameId(null);
+                    setGameData(null);
+                  }}
+                  className="mt-4 bg-[#6b2a58] text-white py-2 px-4 rounded-lg hover:bg-[#496E3E] transition-colors"
+                >
+                  Go Back
+                </button>
+              </div>
+            );
+          }
 
-              {/* New: Display running score and rank */}
-              {!safeGameData.quizEnded && !isHost && ( // Changed to use safeGameData
-                <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
-                  <p className="text-lg font-semibold text-gray-800">
-                    Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                  </p>
-                  {currentPlayersArray.length > 1 && ( // Use currentPlayersArray
-                    <p className="text-md text-gray-700">
-                      You are in <span className="font-bold text-[#6b2a58]">{currentPlayerRank}</span> place!
+          if (mode === 'enterName') {
+            return (
+              <div className="text-center space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSetName();
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleSetName}
+                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                               focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                  disabled={!nameInput.trim()}
+                >
+                  Continue
+                </button>
+              </div>
+            );
+          } else if (mode === 'initial') {
+            return (
+              <div className="text-center space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900">Choose Your Mode</h2>
+                <p className="text-gray-700 text-lg">Welcome, <span className="font-mono text-[#6b2a58]">{userName}</span>!</p>
+                <button
+                  onClick={() => {
+                    setMode('singlePlayer');
+                    setQuestions(getTenRandomQuestions()); // Load questions when entering single player
+                  }}
+                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                               focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                >
+                  Single Player
+                </button>
+                <button
+                  onClick={() => setMode('multiplayer')}
+                  className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold
+                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                               focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                >
+                  Multiplayer
+                </button>
+                {/* New: Edit Name Button */}
+                <button
+                  onClick={() => setMode('enterName')}
+                  className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                               hover:bg-gray-600 transition-colors duration-200 shadow-md"
+                >
+                  Edit Name
+                </button>
+              </div>
+            );
+          } else if (mode === 'singlePlayer') {
+            const currentQuestion = questions[currentQuestionIndex];
+            // Determine if the correct answer is a varietal from our list for elaboration
+            const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
+                                     WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
+
+            return (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900 text-center">Single Player Quiz</h2>
+                {!quizEnded ? (
+                  <>
+                    <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
+                      <p className="text-lg font-semibold text-gray-700 mb-2">
+                        Question {currentQuestionIndex + 1} of {questions.length}
+                      </p>
+                      <p className="text-xl text-gray-800 font-medium">
+                        {currentQuestion.question}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {currentQuestion.options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSinglePlayerAnswerClick(option)}
+                          disabled={answerSelected}
+                          className={`
+                            w-full p-4 rounded-lg text-left text-lg font-medium
+                            transition-all duration-200 ease-in-out
+                            ${answerSelected
+                              ? option === currentQuestion.correctAnswer
+                                ? 'bg-green-100 text-green-800 ring-2 ring-green-500' // Using default green for correct
+                                : option === selectedAnswer
+                                  ? 'bg-red-100 text-red-800 ring-2 ring-red-500' // Using default red for incorrect
+                                  : 'bg-gray-100 text-gray-600 cursor-not-allowed'
+                              : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
+                            }
+                            ${!answerSelected && 'hover:scale-[1.02]'}
+                          `}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+
+                    {feedback && (
+                      <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
+                        <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+                          {feedback}
+                        </p>
+                        {feedback === 'Incorrect.' && (
+                          <p className="text-gray-700 mt-2">
+                            <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
+                          </p>
+                        )}
+                        <p className="text-gray-700 mt-2">
+                          <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+                        </p>
+                        {isVarietalAnswer && ( // Only show if it's a varietal
+                          <button
+                            onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
+                            className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
+                                       hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
+                            disabled={llmLoading}
+                          >
+                            {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {answerSelected && (
+                      <button
+                        onClick={handleSinglePlayerNextQuestion}
+                        className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
+                                           hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                      >
+                        {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center space-y-6">
+                    <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
+                    <p className="text-2xl text-gray-700">
+                      You scored <span className="font-extrabold text-[#6b2a58]">{score}</span> out of <span className="font-extrabold text-[#6b2a58]">{questions.length}</span>!
                     </p>
+                    <p className="text-lg text-gray-600">
+                      Ready to explore more wines?
+                    </p>
+                    <button
+                      onClick={restartSinglePlayerQuiz}
+                      className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
+                                           hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                    >
+                      Play Again
+                    </button>
+                    <a
+                      href="https://www.vineyardvoyages.com/tours"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
+                                           hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                    >
+                      Book a Tour Now!
+                    </a>
+                  </div>
+                )}
+                <button
+                  onClick={() => setMode('initial')}
+                  className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                               hover:bg-gray-600 transition-colors duration-200 shadow-md"
+                >
+                  Back to Mode Selection
+                </button>
+              </div>
+            );
+          } else if (mode === 'multiplayer' && !activeGameId) {
+            return (
+              <div className="text-center space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
+                <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
+                <button
+                  onClick={createNewGame}
+                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                               focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                >
+                  Create New Game (Proctor Mode)
+                </button>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <input
+                    type="text"
+                    placeholder="Enter 4-character Game ID"
+                    className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+                    value={gameCodeInput}
+                    onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
+                    maxLength={4}
+                  />
+                  <button
+                    onClick={joinExistingGame}
+                    disabled={gameCodeInput.length !== 4}
+                    className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
+                                       hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                       focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Join Game (Player Mode)
+                  </button>
+                </div>
+                <button
+                  onClick={() => setMode('initial')}
+                  className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                               hover:bg-gray-600 transition-colors duration-200 shadow-md"
+                >
+                  Back to Mode Selection
+                </button>
+              </div>
+            );
+          } else if (mode === 'multiplayer' && activeGameId) { // Only render if activeGameId is present
+            // Initialize gameData with safe defaults if it's null or undefined
+            const safeGameData = gameData || { 
+              players: [], 
+              questions: [], 
+              currentQuestionIndex: 0, 
+              quizEnded: false, 
+              hostId: '', // Default for hostId
+              hostName: '' // Default for hostName
+            }; 
+            
+            // Declare isHost and isVarietalAnswer here
+            const isHost = safeGameData.hostId === userId; // Declare isHost here
+            const currentQuestion = safeGameData.questions && safeGameData.questions.length > safeGameData.currentQuestionIndex 
+                                    ? safeGameData.questions[safeGameData.currentQuestionIndex] 
+                                    : { options: [], correctAnswer: '', question: '', explanation: '' }; // Provide a very safe default question structure
+            const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
+                                     WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim()); // Declare isVarietalAnswer here
+
+            // Ensure gameData.players is an array before attempting spread and sort
+            const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
+
+            // eslint-disable-next-line no-unused-vars
+            const sortedPlayers = [...currentPlayersArray].sort((a, b) => b.score - a.score);
+            // eslint-disable-next-line no-unused-vars
+            const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
+
+            const getWinners = () => {
+              // Ensure sortedPlayers is also safe before using
+              if (!Array.isArray(sortedPlayers) || sortedPlayers.length === 0) return [];
+              const topScore = sortedPlayers[0].score;
+              return sortedPlayers.filter(player => player.score === topScore);
+            };
+            // eslint-disable-next-line no-unused-vars
+            const winners = getWinners();
+
+            // Find the current player's answers/feedback for highlighting
+            // Ensure currentPlayersArray is used and find method is safe
+            const currentPlayerGameData = Array.isArray(safeGameData.players) ? safeGameData.players.find(p => p.id === userId) : undefined;
+            // eslint-disable-next-line no-unused-vars
+            const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
+            // eslint-disable-next-line no-unused-vars
+            const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
+
+
+            return (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
+                <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
+                <p className="text-gray-700 text-lg text-center">
+                  Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
+                  {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
+                </p>
+
+                {/* Display Proctor's Name */}
+                {!isHost && safeGameData.hostName && ( // Changed to use safeGameData
+                  <p className="text-gray-700 text-lg text-center">
+                    Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
+                  </p>
+                )}
+
+                {/* New: Display running score and rank */}
+                {!safeGameData.quizEnded && !isHost && ( // Changed to use safeGameData
+                  <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
+                    <p className="text-lg font-semibold text-gray-800">
+                      Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+                    </p>
+                    {currentPlayersArray.length > 1 && ( // Use currentPlayersArray
+                      <p className="text-md text-gray-700">
+                        You are in <span className="font-bold text-[#6b2a58]">{currentPlayerRank}</span> place!
+                      </p>
+                    )}
+                  </div>
+                )}
+
+
+                <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
+                  <p className="text-lg font-semibold text-gray-700 mb-2">
+                    Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length} {/* Changed to use safeGameData */}
+                  </p>
+                  <p className="text-xl text-gray-800 font-medium">
+                    {currentQuestion.question}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {isHost ? ( // Proctor does not answer questions, but sees all info
+                    <>
+                      {currentQuestion.options.map((option, index) => (
+                        <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium
+                          ${option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
+                          {option}
+                        </div>
+                      ))}
+                      <p className="text-gray-700 text-center col-span-2">
+                        <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
+                      </p>
+                      <p className="text-gray-700 text-center col-span-2">
+                        <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+                      </p>
+                    </>
+                  ) : ( // Player view: clickable buttons with feedback
+                    currentQuestion.options.map((option, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleMultiplayerAnswerClick(option)}
+                        disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || safeGameData.quizEnded} // Changed to use safeGameData
+                        className={`
+                          w-full p-4 rounded-lg text-left text-lg font-medium
+                          transition-all duration-200 ease-in-out
+                          ${currentPlayerGameData?.selectedAnswerForQuestion !== null // If an answer has been selected by *this player*
+                            ? option === currentQuestion.correctAnswer
+                              ? 'bg-green-100 text-green-800 ring-2 ring-green-500' // Correct answer is green
+                              : option === playerSelectedAnswer
+                                ? 'bg-red-100 text-red-800 ring-2 ring-red-500' // Player's wrong answer is red
+                                : 'bg-gray-100 text-gray-600 cursor-not-allowed' // Other non-selected options are greyed out
+                            : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40' // Before any answer, normal styling
+                          }
+                          ${currentPlayerGameData?.selectedAnswerForQuestion === null && 'hover:scale-[1.02]'} // Use playerSelectedAnswer check
+                        `}
+                      >
+                        {option}
+                      </button>
+                    ))
                   )}
                 </div>
-              )}
 
-
-              <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
-                <p className="text-lg font-semibold text-gray-700 mb-2">
-                  Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length} {/* Changed to use safeGameData */}
-                </p>
-                <p className="text-xl text-gray-800 font-medium">
-                  {currentQuestion.question}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {isHost ? ( // Proctor does not answer questions, but sees all info
-                  <>
-                    {currentQuestion.options.map((option, index) => (
-                      <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium
-                        ${option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
-                        {option}
-                      </div>
-                    ))}
-                    <p className="text-gray-700 text-center col-span-2">
-                      <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
+                {playerFeedback && !isHost && ( // Only show feedback to Players
+                  <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
+                    <p className={`text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+                      {playerFeedback}
                     </p>
-                    <p className="text-gray-700 text-center col-span-2">
+                    {playerFeedback === 'Incorrect.' && (
+                      <p className="text-gray-700 mt-2">
+                        <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
+                      </p>
+                    )}
+                    <p className="text-gray-700 mt-2">
                       <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
                     </p>
-                  </>
-                ) : ( // Player view: clickable buttons with feedback
-                  currentQuestion.options.map((option, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleMultiplayerAnswerClick(option)}
-                      disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || safeGameData.quizEnded} // Changed to use safeGameData
-                      className={`
-                        w-full p-4 rounded-lg text-left text-lg font-medium
-                        transition-all duration-200 ease-in-out
-                        ${currentPlayerGameData?.selectedAnswerForQuestion !== null // If an answer has been selected by *this player*
-                          ? option === currentQuestion.correctAnswer
-                            ? 'bg-green-100 text-green-800 ring-2 ring-green-500' // Correct answer is green
-                            : option === playerSelectedAnswer
-                              ? 'bg-red-100 text-red-800 ring-2 ring-red-500' // Player's wrong answer is red
-                              : 'bg-gray-100 text-gray-600 cursor-not-allowed' // Other non-selected options are greyed out
-                          : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40' // Before any answer, normal styling
-                        }
-                        ${currentPlayerGameData?.selectedAnswerForQuestion === null && 'hover:scale-[1.02]'} // Use playerSelectedAnswer check
-                      `}
-                    >
-                      {option}
-                    </button>
-                  ))
+                    {isVarietalAnswer && ( // Only show if it's a varietal
+                      <button
+                        onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
+                        className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
+                                   hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
+                        disabled={llmLoading}
+                      >
+                        {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
+                      </button>
+                    )}
+                  </div>
                 )}
-              </div>
 
-              {playerFeedback && !isHost && ( // Only show feedback to Players
-                <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-                  <p className={`text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                    {playerFeedback}
-                  </p>
-                  {playerFeedback === 'Incorrect.' && (
-                    <p className="text-gray-700 mt-2">
-                      <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                    </p>
-                  )}
-                  <p className="text-gray-700 mt-2">
-                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                  </p>
-                  {isVarietalAnswer && ( // Only show if it's a varietal
-                    <button
-                      onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
-                      disabled={llmLoading}
-                    >
-                      {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {isHost && !safeGameData.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
-                <button
-                  onClick={handleMultiplayerNextQuestion}
-                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                >
-                  {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'} {/* Changed to use safeGameData */}
-                </button>
-              )}
-
-              {isHost && ( // Proctor-only button for generating new questions
-                <button
-                  onClick={() => setShowGenerateQuestionModal(true)}
-                  className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold mt-6
-                                         hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-indigo-300 active:bg-[#486D3E]"
-                  disabled={llmLoading}
-                >
-                  {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-                </button>
-              )}
-
-              <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
-                <ul className="space-y-2">
-                  {/* Ensure safeGameData.players exists and is array before mapping */}
-                  {safeGameData.players && Array.isArray(safeGameData.players) && sortedPlayers.map(player => (
-                    <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
-                      <span className="font-semibold">
-                        {player.userName}
-                        {player.id === safeGameData.hostId ? (
-                          <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
-                        ) : (
-                          <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
-                        )}
-                      </span>
-                      <span className="font-bold text-[#6b2a58]">{player.score}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {safeGameData.quizEnded && ( // Changed to use safeGameData
-                <div className="text-center space-y-6 mt-8">
-                  <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
-                  {winners.length === 1 ? (
-                    <p className="text-3xl font-extrabold text-green-700">
-                      Winner: {winners[0].userName}!
-                    </p>
-                  ) : (
-                    <p className="text-3xl font-extrabold text-green-700">
-                      It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
-                    </p>
-                  )}
-                  {/* Only show player's score if they are a Player */}
-                  {!isHost && (
-                    <p className="text-2xl text-gray-700">
-                      Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                    </p>
-                  )}
-                  {isHost && (
-                    <button
-                      onClick={restartMultiplayerQuiz}
-                      className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                    >
-                      Restart Game
-                    </button>
-                  )}
-                  <a
-                    href="https://www.vineyardvoyages.com/tours"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                         focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                {isHost && !safeGameData.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
+                  <button
+                    onClick={handleMultiplayerNextQuestion}
+                    className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
+                                           hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
                   >
-                    Book a Tour Now!
-                  </a>
+                    {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'} {/* Changed to use safeGameData */}
+                  </button>
+                )}
+
+                {isHost && ( // Proctor-only button for generating new questions
+                  <button
+                    onClick={() => setShowGenerateQuestionModal(true)}
+                    className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold mt-6
+                                           hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#indigo-300] active:bg-[#486D3E]"
+                    disabled={llmLoading}
+                  >
+                    {llmLoading ? 'Generating...' : '✨ Generate New Question'}
+                  </button>
+                )}
+
+                <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
+                  <ul className="space-y-2">
+                    {/* Ensure safeGameData.players exists and is array before mapping */}
+                    {safeGameData.players && Array.isArray(safeGameData.players) && sortedPlayers.map(player => (
+                      <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
+                        <span className="font-semibold">
+                          {player.userName}
+                          {player.id === safeGameData.hostId ? (
+                            <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
+                          ) : (
+                            <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
+                          )}
+                        </span>
+                        <span className="font-bold text-[#6b2a58]">{player.score}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-              <button
-                onClick={() => {
-                  setMode('initial');
-                  setActiveGameId(null); // Clear active game ID when leaving
-                  setGameData(null);
-                }}
-                className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                             hover:bg-gray-600 transition-colors duration-200 shadow-md"
-              >
-                Leave Game
-              </button>
+
+                {safeGameData.quizEnded && ( // Changed to use safeGameData
+                  <div className="text-center space-y-6 mt-8">
+                    <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
+                    {winners.length === 1 ? (
+                      <p className="text-3xl font-extrabold text-green-700">
+                        Winner: {winners[0].userName}!
+                      </p>
+                    ) : (
+                      <p className="text-3xl font-extrabold text-green-700">
+                        It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
+                      </p>
+                    )}
+                    {/* Only show player's score if they are a Player */}
+                    {!isHost && (
+                      <p className="text-2xl text-gray-700">
+                        Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+                      </p>
+                    )}
+                    {isHost && (
+                      <button
+                        onClick={restartMultiplayerQuiz}
+                        className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
+                                           hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                      >
+                        Restart Game
+                      </button>
+                    )}
+                    <a
+                      href="https://www.vineyardvoyages.com/tours"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
+                                           hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
+                                           focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                    >
+                      Book a Tour Now!
+                    </a>
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    setMode('initial');
+                    setActiveGameId(null); // Clear active game ID when leaving
+                    setGameData(null);
+                  }}
+                  className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
+                               hover:bg-gray-600 transition-colors duration-200 shadow-md"
+                >
+                  Leave Game
+                </button>
+              </div>
             </div>
           );
         }
@@ -1927,19 +1937,4 @@ const WINE_QUIZ_QUESTIONS = [
         tailwindScript.src = "https://cdn.tailwindcss.com";
         document.head.appendChild(tailwindScript);
 
-        // Add Inter font
-        const fontLink = document.createElement('link');
-        fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap";
-        document.head.appendChild(fontLink);
-
-        // Apply font to body
-        const styleTag = document.createElement('style');
-        styleTag.innerHTML = `
-          body {
-            font-family: 'Inter', sans-serif;
-          }
-        `;
-        document.head.appendChild(styleTag);
-
-        export default App;
-        
+        // 
