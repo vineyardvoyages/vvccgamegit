@@ -1326,10 +1326,13 @@ const WINE_QUIZ_QUESTIONS = [
         const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
                                  WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
           
+        // Dummy usage to satisfy ESLint's no-unused-vars rule
+        // This ensures the variables are marked as "used" even if their primary usage is in JSX conditions
+        // that ESLint doesn't fully track.
         // eslint-disable-next-line no-unused-vars
-        const isHostESLintFix = isHost; // Dummy usage to satisfy ESLint for isHost
+        const isHostESLintFix = isHost;
         // eslint-disable-next-line no-unused-vars
-        const isVarietalAnswerESLintFix = isVarietalAnswer; // Dummy usage to satisfy ESLint for isVarietalAnswer
+        const isVarietalAnswerESLintFix = isVarietalAnswer;
 
 
         // Ensure gameData.players is an array before attempting spread and sort
