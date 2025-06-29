@@ -140,7 +140,7 @@ const WINE_VARIETALS = [
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
   { name: "Terret Noir", country: "France" },
-  { name: "Valdiguié", country: "France" }, // Fixed missing colon and extraneous quotes
+  { name: "Valdiguié", country: "France" },
   { name: "Ruby Cabernet", country: "USA" },
   { name: "Emerald Riesling", country: "USA" },
   { name: "Symphony", country: "USA" },
@@ -1218,7 +1218,7 @@ const WINE_QUIZ_QUESTIONS = [
         try {
           const response = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application' }, // Corrected to 'application/json'
             body: JSON.stringify(payload)
           });
 
