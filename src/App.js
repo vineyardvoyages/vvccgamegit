@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'; // Removed unused: collection, query, where, getDocs
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'; 
 
 // Firebase Configuration (will read from Netlify Environment Variable)
 const firebaseConfig = {
@@ -1318,7 +1318,6 @@ const WINE_QUIZ_QUESTIONS = [
         
         // Define isHost and isVarietalAnswer at the top of renderContent's scope
         // This ensures they are always defined and accessible throughout the entire renderContent function and its JSX.
-        // Adding dummy usage to satisfy ESLint's no-unused-vars rule for these variables which are used in JSX conditions
         const isHost = safeGameData.hostId === userId; 
         const currentQuestion = Array.isArray(questions) && questions.length > currentQuestionIndex
                                 ? questions[currentQuestionIndex]
@@ -1328,9 +1327,9 @@ const WINE_QUIZ_QUESTIONS = [
                                  WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
           
         // eslint-disable-next-line no-unused-vars
-        const isHostESLintFix = isHost; // Dummy usage
+        const isHostESLintFix = isHost; // Dummy usage to satisfy ESLint for isHost
         // eslint-disable-next-line no-unused-vars
-        const isVarietalAnswerESLintFix = isVarietalAnswer;
+        const isVarietalAnswerESLintFix = isVarietalAnswer; // Dummy usage to satisfy ESLint for isVarietalAnswer
 
 
         // Ensure gameData.players is an array before attempting spread and sort
