@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // CORRECTED SYNTAX
+import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'; // Removed unused: collection, query, where, getDocs
@@ -27,7 +27,7 @@ let db;
 let auth;
 
 // Extensive list of wine varietals with their countries of origin (Canada excluded)
-// This array is now only used for quiz questions, not for assigning user names.
+// This array is now only only used for quiz questions, not for assigning user names.
 const WINE_VARIETALS = [
   { name: "Cabernet Sauvignon", country: "France" },
   { name: "Merlot", country: "France" },
