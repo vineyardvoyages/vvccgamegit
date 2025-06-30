@@ -29,7 +29,7 @@ let auth;
 // Extensive list of wine varietals with their countries of origin (Canada excluded)
 // This array is now only only used for quiz questions, not for assigning user names.
 const WINE_VARIETALS = [
- { name: "Cabernet Sauvignon", country: "France" },
+  { name: "Cabernet Sauvignon", country: "France" },
   { name: "Merlot", country: "France" },
   { name: "Chardonnay", country: "France" },
   { name: "Pinot Noir", country: "France" },
