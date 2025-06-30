@@ -27,7 +27,7 @@ let db;
 let auth;
 
 // Extensive list of wine varietals with their countries of origin (Canada excluded)
-// This array is now only only used for quiz questions, not for assigning user names.
+// This array is now only used for quiz questions, not for assigning user names.
 const WINE_VARIETALS = [
   { name: "Cabernet Sauvignon", country: "France" },
   { name: "Merlot", country: "France" },
@@ -1032,6 +1032,7 @@ const WINE_QUIZ_QUESTIONS = [
             hostName: userName, // Store Proctor's name
             currentQuestionIndex: 0,
             quizEnded: false,
+            revealAnswers: false, // Add this
             players: [], // Proctor is NOT a player initially
             questions: selectedGameQuestions, // Store selected questions in game data
             createdAt: new Date().toISOString(),
@@ -1044,6 +1045,12 @@ const WINE_QUIZ_QUESTIONS = [
           setError("Failed to create a new game.");
           setLoading(false);
         }
+      };
+
+      // Add reveal function
+      const revealAnswersToAll = async () => {
+        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+        await updateDoc(gameDocRef, { revealAnswers: true });
       };
 
       const joinExistingGame = async () => { // No longer takes idToJoin as arg, uses gameCodeInput
@@ -1134,6 +1141,7 @@ const WINE_QUIZ_QUESTIONS = [
         }
       };
 
+      // Modify next question to reset reveal
       const handleMultiplayerNextQuestion = async () => {
         if (!gameData || gameData.hostId !== userId) { // Only Proctor can advance questions
           setError("Only the Proctor (host) can advance questions.");
@@ -1158,7 +1166,11 @@ const WINE_QUIZ_QUESTIONS = [
 
         if (nextIndex < gameData.questions.length) {
           try {
-            await updateDoc(gameDocRef, { currentQuestionIndex: nextIndex, players: resetPlayers });
+            await updateDoc(gameDocRef, { 
+              currentQuestionIndex: nextIndex, 
+              players: resetPlayers,
+              revealAnswers: false // Reset for next question
+            });
           } catch (e) {
             console.error("Error advancing question:", e);
             setError("Failed to advance question.");
@@ -1218,7 +1230,7 @@ const WINE_QUIZ_QUESTIONS = [
         try {
           const response = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }, // Corrected to 'application/json'
+            headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify(payload)
           });
 
@@ -1314,7 +1326,7 @@ const WINE_QUIZ_QUESTIONS = [
       // Render based on mode
       const renderContent = () => {
         // Initialize gameData with safe defaults if it's null or undefined
-        const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '' };
+        const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '', revealAnswers: false };
         
         // Define isHost and isVarietalAnswer at the top of renderContent's scope
         // This ensures they are always defined and accessible throughout the entire renderContent function and its JSX.
@@ -1615,7 +1627,8 @@ const WINE_QUIZ_QUESTIONS = [
             currentQuestionIndex: 0, 
             quizEnded: false, 
             hostId: '', // Default for hostId
-            hostName: '' // Default for hostName
+            hostName: '', // Default for hostName
+            revealAnswers: false // Default for revealAnswers
           }; 
 
           // Define isHost and isVarietalAnswer at the top of renderContent's scope
@@ -1969,3 +1982,4 @@ const WINE_QUIZ_QUESTIONS = [
         document.head.appendChild(styleTag);
 
         export default App;
+        
