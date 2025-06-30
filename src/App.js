@@ -1208,6 +1208,12 @@ const WINE_QUIZ_QUESTIONS = [
         }
       };
 
+      // Add reveal function
+      const revealAnswersToAll = async () => {
+        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+        await updateDoc(gameDocRef, { revealAnswers: true });
+      };
+
       // --- LLM Functions ---
       const callGeminiAPI = async (prompt, schema = null) => {
         setLlmLoading(true);
@@ -1963,23 +1969,23 @@ const WINE_QUIZ_QUESTIONS = [
         };
 
         // Ensure Tailwind CSS is loaded
-        const tailwindScript = document.createElement('script');
-        tailwindScript.src = "https://cdn.tailwindcss.com";
-        document.head.appendChild(tailwindScript);
+        // const tailwindScript = document.createElement('script'); // REMOVED
+        // tailwindScript.src = "https://cdn.tailwindcss.com"; // REMOVED
+        // document.head.appendChild(tailwindScript); // REMOVED
 
         // Add Inter font
-        const fontLink = document.createElement('link');
-        fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap";
-        document.head.appendChild(fontLink);
+        // const fontLink = document.createElement('link'); // REMOVED
+        // fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"; // REMOVED
+        // document.head.appendChild(fontLink); // REMOVED
 
         // Apply font to body
-        const styleTag = document.createElement('style');
-        styleTag.innerHTML = `
-          body {
-            font-family: 'Inter', sans-serif;
-          }
-        `;
-        document.head.appendChild(styleTag);
+        // const styleTag = document.createElement('style'); // REMOVED
+        // styleTag.innerHTML = ` // REMOVED
+        //   body { // REMOVED
+        //     font-family: 'Inter', sans-serif; // REMOVED
+        //   } // REMOVED
+        // `; // REMOVED
+        // document.head.appendChild(styleTag); // REMOVED
 
         export default App;
         
