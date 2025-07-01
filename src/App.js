@@ -73,7 +73,7 @@ const WINE_VARIETALS = [
   { name: "Pecorino", country: "Italy" },
   { name: "Refosco", country: "Italy" },
   { name: "Verdicchio", country: "Italy" },
-  { name: "Cannonau", country: "极
+{ name: "Cannonau", country: "Italy" },
   { name: "Vermentino di Sardegna", country: "Italy" },
   { name: "Corvina", country: "Italy" },
   { name: "Moscato", country: "Italy" },
@@ -124,7 +124,7 @@ const WINE_VARIETALS = [
   { name: "Pineau d'Aunis", country: "France" },
   { name: "Piquepoul", country: "France" },
   { name: "Rolle", country: "France" },
-  { name: "Roussanne", country: "France极
+ { name: "Mondeuse", country: "France" },
   { name: "Savagnin", country: "France" },
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
@@ -198,7 +198,7 @@ const WINE_QUIZ_QUESTIONS = [
     question: "What is the primary grape used in traditional Champagne production?",
     options: ["Riesling", "Pinot Noir", "Syrah", "Zinfandel"],
     correctAnswer: "Pinot Noir",
-    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pin极
+    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pinot Noir is one of the key red grapes used." },
   {
     question: "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
     options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Zinfandel"],
