@@ -392,7 +392,7 @@ const App = () => {
     setError('');
     try {
       const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', userId, 'profile', 'userProfile');
-      await setDoc(userProfile极
+      await setDoc(userProfileRef, { userName: nameInput.trim() }, { merge: true });
       setUserName(nameInput.trim());
       setMode('initial');
     } catch (e) {
@@ -835,9 +835,8 @@ const App = () => {
 
     if (mode === 'enterName') {
       return (
-        <div className="text-center space极
-        <div className="text-center space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
+<div className="text-center space-y-6">
+  <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
           <input
             type="text"
             placeholder="Your Name"
@@ -871,11 +870,7 @@ const App = () => {
               setMode('singlePlayer');
               setQuestions(getTenRandomQuestions());
             }}
-            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                         hover极
-            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
           >
             Single Player
           </button>
@@ -993,17 +988,13 @@ const App = () => {
                 Play Again
               </button>
               <a
-                href="https://www.vineyardvoyages.com/tours"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px极
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                     hover:bg-[#496E3极
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-              >
-                Book a Tour Now!
-              </a>
+  href="https://www.vineyardvoyages.com/tours"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+>
+  Book a Tour Now!
+</a>
             </div>
           )}
           <button
@@ -1079,10 +1070,12 @@ const App = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
           <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
           <p className="text-gray-700 text-lg text-center">
-            Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
-            {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semib极
-            {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
-          </p>
+         Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
+{isHost
+  ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span>
+  : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>
+} 
+      </p>
 
           {!isHost && safeGameData.hostName && (
             <p className="text-gray-700 text-lg text-center">
@@ -1333,18 +1326,17 @@ const App = () => {
           </div>
         )}
 
-        {showGenerateQuestionModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-              <h3 className="text-2极
-              <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-              <input
-                type="text"
-                placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-                className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                value={newQuestionTopic}
-                onChange={(e) => setNewQuestionTopic(e.target.value)}
-              />
+{showGenerateQuestionModal && (
+  <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
+      <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
+      <input
+        type="text"
+        placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
+        className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+        value={newQuestionTopic}
+        onChange={(e) => setNewQuestionTopic(e.target.value)}
+      />
               <button
                 onClick={handleGenerateQuestion}
                 className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
