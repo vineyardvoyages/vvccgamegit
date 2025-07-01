@@ -66,7 +66,6 @@ const WINE_VARIETALS = [
   { name: "Traminette", country: "USA" },
   { name: "Seyval Blanc", country: "USA" },
   { name: "Cortese", country: "Italy" },
-  { name极
   { name: "Dolcetto", country: "Italy" },
   { name: "Greco", country: "Italy" },
   { name: "Lambrusco", country: "Italy" },
