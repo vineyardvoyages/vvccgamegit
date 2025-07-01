@@ -1210,23 +1210,24 @@ const App = () => {
 
           <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Players:</h3>
-            <ul className="space-y-2">
-              {currentPlayersArray.map(player => (
-                <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
-                  <span className="font-semibold">
-                    {player.userName}
-                    {player.id === safeGameData.hostId ? (
-                      <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
-                    ) : (
-                      <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
-                    )}
-                  </span>
-                  <span className="font-bold text-[#6b2a58]">
-                    {(safeGameData.quizEnded || safeGameData.revealAnswers) ? player.score : "?"}
-                  </span>
-                </li>
-              ))}
-            </ul>
+         <ul className="space-y-2">
+  {currentPlayersArray.map(player => (
+    <li key={player.id} className="flex items-center text-lg text-gray-700">
+      <span className="font-semibold">
+        {player.userName}
+        {player.id === safeGameData.hostId ? (
+          <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
+        ) : (
+          <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
+        )}
+      </span>
+      {/* No score shown */}
+    </li>
+  ))}
+<p className="text-gray-700 text-center mb-2">
+  There {currentPlayersArray.length === 1 ? 'is' : 'are'} {currentPlayersArray.length} player{currentPlayersArray.length === 1 ? '' : 's'} in this game.
+</p>
+</ul>
           </div>
 
           {safeGameData.quizEnded && (
