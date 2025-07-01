@@ -3,7 +3,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
 
-// Firebase Configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "vineyardvoyagesquiz.firebaseapp.com",
@@ -19,7 +18,6 @@ let app;
 let db;
 let auth;
 
-// Wine varietals with corrected UTF-8 encoding
 const WINE_VARIETALS = [
   { name: "Cabernet Sauvignon", country: "France" },
   { name: "Merlot", country: "France" },
@@ -68,6 +66,7 @@ const WINE_VARIETALS = [
   { name: "Traminette", country: "USA" },
   { name: "Seyval Blanc", country: "USA" },
   { name: "Cortese", country: "Italy" },
+  { name极
   { name: "Dolcetto", country: "Italy" },
   { name: "Greco", country: "Italy" },
   { name: "Lambrusco", country: "Italy" },
@@ -75,7 +74,7 @@ const WINE_VARIETALS = [
   { name: "Pecorino", country: "Italy" },
   { name: "Refosco", country: "Italy" },
   { name: "Verdicchio", country: "Italy" },
-  { name: "Cannonau", country: "Italy" },
+  { name: "Cannonau", country: "极
   { name: "Vermentino di Sardegna", country: "Italy" },
   { name: "Corvina", country: "Italy" },
   { name: "Moscato", country: "Italy" },
@@ -126,7 +125,7 @@ const WINE_VARIETALS = [
   { name: "Pineau d'Aunis", country: "France" },
   { name: "Piquepoul", country: "France" },
   { name: "Rolle", country: "France" },
-  { name: "Roussanne", country: "France" },
+  { name: "Roussanne", country: "France极
   { name: "Savagnin", country: "France" },
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
@@ -172,13 +171,12 @@ const WINE_VARIETALS = [
   { name: "Leon Millot", country: "USA" }
 ];
 
-// Question bank (removed "Proctor" question)
 const WINE_QUIZ_QUESTIONS = [
   {
-    question: "Which of the following is a red grape varietal?",
-    options: ["Chardonnay", "Sauvignon Blanc", "Merlot", "Pinot Grigio"],
-    correctAnswer: "Merlot",
-    explanation: "Merlot is a popular red grape varietal known for its soft, approachable wines."
+    question: "Which Italian wine is made primarily from Nebbiolo grapes?",
+    options: ["Chianti", "Barolo", "Valpolicella", "Soave"],
+    correctAnswer: "Barolo",
+    explanation: "Barolo is a prestigious red wine from Piedmont, Italy, known for its powerful structure and aging potential."
   },
   {
     question: "What is 'terroir' in winemaking?",
@@ -201,14 +199,7 @@ const WINE_QUIZ_QUESTIONS = [
     question: "What is the primary grape used in traditional Champagne production?",
     options: ["Riesling", "Pinot Noir", "Syrah", "Zinfandel"],
     correctAnswer: "Pinot Noir",
-    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pinot Meunier grapes. Pinot Noir is one of the key red grapes used."
-  },
-  {
-    question: "Which Italian wine is made primarily from Nebbiolo grapes?",
-    options: ["Chianti", "Barolo", "Valpolicella", "Soave"],
-    correctAnswer: "Barolo",
-    explanation: "Barolo is a prestigious red wine from Piedmont, Italy, known for its powerful structure and aging potential."
-  },
+    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pin极
   {
     question: "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
     options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Zinfandel"],
@@ -308,22 +299,19 @@ const App = () => {
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [quizEnded, setQuizEnded] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [answerSelected, setAnswerSelected] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null); // FIXED: was "= null" instead of useState(null)
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
-
   const [llmLoading, setLlmLoading] = useState(false);
   const [varietalElaboration, setVarietalElaboration] = useState('');
   const [showVarietalModal, setShowVarietalModal] = useState(false);
   const [newQuestionTopic, setNewQuestionTopic] = useState('');
   const [showGenerateQuestionModal, setShowGenerateQuestionModal] = useState(false);
 
-  // Firebase initialization
   useEffect(() => {
     try {
       app = initializeApp(firebaseConfig);
@@ -357,7 +345,6 @@ const App = () => {
     }
   }, []);
 
-  // Multiplayer game data subscription
   useEffect(() => {
     let unsubscribe;
     if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
@@ -370,12 +357,9 @@ const App = () => {
           setCurrentQuestionIndex(data.currentQuestionIndex || 0);
           setQuizEnded(data.quizEnded || false);
           setQuestions(Array.isArray(data.questions) ? data.questions : []);
-          // Only update score when answers are revealed
-          if (data.revealAnswers) {
-            const currentPlayerScore = Array.isArray(data.players) ? 
-              (data.players.find(p => p.id === userId)?.score || 0) : 0;
-            setScore(currentPlayerScore);
-          }
+          const currentPlayerScore = Array.isArray(data.players) ? 
+            (data.players.find(p => p.id === userId)?.score || 0) : 0;
+          setScore(currentPlayerScore);
           setFeedback('');
           setAnswerSelected(false);
           setSelectedAnswer(null);
@@ -409,7 +393,7 @@ const App = () => {
     setError('');
     try {
       const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', userId, 'profile', 'userProfile');
-      await setDoc(userProfileRef, { userName: nameInput.trim() }, { merge: true });
+      await setDoc(userProfile极
       setUserName(nameInput.trim());
       setMode('initial');
     } catch (e) {
@@ -420,7 +404,6 @@ const App = () => {
     }
   };
 
-  // Single Player Logic
   const handleSinglePlayerAnswerClick = (selectedOption) => {
     if (answerSelected) return;
 
@@ -464,7 +447,6 @@ const App = () => {
     setQuestions(getTenRandomQuestions());
   };
 
-  // Multiplayer Logic
   const createNewGame = async () => {
     if (!userId || !userName) {
       setError("User identity not ready or name not set. Please wait.");
@@ -561,7 +543,6 @@ const App = () => {
     }
   };
 
-  // FIXED: Only store selected answer, don't update score yet
   const handleMultiplayerAnswerClick = async (selectedOption) => {
     const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false };
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
@@ -573,7 +554,6 @@ const App = () => {
     setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
 
-    // Only store the selected answer, don't update score yet
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const updatedPlayers = currentPlayersArray.map(p => {
       if (p.id === userId) {
@@ -593,7 +573,6 @@ const App = () => {
     }
   };
 
-  // NEW: Reveal answers and update all scores
   const revealAnswersToAll = async () => {
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
@@ -621,7 +600,6 @@ const App = () => {
       return;
     }
 
-    // Check if answers have been revealed
     if (!safeGameData.revealAnswers) {
       setError("Please reveal answers before proceeding to the next question.");
       return;
@@ -698,7 +676,6 @@ const App = () => {
     }
   };
 
-  // LLM Functions
   const callGeminiAPI = async (prompt, schema = null) => {
     setLlmLoading(true);
     setError('');
@@ -817,7 +794,6 @@ const App = () => {
     }
   };
 
-  // Render content
   const renderContent = () => {
     const safeGameData = gameData || { 
       players: [], 
@@ -832,8 +808,6 @@ const App = () => {
     const isHost = safeGameData.hostId === userId;
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
     const sortedPlayers = [...currentPlayersArray].sort((a, b) => b.score - a.score);
-
-    // NEW: Calculate answered count for proctor
     const answeredCount = currentPlayersArray.filter(p => p.selectedAnswerForQuestion != null).length;
     const totalPlayers = currentPlayersArray.length;
 
@@ -862,6 +836,7 @@ const App = () => {
 
     if (mode === 'enterName') {
       return (
+        <div className="text-center space极
         <div className="text-center space-y-6">
           <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
           <input
@@ -897,6 +872,8 @@ const App = () => {
               setMode('singlePlayer');
               setQuestions(getTenRandomQuestions());
             }}
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                         hover极
             className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
                          hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
                          focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
@@ -1020,7 +997,9 @@ const App = () => {
                 href="https://www.vineyardvoyages.com/tours"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px极
                 className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
+                                     hover:bg-[#496E3极
                                      hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
                                      focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
               >
@@ -1102,6 +1081,7 @@ const App = () => {
           <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
           <p className="text-gray-700 text-lg text-center">
             Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
+            {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semib极
             {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
           </p>
 
@@ -1111,7 +1091,6 @@ const App = () => {
             </p>
           )}
 
-          {/* NEW: Show answered count for proctor */}
           {isHost && !safeGameData.quizEnded && (
             <div className="bg-blue-50 p-3 rounded-lg shadow-inner text-center">
               <p className="text-lg font-semibold text-blue-800">
@@ -1251,8 +1230,7 @@ const App = () => {
                     )}
                   </span>
                   <span className="font-bold text-[#6b2a58]">
-                    {/* Anonymous scoring: only show scores if quiz has ended or answers are revealed */}
-                    {(safeGameData.quizEnded || (safeGameData.revealAnswers && isHost)) ? player.score : "?"}
+                    {(safeGameData.quizEnded || safeGameData.revealAnswers) ? player.score : "?"}
                   </span>
                 </li>
               ))}
@@ -1336,7 +1314,6 @@ const App = () => {
         </h1>
         {renderContent()}
 
-        {/* Varietal Elaboration Modal */}
         {showVarietalModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
@@ -1357,10 +1334,10 @@ const App = () => {
           </div>
         )}
 
-        {/* Generate Question Modal */}
         {showGenerateQuestionModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
+              <h3 className="text-2极
               <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
               <input
                 type="text"
