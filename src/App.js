@@ -19,7 +19,7 @@ let app;
 let db;
 let auth;
 
-// Wine varietals with corrected encoding
+// Wine varietals with corrected UTF-8 encoding
 const WINE_VARIETALS = [
   { name: "Cabernet Sauvignon", country: "France" },
   { name: "Merlot", country: "France" },
@@ -131,10 +131,48 @@ const WINE_VARIETALS = [
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
   { name: "Terret Noir", country: "France" },
-  { name: "Valdiguié", country: "France" }
+  { name: "Valdiguié", country: "France" },
+  { name: "Ruby Cabernet", country: "USA" },
+  { name: "Emerald Riesling", country: "USA" },
+  { name: "Symphony", country: "USA" },
+  { name: "Cayuga White", country: "USA" },
+  { name: "Marquette", country: "USA" },
+  { name: "Frontenac", country: "USA" },
+  { name: "La Crescent", country: "USA" },
+  { name: "Prairie Star", country: "USA" },
+  { name: "Chambourcin", country: "USA" },
+  { name: "Vignoles", country: "USA" },
+  { name: "Catawba", country: "USA" },
+  { name: "Delaware", country: "USA" },
+  { name: "Muscadine", country: "USA" },
+  { name: "Scuppernong", country: "USA" },
+  { name: "Carlos", country: "USA" },
+  { name: "Noble", country: "USA" },
+  { name: "Magnolia", country: "USA" },
+  { name: "Tara", country: "USA" },
+  { name: "Summit", country: "USA" },
+  { name: "Nesbitt", country: "USA" },
+  { name: "Sterling", country: "USA" },
+  { name: "Blanc du Bois", country: "USA" },
+  { name: "Lenoir", country: "USA" },
+  { name: "Black Spanish", country: "USA" },
+  { name: "Cynthiana", country: "USA" },
+  { name: "St. Vincent", country: "USA" },
+  { name: "Vidal", country: "USA" },
+  { name: "Seyval", country: "USA" },
+  { name: "Chardonel", country: "USA" },
+  { name: "Noiret", country: "USA" },
+  { name: "Corot Noir", country: "USA" },
+  { name: "Valvin Muscat", country: "USA" },
+  { name: "Aurore", country: "USA" },
+  { name: "Baco Noir", country: "USA" },
+  { name: "Cascade", country: "USA" },
+  { name: "De Chaunac", country: "USA" },
+  { name: "Marechal Foch", country: "USA" },
+  { name: "Leon Millot", country: "USA" }
 ];
 
-// Question bank with "Proctor" question REMOVED
+// Question bank (removed "Proctor" question)
 const WINE_QUIZ_QUESTIONS = [
   {
     question: "Which of the following is a red grape varietal?",
@@ -238,8 +276,7 @@ const shuffleArray = (array) => {
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
   return array;
 };
@@ -333,9 +370,12 @@ const App = () => {
           setCurrentQuestionIndex(data.currentQuestionIndex || 0);
           setQuizEnded(data.quizEnded || false);
           setQuestions(Array.isArray(data.questions) ? data.questions : []);
-          const currentPlayerScore = Array.isArray(data.players) ? 
-            (data.players.find(p => p.id === userId)?.score || 0) : 0;
-          setScore(currentPlayerScore);
+          // Only update score when answers are revealed
+          if (data.revealAnswers) {
+            const currentPlayerScore = Array.isArray(data.players) ? 
+              (data.players.find(p => p.id === userId)?.score || 0) : 0;
+            setScore(currentPlayerScore);
+          }
           setFeedback('');
           setAnswerSelected(false);
           setSelectedAnswer(null);
@@ -521,11 +561,7 @@ const App = () => {
     }
   };
 
-  const revealAnswersToAll = async () => {
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-    await updateDoc(gameDocRef, { revealAnswers: true });
-  };
-
+  // FIXED: Only store selected answer, don't update score yet
   const handleMultiplayerAnswerClick = async (selectedOption) => {
     const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false };
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
@@ -537,29 +573,13 @@ const App = () => {
     setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
 
-    const currentQuestionsArray = Array.isArray(safeGameData.questions) ? safeGameData.questions : [];
-    const currentQuestion = currentQuestionsArray.length > safeGameData.currentQuestionIndex ? 
-      currentQuestionsArray[safeGameData.currentQuestionIndex] : { correctAnswer: '', explanation: '' };
-    
-    let newFeedback = '';
-    let newScore = score;
-
-    if (selectedOption === currentQuestion.correctAnswer) {
-      newScore = score + 1;
-      newFeedback = 'Correct!';
-    } else {
-      newFeedback = 'Incorrect.';
-    }
-    setFeedback(newFeedback);
-
+    // Only store the selected answer, don't update score yet
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const updatedPlayers = currentPlayersArray.map(p => {
       if (p.id === userId) {
         return {
           ...p,
-          score: newScore,
-          selectedAnswerForQuestion: selectedOption,
-          feedbackForQuestion: newFeedback
+          selectedAnswerForQuestion: selectedOption
         };
       }
       return p;
@@ -568,9 +588,29 @@ const App = () => {
     try {
       await updateDoc(gameDocRef, { players: updatedPlayers });
     } catch (e) {
-      console.error("Error updating score:", e);
-      setError("Failed to update your score.");
+      console.error("Error updating answer:", e);
+      setError("Failed to submit your answer.");
     }
+  };
+
+  // NEW: Reveal answers and update all scores
+  const revealAnswersToAll = async () => {
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
+    const updatedPlayers = gameData.players.map(p => {
+      let increment = 0;
+      if (p.selectedAnswerForQuestion === currentQuestion.correctAnswer) {
+        increment = 1;
+      }
+      return {
+        ...p,
+        score: (p.score || 0) + increment,
+        feedbackForQuestion: (p.selectedAnswerForQuestion
+          ? (p.selectedAnswerForQuestion === currentQuestion.correctAnswer ? "Correct!" : "Incorrect.")
+          : null)
+      };
+    });
+    await updateDoc(gameDocRef, { players: updatedPlayers, revealAnswers: true });
   };
 
   const handleMultiplayerNextQuestion = async () => {
@@ -792,6 +832,10 @@ const App = () => {
     const isHost = safeGameData.hostId === userId;
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
     const sortedPlayers = [...currentPlayersArray].sort((a, b) => b.score - a.score);
+
+    // NEW: Calculate answered count for proctor
+    const answeredCount = currentPlayersArray.filter(p => p.selectedAnswerForQuestion != null).length;
+    const totalPlayers = currentPlayersArray.length;
 
     if (loading || !isAuthReady) {
       return <p className="text-center text-gray-700 text-xl">Loading...</p>;
@@ -1044,7 +1088,6 @@ const App = () => {
       const currentPlayerGameData = currentPlayersArray.find(p => p.id === userId);
       const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
       const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
-      const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
 
       const getWinners = () => {
         if (!Array.isArray(sortedPlayers) || sortedPlayers.length === 0) return [];
@@ -1068,16 +1111,12 @@ const App = () => {
             </p>
           )}
 
-          {!safeGameData.quizEnded && !isHost && (
-            <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
-              <p className="text-lg font-semibold text-gray-800">
-                Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+          {/* NEW: Show answered count for proctor */}
+          {isHost && !safeGameData.quizEnded && (
+            <div className="bg-blue-50 p-3 rounded-lg shadow-inner text-center">
+              <p className="text-lg font-semibold text-blue-800">
+                Players answered: <span className="font-bold">{answeredCount} / {totalPlayers}</span>
               </p>
-              {currentPlayersArray.length > 1 && (
-                <p className="text-md text-gray-700">
-                  You are in <span className="font-bold text-[#6b2a58]">{currentPlayerRank}</span> place!
-                </p>
-              )}
             </div>
           )}
 
@@ -1212,8 +1251,8 @@ const App = () => {
                     )}
                   </span>
                   <span className="font-bold text-[#6b2a58]">
-                    {/* Anonymous scoring: only show scores if quiz has ended or viewer is host */}
-                    {(safeGameData.quizEnded || isHost) ? player.score : "?"}
+                    {/* Anonymous scoring: only show scores if quiz has ended or answers are revealed */}
+                    {(safeGameData.quizEnded || (safeGameData.revealAnswers && isHost)) ? player.score : "?"}
                   </span>
                 </li>
               ))}
