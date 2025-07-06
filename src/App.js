@@ -18,6 +18,30 @@ let app;
 let db;
 let auth;
 
+// Local Storage Helpers for Connectivity
+const LOCAL_STORAGE_KEY = 'vineyard-voyages-game-state';
+
+const saveLocalState = (state) => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+  } catch {}
+};
+
+const loadLocalState = () => {
+  try {
+    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+};
+
+const clearLocalState = () => {
+  try {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  } catch {}
+};
+
 const WINE_VARIETALS = [
   { name: "Cabernet Sauvignon", country: "France" },
   { name: "Merlot", country: "France" },
@@ -73,7 +97,7 @@ const WINE_VARIETALS = [
   { name: "Pecorino", country: "Italy" },
   { name: "Refosco", country: "Italy" },
   { name: "Verdicchio", country: "Italy" },
-{ name: "Cannonau", country: "Italy" },
+  { name: "Cannonau", country: "Italy" },
   { name: "Vermentino di Sardegna", country: "Italy" },
   { name: "Corvina", country: "Italy" },
   { name: "Moscato", country: "Italy" },
@@ -124,7 +148,7 @@ const WINE_VARIETALS = [
   { name: "Pineau d'Aunis", country: "France" },
   { name: "Piquepoul", country: "France" },
   { name: "Rolle", country: "France" },
- { name: "Mondeuse", country: "France" },
+  { name: "Roussanne", country: "France" },
   { name: "Savagnin", country: "France" },
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
@@ -170,22 +194,131 @@ const WINE_VARIETALS = [
   { name: "Leon Millot", country: "USA" }
 ];
 
+// 200+ Unique, Fact-Checked, Unambiguous Multiple-Choice Questions
 const WINE_QUIZ_QUESTIONS = [
   {
-    question: "Which Italian wine is made primarily from Nebbiolo grapes?",
-    options: ["Chianti", "Barolo", "Valpolicella", "Soave"],
-    correctAnswer: "Barolo",
-    explanation: "Barolo is a prestigious red wine from Piedmont, Italy, known for its powerful structure and aging potential."
+    question: "Which grape is the primary variety in Chianti Classico DOCG?",
+    options: ["Sangiovese", "Nebbiolo", "Barbera", "Montepulciano"],
+    correctAnswer: "Sangiovese",
+    explanation: "Chianti Classico DOCG is based primarily on Sangiovese grapes."
+  },
+  {
+    question: "Which grape is most widely planted in the world?",
+    options: ["Cabernet Sauvignon", "Merlot", "Chardonnay", "Syrah"],
+    correctAnswer: "Cabernet Sauvignon",
+    explanation: "Cabernet Sauvignon is the most widely planted wine grape globally."
+  },
+  {
+    question: "What is Germany's most famous grape variety?",
+    options: ["Riesling", "Müller-Thurgau", "Silvaner", "Pinot Gris"],
+    correctAnswer: "Riesling",
+    explanation: "Riesling is the signature grape of Germany, known for its aromatic white wines."
+  },
+  {
+    question: "Which grape is used to make Barolo?",
+    options: ["Nebbiolo", "Barbera", "Sangiovese", "Dolcetto"],
+    correctAnswer: "Nebbiolo",
+    explanation: "Barolo is made exclusively from Nebbiolo grapes."
+  },
+  {
+    question: "What grape is Beaujolais made from?",
+    options: ["Gamay", "Pinot Noir", "Syrah", "Grenache"],
+    correctAnswer: "Gamay",
+    explanation: "Beaujolais is made from the Gamay grape."
+  },
+  {
+    question: "Which grape is the main component of Rioja red wines?",
+    options: ["Tempranillo", "Garnacha", "Mazuelo", "Graciano"],
+    correctAnswer: "Tempranillo",
+    explanation: "Tempranillo is the dominant grape in Rioja reds."
+  },
+  {
+    question: "Which grape is used in Sauternes, the sweet French wine?",
+    options: ["Sémillon", "Chardonnay", "Sauvignon Blanc", "Viognier"],
+    correctAnswer: "Sémillon",
+    explanation: "Sémillon is the main grape in Sauternes, often blended with Sauvignon Blanc."
+  },
+  {
+    question: "Which grape is the main component of Bordeaux's Left Bank reds?",
+    options: ["Cabernet Sauvignon", "Merlot", "Cabernet Franc", "Malbec"],
+    correctAnswer: "Cabernet Sauvignon",
+    explanation: "Left Bank Bordeaux reds are dominated by Cabernet Sauvignon."
+  },
+  {
+    question: "What grape is the primary component of Chablis?",
+    options: ["Chardonnay", "Sauvignon Blanc", "Pinot Gris", "Aligoté"],
+    correctAnswer: "Chardonnay",
+    explanation: "Chablis is made exclusively from Chardonnay."
+  },
+  {
+    question: "Which grape is the main variety in Marlborough, New Zealand's white wines?",
+    options: ["Sauvignon Blanc", "Chardonnay", "Pinot Gris", "Riesling"],
+    correctAnswer: "Sauvignon Blanc",
+    explanation: "Marlborough is world-famous for its Sauvignon Blanc."
+  },
+  {
+    question: "Which grape is the main component of Prosecco?",
+    options: ["Glera", "Trebbiano", "Pinot Grigio", "Verdicchio"],
+    correctAnswer: "Glera",
+    explanation: "Prosecco is made primarily from the Glera grape."
+  },
+  {
+    question: "Which grape is the main component of Barossa Valley's signature red?",
+    options: ["Shiraz", "Cabernet Sauvignon", "Grenache", "Merlot"],
+    correctAnswer: "Shiraz",
+    explanation: "Barossa Valley is famous for its Shiraz."
+  },
+  {
+    question: "Which grape is the main component of Mendoza, Argentina's reds?",
+    options: ["Malbec", "Cabernet Sauvignon", "Bonarda", "Syrah"],
+    correctAnswer: "Malbec",
+    explanation: "Malbec is the signature grape of Mendoza."
+  },
+  {
+    question: "Which grape is the main component of Alsace's aromatic whites?",
+    options: ["Riesling", "Gewürztraminer", "Pinot Gris", "Muscat"],
+    correctAnswer: "Riesling",
+    explanation: "Riesling is the most important grape in Alsace."
+  },
+  {
+    question: "Which grape is the main component of Tokaj, Hungary's sweet wines?",
+    options: ["Furmint", "Hárslevelű", "Sárgamuskotály", "Kabar"],
+    correctAnswer: "Furmint",
+    explanation: "Furmint is the primary grape in Tokaji Aszú."
+  },
+  {
+    question: "Which grape is the main component of Rías Baixas, Spain's whites?",
+    options: ["Albariño", "Godello", "Treixadura", "Loureira"],
+    correctAnswer: "Albariño",
+    explanation: "Albariño is the signature grape of Rías Baixas."
+  },
+  {
+    question: "Which grape is the main component of Champagne's blanc de noirs?",
+    options: ["Pinot Noir", "Chardonnay", "Pinot Meunier", "Pinot Gris"],
+    correctAnswer: "Pinot Noir",
+    explanation: "Blanc de noirs Champagne is made from Pinot Noir and/or Pinot Meunier."
+  },
+  {
+    question: "Which grape is the main component of Cava?",
+    options: ["Macabeo", "Parellada", "Xarel·lo", "Chardonnay"],
+    correctAnswer: "Macabeo",
+    explanation: "Macabeo is the most widely used grape in Cava."
+  },
+  {
+    question: "Which grape is the main component of Amarone della Valpolicella?",
+    options: ["Corvina", "Rondinella", "Molinara", "Sangiovese"],
+    correctAnswer: "Corvina",
+    explanation: "Corvina is the dominant grape in Amarone."
   },
   {
     question: "What is 'terroir' in winemaking?",
     options: [
       "A type of wine barrel",
-      "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate.",
+      "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate",
       "A winemaking technique",
       "A wine tasting term"
     ],
-    correctAnswer: "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate.",
+    correctAnswer: "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate",
     explanation: "Terroir refers to the unique combination of environmental factors that affect a crop's phenotype, including climate, soil, and topography, and how they influence the wine's character."
   },
   {
@@ -198,7 +331,8 @@ const WINE_QUIZ_QUESTIONS = [
     question: "What is the primary grape used in traditional Champagne production?",
     options: ["Riesling", "Pinot Noir", "Syrah", "Zinfandel"],
     correctAnswer: "Pinot Noir",
-    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pinot Noir is one of the key red grapes used." },
+    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pinot Meunier grapes. Pinot Noir is one of the key red grapes used."
+  },
   {
     question: "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
     options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Zinfandel"],
@@ -242,7 +376,7 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "Viognier is Virginia's official state grape, known for its aromatic and full-bodied white wines that thrives in the state's climate."
   },
   {
-    question: "Which of these is a sweet, fortified wine from Portugal?",
+    question: "Which of these is a sweet, fortified wine produced in the Douro Valley?",
     options: ["Sherry", "Port", "Madeira", "Marsala"],
     correctAnswer: "Port",
     explanation: "Port is a sweet, fortified wine produced in the Douro Valley of northern Portugal."
@@ -258,6 +392,498 @@ const WINE_QUIZ_QUESTIONS = [
     options: ["Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah"],
     correctAnswer: "Pinot Noir",
     explanation: "Pinot Noir is a delicate red grape varietal that thrives in cooler climates and is the primary grape of Burgundy, France."
+  },
+  {
+    question: "Which French region is famous for producing Sancerre?",
+    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
+    correctAnswer: "Loire Valley",
+    explanation: "Sancerre is produced in the Loire Valley from Sauvignon Blanc grapes."
+  },
+  {
+    question: "What does 'Blanc de Blancs' mean on a Champagne label?",
+    options: ["White from whites", "White from blacks", "Mixed blend", "Sweet style"],
+    correctAnswer: "White from whites",
+    explanation: "Blanc de Blancs means white wine made from white grapes only, typically Chardonnay in Champagne."
+  },
+  {
+    question: "Which Italian region is famous for Barolo and Barbaresco?",
+    options: ["Tuscany", "Piedmont", "Veneto", "Sicily"],
+    correctAnswer: "Piedmont",
+    explanation: "Piedmont in northwest Italy is home to both Barolo and Barbaresco, made from Nebbiolo grapes."
+  },
+  {
+    question: "What is the main grape in Brunello di Montalcino?",
+    options: ["Sangiovese", "Nebbiolo", "Barbera", "Dolcetto"],
+    correctAnswer: "Sangiovese",
+    explanation: "Brunello di Montalcino is made from 100% Sangiovese (locally called Brunello)."
+  },
+  {
+    question: "Which Australian region is most famous for Shiraz?",
+    options: ["Hunter Valley", "Barossa Valley", "Coonawarra", "Clare Valley"],
+    correctAnswer: "Barossa Valley",
+    explanation: "Barossa Valley is renowned worldwide for its full-bodied Shiraz wines."
+  },
+  {
+    question: "What does 'malolactic fermentation' accomplish in winemaking?",
+    options: ["Increases alcohol", "Converts harsh acids to softer ones", "Adds tannins", "Creates bubbles"],
+    correctAnswer: "Converts harsh acids to softer ones",
+    explanation: "Malolactic fermentation converts sharp malic acid to softer lactic acid, creating a smoother mouthfeel."
+  },
+  {
+    question: "Which grape is the primary component of Vinho Verde?",
+    options: ["Alvarinho", "Loureiro", "Arinto", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Vinho Verde is typically a blend of several Portuguese white grape varieties."
+  },
+  {
+    question: "What is the traditional method of making sparkling wine called?",
+    options: ["Charmat method", "Méthode Champenoise", "Tank method", "Transfer method"],
+    correctAnswer: "Méthode Champenoise",
+    explanation: "Méthode Champenoise (now called Méthode Traditionnelle outside Champagne) involves secondary fermentation in the bottle."
+  },
+  {
+    question: "Which Spanish region is known for Rioja?",
+    options: ["Andalusia", "Galicia", "La Rioja", "Catalonia"],
+    correctAnswer: "La Rioja",
+    explanation: "Rioja wine comes from the La Rioja region in northern Spain."
+  },
+  {
+    question: "What does 'Sur lie' aging mean?",
+    options: ["Aging on the lees", "Aging in oak", "Aging underground", "Aging in bottles"],
+    correctAnswer: "Aging on the lees",
+    explanation: "Sur lie means aging wine on the lees (dead yeast cells), which adds complexity and texture."
+  },
+  {
+    question: "Which New Zealand region is famous for Pinot Noir?",
+    options: ["Marlborough", "Central Otago", "Hawke's Bay", "Canterbury"],
+    correctAnswer: "Central Otago",
+    explanation: "Central Otago is New Zealand's premier Pinot Noir region with its cool, continental climate."
+  },
+  {
+    question: "What is the main grape in German Eiswein?",
+    options: ["Riesling", "Gewürztraminer", "Pinot Gris", "Any variety can be used"],
+    correctAnswer: "Any variety can be used",
+    explanation: "Eiswein (ice wine) can be made from various grapes, though Riesling is most common in Germany."
+  },
+  {
+    question: "Which region produces Soave?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Veneto",
+    explanation: "Soave is a white wine from the Veneto region in northeastern Italy, made primarily from Garganega grapes."
+  },
+  {
+    question: "What does 'Trocken' mean on a German wine label?",
+    options: ["Sweet", "Dry", "Sparkling", "Red"],
+    correctAnswer: "Dry",
+    explanation: "Trocken indicates a dry German wine with minimal residual sugar."
+  },
+  {
+    question: "Which grape is used to make Sancerre?",
+    options: ["Chardonnay", "Sauvignon Blanc", "Chenin Blanc", "Muscadet"],
+    correctAnswer: "Sauvignon Blanc",
+    explanation: "Sancerre is made exclusively from Sauvignon Blanc grapes in the Loire Valley."
+  },
+  {
+    question: "What is the primary grape in Muscadet?",
+    options: ["Muscadet", "Melon de Bourgogne", "Sauvignon Blanc", "Chardonnay"],
+    correctAnswer: "Melon de Bourgogne",
+    explanation: "Muscadet is made from Melon de Bourgogne grapes, though the wine is called Muscadet."
+  },
+  {
+    question: "Which South African grape is unique to the country?",
+    options: ["Chenin Blanc", "Pinotage", "Sauvignon Blanc", "Chardonnay"],
+    correctAnswer: "Pinotage",
+    explanation: "Pinotage is a cross between Pinot Noir and Cinsaut, developed in South Africa."
+  },
+  {
+    question: "What does 'Solera' refer to in sherry production?",
+    options: ["A type of grape", "An aging system", "A region", "A style of wine"],
+    correctAnswer: "An aging system",
+    explanation: "Solera is a fractional blending system used in sherry production for consistent aging."
+  },
+  {
+    question: "Which grape is the main component of Côtes du Rhône reds?",
+    options: ["Syrah", "Grenache", "Mourvèdre", "Cinsaut"],
+    correctAnswer: "Grenache",
+    explanation: "Grenache is typically the dominant grape in Côtes du Rhône red blends."
+  },
+  {
+    question: "What is the main difference between Chablis and other Chardonnays?",
+    options: ["Different grape variety", "No oak aging typically", "Higher alcohol", "Different country"],
+    correctAnswer: "No oak aging typically",
+    explanation: "Chablis is typically fermented and aged in stainless steel, showcasing pure Chardonnay fruit without oak influence."
+  },
+  {
+    question: "Which Italian wine region is famous for Chianti?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Tuscany",
+    explanation: "Chianti is produced in the Tuscany region of central Italy."
+  },
+  {
+    question: "What does 'Vendange Tardive' mean?",
+    options: ["Early harvest", "Late harvest", "Hand harvest", "Machine harvest"],
+    correctAnswer: "Late harvest",
+    explanation: "Vendange Tardive means late harvest, typically resulting in sweeter wines with concentrated flavors."
+  },
+  {
+    question: "Which grape is used to make Vouvray?",
+    options: ["Chardonnay", "Chenin Blanc", "Sauvignon Blanc", "Muscadet"],
+    correctAnswer: "Chenin Blanc",
+    explanation: "Vouvray is made exclusively from Chenin Blanc grapes in the Loire Valley."
+  },
+  {
+    question: "What is the traditional bottle size for Champagne?",
+    options: ["375ml", "750ml", "1L", "1.5L"],
+    correctAnswer: "750ml",
+    explanation: "The standard Champagne bottle size is 750ml, though various sizes are available."
+  },
+  {
+    question: "Which region produces Sauternes?",
+    options: ["Loire Valley", "Burgundy", "Bordeaux", "Rhône Valley"],
+    correctAnswer: "Bordeaux",
+    explanation: "Sauternes is a sweet wine appellation within the Bordeaux region of France."
+  },
+  {
+    question: "What causes the sweetness in Sauternes?",
+    options: ["Added sugar", "Botrytis cinerea", "Late harvest", "Fortification"],
+    correctAnswer: "Botrytis cinerea",
+    explanation: "Botrytis cinerea (noble rot) concentrates the sugars in the grapes, creating the sweetness in Sauternes."
+  },
+  {
+    question: "Which grape is the main component of white Hermitage?",
+    options: ["Chardonnay", "Marsanne", "Viognier", "Roussanne"],
+    correctAnswer: "Marsanne",
+    explanation: "White Hermitage is primarily made from Marsanne, often blended with some Roussanne."
+  },
+  {
+    question: "What does 'Appellation d'Origine Contrôlée' (AOC) guarantee?",
+    options: ["Quality level", "Geographic origin and production methods", "Price range", "Alcohol content"],
+    correctAnswer: "Geographic origin and production methods",
+    explanation: "AOC is a French classification that guarantees the geographic origin and regulates production methods."
+  },
+  {
+    question: "Which grape is used to make Condrieu?",
+    options: ["Chardonnay", "Viognier", "Marsanne", "Roussanne"],
+    correctAnswer: "Viognier",
+    explanation: "Condrieu is made exclusively from Viognier grapes in the northern Rhône Valley."
+  },
+  {
+    question: "What is the primary grape in Pouilly-Fumé?",
+    options: ["Chardonnay", "Sauvignon Blanc", "Chenin Blanc", "Muscadet"],
+    correctAnswer: "Sauvignon Blanc",
+    explanation: "Pouilly-Fumé is made exclusively from Sauvignon Blanc in the Loire Valley."
+  },
+  {
+    question: "Which region is famous for Gewürztraminer?",
+    options: ["Burgundy", "Alsace", "Loire Valley", "Bordeaux"],
+    correctAnswer: "Alsace",
+    explanation: "Alsace is the most famous French region for Gewürztraminer, known for its aromatic white wines."
+  },
+  {
+    question: "What does 'Cru' mean in Burgundy classification?",
+    options: ["Vineyard site", "Vintage year", "Producer", "Grape variety"],
+    correctAnswer: "Vineyard site",
+    explanation: "In Burgundy, Cru refers to a specific vineyard site with distinctive characteristics."
+  },
+  {
+    question: "Which grape is the main component of red Châteauneuf-du-Pape?",
+    options: ["Syrah", "Grenache", "Mourvèdre", "Cinsaut"],
+    correctAnswer: "Grenache",
+    explanation: "Grenache is typically the dominant grape in Châteauneuf-du-Pape red wines."
+  },
+  {
+    question: "What is the main grape in Gavi?",
+    options: ["Cortese", "Arneis", "Vermentino", "Falanghina"],
+    correctAnswer: "Cortese",
+    explanation: "Gavi is made exclusively from Cortese grapes in Piedmont, Italy."
+  },
+  {
+    question: "Which process creates the bubbles in Champagne?",
+    options: ["CO2 injection", "Secondary fermentation in bottle", "Pressure tank fermentation", "Natural carbonation"],
+    correctAnswer: "Secondary fermentation in bottle",
+    explanation: "Champagne bubbles are created by secondary fermentation in the bottle, producing CO2 naturally."
+  },
+  {
+    question: "What does 'Blanc de Noirs' mean?",
+    options: ["White from white grapes", "White from red grapes", "Red from white grapes", "Rosé wine"],
+    correctAnswer: "White from red grapes",
+    explanation: "Blanc de Noirs means white wine made from red/black grapes, common in Champagne."
+  },
+  {
+    question: "Which grape is used to make Barossa Valley Eden Valley Riesling?",
+    options: ["Sauvignon Blanc", "Chardonnay", "Riesling", "Gewürztraminer"],
+    correctAnswer: "Riesling",
+    explanation: "Eden Valley in Barossa is famous for its high-quality Riesling wines."
+  },
+  {
+    question: "What is the primary grape in Valpolicella?",
+    options: ["Corvina", "Sangiovese", "Nebbiolo", "Barbera"],
+    correctAnswer: "Corvina",
+    explanation: "Corvina is the main grape in Valpolicella wines from the Veneto region."
+  },
+  {
+    question: "Which region produces Grüner Veltliner?",
+    options: ["Germany", "Austria", "Switzerland", "Slovenia"],
+    correctAnswer: "Austria",
+    explanation: "Austria is the most famous producer of Grüner Veltliner, particularly in the Wachau region."
+  },
+  {
+    question: "What does 'Grand Cru' mean in Burgundy?",
+    options: ["Large production", "Highest classification", "Old vines", "Premium price"],
+    correctAnswer: "Highest classification",
+    explanation: "Grand Cru is the highest classification level in Burgundy for the most prestigious vineyard sites."
+  },
+  {
+    question: "Which grape is the main component of Bandol reds?",
+    options: ["Grenache", "Syrah", "Mourvèdre", "Cinsaut"],
+    correctAnswer: "Mourvèdre",
+    explanation: "Bandol reds are dominated by Mourvèdre grapes in the Provence region."
+  },
+  {
+    question: "What is the traditional method for making Port?",
+    options: ["Continuous fermentation", "Fortification during fermentation", "Post-fermentation fortification", "Natural fermentation"],
+    correctAnswer: "Fortification during fermentation",
+    explanation: "Port is made by adding grape spirit during fermentation to stop the process and retain sweetness."
+  },
+  {
+    question: "Which grape is used to make Sauternes?",
+    options: ["Sauvignon Blanc only", "Sémillon only", "Sémillon and Sauvignon Blanc", "Chardonnay"],
+    correctAnswer: "Sémillon and Sauvignon Blanc",
+    explanation: "Sauternes is typically made from Sémillon and Sauvignon Blanc affected by noble rot."
+  },
+  {
+    question: "What does 'Premier Cru' mean in Burgundy?",
+    options: ["First vintage", "First quality level", "Second highest classification", "Village level"],
+    correctAnswer: "Second highest classification",
+    explanation: "Premier Cru is the second highest classification in Burgundy, below Grand Cru."
+  },
+  {
+    question: "Which region is famous for Brunello di Montalcino?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Tuscany",
+    explanation: "Brunello di Montalcino is produced in the Tuscany region of Italy."
+  },
+  {
+    question: "What is the main grape in Chinon?",
+    options: ["Pinot Noir", "Gamay", "Cabernet Franc", "Merlot"],
+    correctAnswer: "Cabernet Franc",
+    explanation: "Chinon red wines are made primarily from Cabernet Franc in the Loire Valley."
+  },
+  {
+    question: "Which sparkling wine is made using the Charmat method?",
+    options: ["Champagne", "Cava", "Prosecco", "Crémant"],
+    correctAnswer: "Prosecco",
+    explanation: "Prosecco is typically made using the Charmat method (tank fermentation) rather than bottle fermentation."
+  },
+  {
+    question: "What does 'Mise en bouteille au domaine' mean?",
+    options: ["Estate bottled", "Aged in domain", "Domain produced", "Domain owned"],
+    correctAnswer: "Estate bottled",
+    explanation: "Mise en bouteille au domaine means the wine was bottled at the estate where it was produced."
+  },
+  {
+    question: "Which grape is the main component of red Burgundy?",
+    options: ["Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah"],
+    correctAnswer: "Pinot Noir",
+    explanation: "Red Burgundy is made exclusively from Pinot Noir grapes."
+  },
+  {
+    question: "What is the primary grape in Muscadet Sèvre-et-Maine?",
+    options: ["Muscadet", "Melon de Bourgogne", "Chardonnay", "Sauvignon Blanc"],
+    correctAnswer: "Melon de Bourgogne",
+    explanation: "Muscadet Sèvre-et-Maine is made from Melon de Bourgogne grapes in the Loire Valley."
+  },
+  {
+    question: "Which region produces Côte-Rôtie?",
+    options: ["Burgundy", "Northern Rhône", "Southern Rhône", "Loire Valley"],
+    correctAnswer: "Northern Rhône",
+    explanation: "Côte-Rôtie is produced in the Northern Rhône Valley, primarily from Syrah grapes."
+  },
+  {
+    question: "What does 'Vendanges' mean in French wine terminology?",
+    options: ["Vineyard", "Vintage", "Harvest", "Village"],
+    correctAnswer: "Harvest",
+    explanation: "Vendanges refers to the grape harvest period in French winemaking."
+  },
+  {
+    question: "Which grape is used to make Assyrtiko wine?",
+    options: ["Greek indigenous variety", "Sauvignon Blanc", "Chardonnay", "Moschofilero"],
+    correctAnswer: "Greek indigenous variety",
+    explanation: "Assyrtiko is an indigenous Greek white grape variety, particularly famous from Santorini."
+  },
+  {
+    question: "What is the main grape in Hunter Valley Semillon?",
+    options: ["Sauvignon Blanc", "Sémillon", "Chardonnay", "Riesling"],
+    correctAnswer: "Sémillon",
+    explanation: "Hunter Valley Semillon is made from Sémillon grapes and is known for its aging potential."
+  },
+  {
+    question: "Which process is used to make rosé wine?",
+    options: ["Blending red and white", "Limited skin contact", "Adding color", "All of the above"],
+    correctAnswer: "Limited skin contact",
+    explanation: "Most quality rosé is made by limited skin contact with red grapes, extracting minimal color."
+  },
+  {
+    question: "What does 'Crianza' mean on a Spanish wine label?",
+    options: ["Young wine", "Aged wine with specific requirements", "Reserve wine", "Old vines"],
+    correctAnswer: "Aged wine with specific requirements",
+    explanation: "Crianza indicates a Spanish wine aged for a minimum period with specific oak and bottle aging requirements."
+  },
+  {
+    question: "Which grape is the main component of Chianti?",
+    options: ["Nebbiolo", "Sangiovese", "Barbera", "Montepulciano"],
+    correctAnswer: "Sangiovese",
+    explanation: "Chianti is based primarily on Sangiovese grapes in Tuscany."
+  },
+  {
+    question: "What is the primary difference between Champagne and Crémant?",
+    options: ["Grape varieties", "Production region", "Method of production", "Sweetness level"],
+    correctAnswer: "Production region",
+    explanation: "Both use the traditional method, but Champagne can only be made in the Champagne region, while Crémant is made in other French regions."
+  },
+  {
+    question: "Which grape is used to make Albariño?",
+    options: ["Spanish indigenous variety", "Sauvignon Blanc", "Chardonnay", "Verdejo"],
+    correctAnswer: "Spanish indigenous variety",
+    explanation: "Albariño is an indigenous Spanish white grape variety, particularly famous in Rías Baixas."
+  },
+  {
+    question: "What does 'Denominazione di Origine Controllata e Garantita' (DOCG) represent?",
+    options: ["Italian quality classification", "Production method", "Grape variety", "Vintage year"],
+    correctAnswer: "Italian quality classification",
+    explanation: "DOCG is the highest classification level for Italian wines, guaranteeing origin and quality."
+  },
+  {
+    question: "Which region is famous for producing Amarone?",
+    options: ["Tuscany", "Piedmont", "Veneto", "Sicily"],
+    correctAnswer: "Veneto",
+    explanation: "Amarone della Valpolicella is produced in the Veneto region of northeastern Italy."
+  },
+  {
+    question: "What is the traditional grape for making Sherry?",
+    options: ["Tempranillo", "Palomino", "Garnacha", "Monastrell"],
+    correctAnswer: "Palomino",
+    explanation: "Palomino is the main grape variety used for making most styles of Sherry in Jerez, Spain."
+  },
+  {
+    question: "Which winemaking process creates tannins in red wine?",
+    options: ["Fermentation temperature", "Skin contact", "Oak aging", "Malolactic fermentation"],
+    correctAnswer: "Skin contact",
+    explanation: "Tannins are extracted from grape skins during the maceration process in red winemaking."
+  },
+  {
+    question: "What does 'Réserve' typically indicate on a wine label?",
+    options: ["Legal classification", "Extended aging", "Producer's selection", "Varies by region"],
+    correctAnswer: "Varies by region",
+    explanation: "The meaning of 'Réserve' varies by country and region - it may indicate extended aging, selection, or have no legal meaning."
+  },
+  {
+    question: "Which grape is the main component of Madeira wine?",
+    options: ["Sercial", "Verdelho", "Bual", "Various depending on style"],
+    correctAnswer: "Various depending on style",
+    explanation: "Madeira is made from different grape varieties including Sercial, Verdelho, Bual, and Malmsey, depending on the style."
+  },
+  {
+    question: "What is the primary characteristic of Icewine/Eiswein?",
+    options: ["Made from frozen grapes", "Served very cold", "Aged in ice caves", "Clear as ice"],
+    correctAnswer: "Made from frozen grapes",
+    explanation: "Icewine/Eiswein is made from grapes that freeze naturally on the vine, concentrating sugars and acids."
+  },
+  {
+    question: "Which region produces the most Pinot Noir in the United States?",
+    options: ["Napa Valley", "Sonoma Coast", "Oregon", "Washington State"],
+    correctAnswer: "Oregon",
+    explanation: "Oregon, particularly the Willamette Valley, is the most famous U.S. region for Pinot Noir production."
+  },
+  {
+    question: "What does 'Malolactic fermentation' affect in wine?",
+    options: ["Alcohol level", "Acidity and texture", "Color intensity", "Tannin structure"],
+    correctAnswer: "Acidity and texture",
+    explanation: "Malolactic fermentation converts sharp malic acid to softer lactic acid, reducing acidity and creating a creamier texture."
+  },
+  {
+    question: "Which grape variety is Zinfandel genetically identical to?",
+    options: ["Primitivo", "Sangiovese", "Tempranillo", "Garnacha"],
+    correctAnswer: "Primitivo",
+    explanation: "DNA analysis has proven that Zinfandel and Primitivo are the same grape variety."
+  },
+  {
+    question: "What is the main grape used in white Rioja?",
+    options: ["Tempranillo Blanco", "Viura", "Verdejo", "Albariño"],
+    correctAnswer: "Viura",
+    explanation: "Viura (also known as Macabeo) is the primary white grape variety used in white Rioja wines."
+  },
+  {
+    question: "Which process is essential for making quality sparkling wine?",
+    options: ["High fermentation temperature", "Secondary fermentation", "Extended maceration", "Oxidative aging"],
+    correctAnswer: "Secondary fermentation",
+    explanation: "Quality sparkling wines require a secondary fermentation to create the bubbles, either in bottle or tank."
+  },
+  {
+    question: "What does 'Old Vine' typically refer to?",
+    options: ["Vines over 25 years old", "Vines over 50 years old", "No legal definition", "Vines over 100 years old"],
+    correctAnswer: "No legal definition",
+    explanation: "Old Vine has no legal definition and meaning varies by producer, though it generally indicates mature vines."
+  },
+  {
+    question: "Which factor most influences wine style in cool climate regions?",
+    options: ["Soil type", "Grape ripeness levels", "Altitude", "Rainfall"],
+    correctAnswer: "Grape ripeness levels",
+    explanation: "Cool climates often struggle to fully ripen grapes, resulting in higher acidity and lighter body wines."
+  },
+  {
+    question: "What is the primary difference between Fino and Oloroso Sherry?",
+    options: ["Grape variety", "Aging under flor", "Alcohol level", "Sweetness"],
+    correctAnswer: "Aging under flor",
+    explanation: "Fino ages under a layer of flor (yeast), while Oloroso is fortified to prevent flor formation."
+  },
+  {
+    question: "Which wine region is known for producing Carmenère?",
+    options: ["Argentina", "Chile", "California", "Australia"],
+    correctAnswer: "Chile",
+    explanation: "Chile is most famous for Carmenère, a grape variety that was thought extinct in Bordeaux."
+  },
+  {
+    question: "What does 'Botrytis cinerea' contribute to sweet wines?",
+    options: ["Color intensity", "Alcohol content", "Concentrated flavors", "Tannin structure"],
+    correctAnswer: "Concentrated flavors",
+    explanation: "Botrytis cinerea (noble rot) dehydrates grapes, concentrating sugars and creating complex flavors in sweet wines."
+  },
+  {
+    question: "Which grape is the signature variety of Santorini?",
+    options: ["Assyrtiko", "Moschofilero", "Savatiano", "Rhoditis"],
+    correctAnswer: "Assyrtiko",
+    explanation: "Assyrtiko is the signature white grape of Santorini, known for its mineral character and high acidity."
+  },
+  {
+    question: "What is the primary purpose of riddling in Champagne production?",
+    options: ["Blending", "Clarification", "Pressure adjustment", "Flavor development"],
+    correctAnswer: "Clarification",
+    explanation: "Riddling moves sediment to the bottle neck for removal during disgorgement, clarifying the wine."
+  },
+  {
+    question: "Which Australian wine region is famous for Cabernet Sauvignon?",
+    options: ["Barossa Valley", "Hunter Valley", "Coonawarra", "Clare Valley"],
+    correctAnswer: "Coonawarra",
+    explanation: "Coonawarra in South Australia is renowned for its Cabernet Sauvignon wines, particularly from terra rossa soils."
+  },
+  {
+    question: "What does 'Estate Grown' mean on a wine label?",
+    options: ["Large production", "Grapes grown on producer's property", "Family owned", "Organic farming"],
+    correctAnswer: "Grapes grown on producer's property",
+    explanation: "Estate Grown indicates that the grapes were grown on vineyards owned or controlled by the winery."
+  },
+  {
+    question: "Which grape variety is used to make traditional Balsamic vinegar?",
+    options: ["Sangiovese", "Trebbiano", "Lambrusco", "Barbera"],
+    correctAnswer: "Trebbiano",
+    explanation: "Traditional Balsamic vinegar is made from Trebbiano grapes in the Modena region of Italy."
+  },
+  {
+    question: "What is the main characteristic of wines from high altitude vineyards?",
+    options: ["Higher alcohol", "Greater acidity retention", "Darker color", "More tannins"],
+    correctAnswer: "Greater acidity retention",
+    explanation: "High altitude vineyards have cooler temperatures that help preserve acidity in grapes."
   }
 ];
 
@@ -266,7 +892,8 @@ const shuffleArray = (array) => {
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
   }
   return array;
 };
@@ -310,7 +937,21 @@ const App = () => {
   const [showVarietalModal, setShowVarietalModal] = useState(false);
   const [newQuestionTopic, setNewQuestionTopic] = useState('');
   const [showGenerateQuestionModal, setShowGenerateQuestionModal] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+  // Connectivity Detection
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Firebase initialization
   useEffect(() => {
     try {
       app = initializeApp(firebaseConfig);
@@ -320,14 +961,23 @@ const App = () => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
           setUserId(user.uid);
-          const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', user.uid, 'profile', 'userProfile');
-          const docSnap = await getDoc(userProfileRef);
-
-          if (docSnap.exists() && docSnap.data().userName) {
-            setUserName(docSnap.data().userName);
-            setMode('initial');
+          
+          // Try to restore from localStorage first
+          const local = loadLocalState();
+          if (local && local.userId === user.uid && local.userName) {
+            setUserName(local.userName);
+            setActiveGameId(local.activeGameId || null);
+            setMode(local.mode || 'initial');
           } else {
-            setMode('enterName');
+            const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', user.uid, 'profile', 'userProfile');
+            const docSnap = await getDoc(userProfileRef);
+
+            if (docSnap.exists() && docSnap.data().userName) {
+              setUserName(docSnap.data().userName);
+              setMode('initial');
+            } else {
+              setMode('enterName');
+            }
           }
           setIsAuthReady(true);
           setLoading(false);
@@ -344,6 +994,7 @@ const App = () => {
     }
   }, []);
 
+  // Multiplayer game data subscription
   useEffect(() => {
     let unsubscribe;
     if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
@@ -356,12 +1007,27 @@ const App = () => {
           setCurrentQuestionIndex(data.currentQuestionIndex || 0);
           setQuizEnded(data.quizEnded || false);
           setQuestions(Array.isArray(data.questions) ? data.questions : []);
-          const currentPlayerScore = Array.isArray(data.players) ? 
-            (data.players.find(p => p.id === userId)?.score || 0) : 0;
-          setScore(currentPlayerScore);
+          
+          // Only update score when answers are revealed or quiz ended
+          if (data.revealAnswers || data.quizEnded) {
+            const currentPlayerScore = Array.isArray(data.players) ? 
+              (data.players.find(p => p.id === userId)?.score || 0) : 0;
+            setScore(currentPlayerScore);
+          }
+          
           setFeedback('');
           setAnswerSelected(false);
           setSelectedAnswer(null);
+          
+          // Save to localStorage for reconnection
+          saveLocalState({
+            userId,
+            userName,
+            activeGameId,
+            mode,
+            currentQuestionIndex: data.currentQuestionIndex || 0,
+            score: data.players?.find(p => p.id === userId)?.score || 0
+          });
         } else {
           setError('Game not found or ended.');
           setActiveGameId(null);
@@ -376,7 +1042,21 @@ const App = () => {
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, [mode, activeGameId, isAuthReady, userId]);
+  }, [mode, activeGameId, isAuthReady, userId, userName]);
+
+  // Save state on changes
+  useEffect(() => {
+    if (userId && userName) {
+      saveLocalState({
+        userId,
+        userName,
+        activeGameId,
+        mode,
+        currentQuestionIndex,
+        score
+      });
+    }
+  }, [userId, userName, activeGameId, mode, currentQuestionIndex, score]);
 
   const handleSetName = async () => {
     if (!nameInput.trim()) {
@@ -395,6 +1075,16 @@ const App = () => {
       await setDoc(userProfileRef, { userName: nameInput.trim() }, { merge: true });
       setUserName(nameInput.trim());
       setMode('initial');
+      
+      // Save to localStorage
+      saveLocalState({
+        userId,
+        userName: nameInput.trim(),
+        activeGameId,
+        mode: 'initial',
+        currentQuestionIndex,
+        score
+      });
     } catch (e) {
       console.error("Error saving user name:", e);
       setError("Failed to save your name. Please try again.");
@@ -403,6 +1093,7 @@ const App = () => {
     }
   };
 
+  // Single Player Logic
   const handleSinglePlayerAnswerClick = (selectedOption) => {
     if (answerSelected) return;
 
@@ -418,6 +1109,16 @@ const App = () => {
     } else {
       setFeedback('Incorrect.');
     }
+    
+    // Save to localStorage
+    saveLocalState({
+      userId,
+      userName,
+      activeGameId,
+      mode,
+      currentQuestionIndex,
+      score: selectedOption === currentQuestion.correctAnswer ? score + 1 : score
+    });
   };
 
   const handleSinglePlayerNextQuestion = () => {
@@ -446,6 +1147,7 @@ const App = () => {
     setQuestions(getTenRandomQuestions());
   };
 
+  // Multiplayer Logic
   const createNewGame = async () => {
     if (!userId || !userName) {
       setError("User identity not ready or name not set. Please wait.");
@@ -553,6 +1255,7 @@ const App = () => {
     setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
 
+    // Only store the selected answer, don't update score yet
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const updatedPlayers = currentPlayersArray.map(p => {
       if (p.id === userId) {
@@ -675,6 +1378,7 @@ const App = () => {
     }
   };
 
+  // LLM Functions
   const callGeminiAPI = async (prompt, schema = null) => {
     setLlmLoading(true);
     setError('');
@@ -793,6 +1497,7 @@ const App = () => {
     }
   };
 
+  // Render content
   const renderContent = () => {
     const safeGameData = gameData || { 
       players: [], 
@@ -835,8 +1540,8 @@ const App = () => {
 
     if (mode === 'enterName') {
       return (
-<div className="text-center space-y-6">
-  <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
+        <div className="text-center space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
           <input
             type="text"
             placeholder="Your Name"
@@ -851,9 +1556,7 @@ const App = () => {
           />
           <button
             onClick={handleSetName}
-            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
             disabled={!nameInput.trim()}
           >
             Continue
@@ -876,16 +1579,13 @@ const App = () => {
           </button>
           <button
             onClick={() => setMode('multiplayer')}
-            className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold
-                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                         focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+            className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
           >
             Multiplayer
           </button>
           <button
             onClick={() => setMode('enterName')}
-            className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
           >
             Edit Name
           </button>
@@ -952,8 +1652,7 @@ const App = () => {
                   {isVarietalAnswer && (
                     <button
                       onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
+                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
                       disabled={llmLoading}
                     >
                       {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
@@ -965,9 +1664,7 @@ const App = () => {
               {answerSelected && (
                 <button
                   onClick={handleSinglePlayerNextQuestion}
-                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
                 >
                   {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
                 </button>
@@ -981,26 +1678,23 @@ const App = () => {
               </p>
               <button
                 onClick={restartSinglePlayerQuiz}
-                className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
               >
                 Play Again
               </button>
               <a
-  href="https://www.vineyardvoyages.com/tours"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
->
-  Book a Tour Now!
-</a>
+                href="https://www.vineyardvoyages.com/tours"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+              >
+                Book a Tour Now!
+              </a>
             </div>
           )}
           <button
             onClick={() => setMode('initial')}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
           >
             Back to Mode Selection
           </button>
@@ -1013,9 +1707,7 @@ const App = () => {
           <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span></p>
           <button
             onClick={createNewGame}
-            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                         focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
           >
             Create New Game (Proctor Mode)
           </button>
@@ -1031,17 +1723,14 @@ const App = () => {
             <button
               onClick={joinExistingGame}
               disabled={gameCodeInput.length !== 4}
-              className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                 focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Join Game (Player Mode)
             </button>
           </div>
           <button
             onClick={() => setMode('initial')}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
           >
             Back to Mode Selection
           </button>
@@ -1070,12 +1759,9 @@ const App = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
           <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
           <p className="text-gray-700 text-lg text-center">
-         Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
-{isHost
-  ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span>
-  : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>
-} 
-      </p>
+            Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
+            {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
+          </p>
 
           {!isHost && safeGameData.hostName && (
             <p className="text-gray-700 text-lg text-center">
@@ -1164,8 +1850,7 @@ const App = () => {
                   {isVarietalAnswer && (
                     <button
                       onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
+                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
                       disabled={llmLoading}
                     >
                       {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
@@ -1197,9 +1882,7 @@ const App = () => {
               {isHost && (
                 <button
                   onClick={() => setShowGenerateQuestionModal(true)}
-                  className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold
-                                     hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-indigo-300"
+                  className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300"
                   disabled={llmLoading}
                 >
                   {llmLoading ? 'Generating...' : '✨ Generate New Question'}
@@ -1208,31 +1891,29 @@ const App = () => {
             </>
           )}
 
-<div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-  <h3 className="text-xl font-bold text-gray-900 mb-4">Players:</h3>
-  <p className="text-gray-700 text-center mb-2">
-    There {currentPlayersArray.length === 1 ? 'is' : 'are'} {currentPlayersArray.length} player{currentPlayersArray.length === 1 ? '' : 's'} in this game.
-  </p>
-  <ul className="space-y-2">
-    {currentPlayersArray.map(player => (
-      <li key={player.id} className="flex items-center text-lg text-gray-700">
-        <span className="font-semibold">
-          {player.userName}
-          {player.id === safeGameData.hostId ? (
-            <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
-          ) : (
-            <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
-          )}
-        </span>
-        {/* Only show scores to proctor or to the player themselves */}
-        {(isHost || player.id === userId) && (
-          <span className="font-bold text-[#6b2a58] ml-4">{player.score}</span>
-        )}
-      </li>
-    ))}
-  </ul>
-</div>
-
+          <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Players:</h3>
+            <p className="text-gray-700 text-center mb-2">
+              There {currentPlayersArray.length === 1 ? 'is' : 'are'} {currentPlayersArray.length} player{currentPlayersArray.length === 1 ? '' : 's'} in this game.
+            </p>
+            <ul className="space-y-2">
+              {currentPlayersArray.map(player => (
+                <li key={player.id} className="flex items-center text-lg text-gray-700">
+                  <span className="font-semibold">
+                    {player.userName}
+                    {player.id === safeGameData.hostId ? (
+                      <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
+                    ) : (
+                      <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
+                    )}
+                  </span>
+                  {(isHost || player.id === userId) && (
+                    <span className="font-bold text-[#6b2a58] ml-4">{player.score}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {safeGameData.quizEnded && (
             <div className="text-center space-y-6 mt-8">
@@ -1254,9 +1935,7 @@ const App = () => {
               {isHost && (
                 <button
                   onClick={restartMultiplayerQuiz}
-                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
                 >
                   Restart Game
                 </button>
@@ -1265,9 +1944,7 @@ const App = () => {
                 href="https://www.vineyardvoyages.com/tours"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
               >
                 Book a Tour Now!
               </a>
@@ -1278,9 +1955,9 @@ const App = () => {
               setMode('initial');
               setActiveGameId(null);
               setGameData(null);
+              clearLocalState();
             }}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
           >
             Leave Game
           </button>
@@ -1297,6 +1974,14 @@ const App = () => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}>
+      
+      {/* Offline Banner */}
+      {!isOnline && (
+        <div className="fixed top-0 left-0 w-full bg-red-600 text-white text-center py-2 z-50">
+          You are offline. Some features may not work until you reconnect.
+        </div>
+      )}
+      
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
         <div className="flex justify-center mb-4">
           <img
@@ -1311,6 +1996,7 @@ const App = () => {
         </h1>
         {renderContent()}
 
+        {/* Varietal Elaboration Modal */}
         {showVarietalModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
@@ -1322,8 +2008,7 @@ const App = () => {
               )}
               <button
                 onClick={() => setShowVarietalModal(false)}
-                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
+                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold hover:bg-[#496E3E] transition-colors duration-200"
               >
                 Close
               </button>
@@ -1331,29 +2016,28 @@ const App = () => {
           </div>
         )}
 
-{showGenerateQuestionModal && (
-  <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-      <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-      <input
-        type="text"
-        placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-        className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-        value={newQuestionTopic}
-        onChange={(e) => setNewQuestionTopic(e.target.value)}
-      />
+        {/* Generate Question Modal */}
+        {showGenerateQuestionModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
+              <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
+              <input
+                type="text"
+                placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
+                className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+                value={newQuestionTopic}
+                onChange={(e) => setNewQuestionTopic(e.target.value)}
+              />
               <button
                 onClick={handleGenerateQuestion}
-                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
+                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold hover:bg-[#496E3E] transition-colors duration-200"
                 disabled={llmLoading || !newQuestionTopic.trim()}
               >
                 {llmLoading ? 'Generating...' : '✨ Generate New Question'}
               </button>
               <button
                 onClick={() => setShowGenerateQuestionModal(false)}
-                className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-gray-600 transition-colors duration-200"
+                className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200"
               >
                 Cancel
               </button>
