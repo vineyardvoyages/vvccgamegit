@@ -18,20 +18,45 @@ let app;
 let db;
 let auth;
 
-// Local Storage Helpers for Connectivity
+// Enhanced Local Storage Helpers for Robust Connectivity
 const LOCAL_STORAGE_KEY = 'vineyard-voyages-game-state';
+const RESUME_GAME_KEY = 'vineyard-voyages-resume';
 
 const saveLocalState = (state) => {
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-  } catch {}
+    const stateToSave = {
+      userId: state.userId,
+      userName: state.userName,
+      activeGameId: state.activeGameId,
+      mode: state.mode,
+      currentQuestionIndex: state.currentQuestionIndex,
+      score: state.score,
+      isHost: state.isHost,
+      selectedAnswer: state.selectedAnswer,
+      lastActivity: new Date().toISOString()
+    };
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToSave));
+  } catch (e) {
+    console.warn('Failed to save state to localStorage:', e);
+  }
 };
 
 const loadLocalState = () => {
   try {
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
-  } catch {
+    if (data) {
+      const parsed = JSON.parse(data);
+      const lastActivity = new Date(parsed.lastActivity);
+      const now = new Date();
+      const hoursDiff = (now - lastActivity) / (1000 * 60 * 60);
+      
+      if (hoursDiff < 24) {
+        return parsed;
+      }
+    }
+    return null;
+  } catch (e) {
+    console.warn('Failed to load state from localStorage:', e);
     return null;
   }
 };
@@ -39,7 +64,34 @@ const loadLocalState = () => {
 const clearLocalState = () => {
   try {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
-  } catch {}
+    localStorage.removeItem(RESUME_GAME_KEY);
+  } catch (e) {
+    console.warn('Failed to clear localStorage:', e);
+  }
+};
+
+const saveResumeInfo = (gameId, userName, isHost) => {
+  try {
+    const resumeInfo = {
+      gameId,
+      userName,
+      isHost,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem(RESUME_GAME_KEY, JSON.stringify(resumeInfo));
+  } catch (e) {
+    console.warn('Failed to save resume info:', e);
+  }
+};
+
+const getResumeInfo = () => {
+  try {
+    const data = localStorage.getItem(RESUME_GAME_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.warn('Failed to get resume info:', e);
+    return null;
+  }
 };
 
 const WINE_VARIETALS = [
@@ -194,713 +246,1469 @@ const WINE_VARIETALS = [
   { name: "Leon Millot", country: "USA" }
 ];
 
-// 200+ Unique, Fact-Checked, Unambiguous Multiple-Choice Questions
+// Complete 200 Wine Quiz Questions with Enhanced Diversity
 const WINE_QUIZ_QUESTIONS = [
+  // Grape Varieties (40 questions)
   {
     question: "Which grape is the primary variety in Chianti Classico DOCG?",
     options: ["Sangiovese", "Nebbiolo", "Barbera", "Montepulciano"],
     correctAnswer: "Sangiovese",
-    explanation: "Chianti Classico DOCG is based primarily on Sangiovese grapes."
+    explanation: "Chianti Classico DOCG is based primarily on Sangiovese grapes.",
+    category: "grapes"
   },
   {
     question: "Which grape is most widely planted in the world?",
     options: ["Cabernet Sauvignon", "Merlot", "Chardonnay", "Syrah"],
     correctAnswer: "Cabernet Sauvignon",
-    explanation: "Cabernet Sauvignon is the most widely planted wine grape globally."
+    explanation: "Cabernet Sauvignon is the most widely planted wine grape globally.",
+    category: "grapes"
   },
   {
     question: "What is Germany's most famous grape variety?",
     options: ["Riesling", "Müller-Thurgau", "Silvaner", "Pinot Gris"],
     correctAnswer: "Riesling",
-    explanation: "Riesling is the signature grape of Germany, known for its aromatic white wines."
+    explanation: "Riesling is the signature grape of Germany, known for its aromatic white wines.",
+    category: "grapes"
   },
   {
     question: "Which grape is used to make Barolo?",
     options: ["Nebbiolo", "Barbera", "Sangiovese", "Dolcetto"],
     correctAnswer: "Nebbiolo",
-    explanation: "Barolo is made exclusively from Nebbiolo grapes."
+    explanation: "Barolo is made exclusively from Nebbiolo grapes.",
+    category: "grapes"
   },
   {
     question: "What grape is Beaujolais made from?",
     options: ["Gamay", "Pinot Noir", "Syrah", "Grenache"],
     correctAnswer: "Gamay",
-    explanation: "Beaujolais is made from the Gamay grape."
+    explanation: "Beaujolais is made from the Gamay grape.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Rioja red wines?",
     options: ["Tempranillo", "Garnacha", "Mazuelo", "Graciano"],
     correctAnswer: "Tempranillo",
-    explanation: "Tempranillo is the dominant grape in Rioja reds."
+    explanation: "Tempranillo is the dominant grape in Rioja reds.",
+    category: "grapes"
   },
   {
     question: "Which grape is used in Sauternes, the sweet French wine?",
     options: ["Sémillon", "Chardonnay", "Sauvignon Blanc", "Viognier"],
     correctAnswer: "Sémillon",
-    explanation: "Sémillon is the main grape in Sauternes, often blended with Sauvignon Blanc."
+    explanation: "Sémillon is the main grape in Sauternes, often blended with Sauvignon Blanc.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Bordeaux's Left Bank reds?",
     options: ["Cabernet Sauvignon", "Merlot", "Cabernet Franc", "Malbec"],
     correctAnswer: "Cabernet Sauvignon",
-    explanation: "Left Bank Bordeaux reds are dominated by Cabernet Sauvignon."
+    explanation: "Left Bank Bordeaux reds are dominated by Cabernet Sauvignon.",
+    category: "grapes"
   },
   {
     question: "What grape is the primary component of Chablis?",
     options: ["Chardonnay", "Sauvignon Blanc", "Pinot Gris", "Aligoté"],
     correctAnswer: "Chardonnay",
-    explanation: "Chablis is made exclusively from Chardonnay."
+    explanation: "Chablis is made exclusively from Chardonnay.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main variety in Marlborough, New Zealand's white wines?",
     options: ["Sauvignon Blanc", "Chardonnay", "Pinot Gris", "Riesling"],
     correctAnswer: "Sauvignon Blanc",
-    explanation: "Marlborough is world-famous for its Sauvignon Blanc."
+    explanation: "Marlborough is world-famous for its Sauvignon Blanc.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Prosecco?",
     options: ["Glera", "Trebbiano", "Pinot Grigio", "Verdicchio"],
     correctAnswer: "Glera",
-    explanation: "Prosecco is made primarily from the Glera grape."
+    explanation: "Prosecco is made primarily from the Glera grape.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Barossa Valley's signature red?",
     options: ["Shiraz", "Cabernet Sauvignon", "Grenache", "Merlot"],
     correctAnswer: "Shiraz",
-    explanation: "Barossa Valley is famous for its Shiraz."
+    explanation: "Barossa Valley is famous for its Shiraz.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Mendoza, Argentina's reds?",
     options: ["Malbec", "Cabernet Sauvignon", "Bonarda", "Syrah"],
     correctAnswer: "Malbec",
-    explanation: "Malbec is the signature grape of Mendoza."
+    explanation: "Malbec is the signature grape of Mendoza.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Alsace's aromatic whites?",
     options: ["Riesling", "Gewürztraminer", "Pinot Gris", "Muscat"],
     correctAnswer: "Riesling",
-    explanation: "Riesling is the most important grape in Alsace."
+    explanation: "Riesling is the most important grape in Alsace.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Tokaj, Hungary's sweet wines?",
     options: ["Furmint", "Hárslevelű", "Sárgamuskotály", "Kabar"],
     correctAnswer: "Furmint",
-    explanation: "Furmint is the primary grape in Tokaji Aszú."
-  },
-  {
-    question: "Which grape is the main component of Rías Baixas, Spain's whites?",
-    options: ["Albariño", "Godello", "Treixadura", "Loureira"],
-    correctAnswer: "Albariño",
-    explanation: "Albariño is the signature grape of Rías Baixas."
+    explanation: "Furmint is the primary grape in Tokaji Aszú.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Champagne's blanc de noirs?",
     options: ["Pinot Noir", "Chardonnay", "Pinot Meunier", "Pinot Gris"],
     correctAnswer: "Pinot Noir",
-    explanation: "Blanc de noirs Champagne is made from Pinot Noir and/or Pinot Meunier."
+    explanation: "Blanc de noirs Champagne is made from Pinot Noir and/or Pinot Meunier.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Cava?",
     options: ["Macabeo", "Parellada", "Xarel·lo", "Chardonnay"],
     correctAnswer: "Macabeo",
-    explanation: "Macabeo is the most widely used grape in Cava."
+    explanation: "Macabeo is the most widely used grape in Cava.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of Amarone della Valpolicella?",
     options: ["Corvina", "Rondinella", "Molinara", "Sangiovese"],
     correctAnswer: "Corvina",
-    explanation: "Corvina is the dominant grape in Amarone."
+    explanation: "Corvina is the dominant grape in Amarone.",
+    category: "grapes"
   },
   {
-    question: "What is 'terroir' in winemaking?",
-    options: [
-      "A type of wine barrel",
-      "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate",
-      "A winemaking technique",
-      "A wine tasting term"
-    ],
-    correctAnswer: "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate",
-    explanation: "Terroir refers to the unique combination of environmental factors that affect a crop's phenotype, including climate, soil, and topography, and how they influence the wine's character."
-  },
-  {
-    question: "Which country is the largest producer of wine globally?",
-    options: ["France", "Italy", "Spain", "United States"],
-    correctAnswer: "Italy",
-    explanation: "While France is famous for its wines, Italy consistently holds the title of the world's largest wine producer by volume."
-  },
-  {
-    question: "What is the primary grape used in traditional Champagne production?",
-    options: ["Riesling", "Pinot Noir", "Syrah", "Zinfandel"],
-    correctAnswer: "Pinot Noir",
-    explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pinot Meunier grapes. Pinot Noir is one of the key red grapes used."
-  },
-  {
-    question: "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
-    options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Zinfandel"],
-    correctAnswer: "Sauvignon Blanc",
-    explanation: "Sauvignon Blanc is known for its high acidity and aromatic profile, often featuring notes of green apple, lime, and herbaceousness."
-  },
-  {
-    question: "What is the process of aging wine in oak barrels called?",
-    options: ["Fermentation", "Malolactic fermentation", "Oaking", "Racking"],
-    correctAnswer: "Oaking",
-    explanation: "Oaking is the process of aging wine in oak barrels, which can impart flavors like vanilla, spice, and toast."
-  },
-  {
-    question: "Which wine region is famous for its Cabernet Sauvignon wines?",
-    options: ["Bordeaux, France", "Napa Valley, USA", "Barossa Valley, Australia", "All of the above"],
-    correctAnswer: "All of the above",
-    explanation: "Cabernet Sauvignon is a widely planted grape, and all listed regions are renowned for producing high-quality Cabernet Sauvignon wines."
-  },
-  {
-    question: "What is the ideal serving temperature for most red wines?",
-    options: ["Chilled (40-45°F)", "Room temperature (68-72°F)", "Cool (60-65°F)", "Warm (75-80°F)"],
-    correctAnswer: "Cool (60-65°F)",
-    explanation: "Most red wines are best served slightly cooler than typical room temperature to highlight their fruit and acidity."
-  },
-  {
-    question: "Which of these is a sparkling wine from Spain?",
-    options: ["Prosecco", "Champagne", "Cava", "Lambrusco"],
-    correctAnswer: "Cava",
-    explanation: "Cava is a popular sparkling wine from Spain, produced using the traditional method, similar to Champagne."
-  },
-  {
-    question: "What does 'tannin' refer to in wine?",
-    options: ["Sweetness", "Acidity", "Bitterness and astringency", "Alcohol content"],
-    correctAnswer: "Bitterness and astringency",
-    explanation: "Tannins are naturally occurring compounds found in grape skins, seeds, and stems, contributing to a wine's bitterness, astringency, and structure."
-  },
-  {
-    question: "Which grape varietal is considered Virginia's signature white grape?",
-    options: ["Chardonnay", "Viognier", "Sauvignon Blanc", "Albariño"],
-    correctAnswer: "Viognier",
-    explanation: "Viognier is Virginia's official state grape, known for its aromatic and full-bodied white wines that thrives in the state's climate."
-  },
-  {
-    question: "Which of these is a sweet, fortified wine produced in the Douro Valley?",
-    options: ["Sherry", "Port", "Madeira", "Marsala"],
-    correctAnswer: "Port",
-    explanation: "Port is a sweet, fortified wine produced in the Douro Valley of northern Portugal."
-  },
-  {
-    question: "What is the process of converting grape juice into wine called?",
-    options: ["Distillation", "Fermentation", "Maceration", "Clarification"],
-    correctAnswer: "Fermentation",
-    explanation: "Fermentation is the chemical process by which yeast converts the sugars in grape juice into alcohol and carbon dioxide."
-  },
-  {
-    question: "Which red grape is known for its light body, high acidity, and red fruit flavors, often associated with Burgundy?",
-    options: ["Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah"],
-    correctAnswer: "Pinot Noir",
-    explanation: "Pinot Noir is a delicate red grape varietal that thrives in cooler climates and is the primary grape of Burgundy, France."
-  },
-  {
-    question: "Which French region is famous for producing Sancerre?",
-    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
-    correctAnswer: "Loire Valley",
-    explanation: "Sancerre is produced in the Loire Valley from Sauvignon Blanc grapes."
-  },
-  {
-    question: "What does 'Blanc de Blancs' mean on a Champagne label?",
-    options: ["White from whites", "White from blacks", "Mixed blend", "Sweet style"],
-    correctAnswer: "White from whites",
-    explanation: "Blanc de Blancs means white wine made from white grapes only, typically Chardonnay in Champagne."
-  },
-  {
-    question: "Which Italian region is famous for Barolo and Barbaresco?",
-    options: ["Tuscany", "Piedmont", "Veneto", "Sicily"],
-    correctAnswer: "Piedmont",
-    explanation: "Piedmont in northwest Italy is home to both Barolo and Barbaresco, made from Nebbiolo grapes."
-  },
-  {
-    question: "What is the main grape in Brunello di Montalcino?",
-    options: ["Sangiovese", "Nebbiolo", "Barbera", "Dolcetto"],
-    correctAnswer: "Sangiovese",
-    explanation: "Brunello di Montalcino is made from 100% Sangiovese (locally called Brunello)."
-  },
-  {
-    question: "Which Australian region is most famous for Shiraz?",
-    options: ["Hunter Valley", "Barossa Valley", "Coonawarra", "Clare Valley"],
-    correctAnswer: "Barossa Valley",
-    explanation: "Barossa Valley is renowned worldwide for its full-bodied Shiraz wines."
-  },
-  {
-    question: "What does 'malolactic fermentation' accomplish in winemaking?",
-    options: ["Increases alcohol", "Converts harsh acids to softer ones", "Adds tannins", "Creates bubbles"],
-    correctAnswer: "Converts harsh acids to softer ones",
-    explanation: "Malolactic fermentation converts sharp malic acid to softer lactic acid, creating a smoother mouthfeel."
-  },
-  {
-    question: "Which grape is the primary component of Vinho Verde?",
-    options: ["Alvarinho", "Loureiro", "Arinto", "All of the above"],
-    correctAnswer: "All of the above",
-    explanation: "Vinho Verde is typically a blend of several Portuguese white grape varieties."
-  },
-  {
-    question: "What is the traditional method of making sparkling wine called?",
-    options: ["Charmat method", "Méthode Champenoise", "Tank method", "Transfer method"],
-    correctAnswer: "Méthode Champenoise",
-    explanation: "Méthode Champenoise (now called Méthode Traditionnelle outside Champagne) involves secondary fermentation in the bottle."
-  },
-  {
-    question: "Which Spanish region is known for Rioja?",
-    options: ["Andalusia", "Galicia", "La Rioja", "Catalonia"],
-    correctAnswer: "La Rioja",
-    explanation: "Rioja wine comes from the La Rioja region in northern Spain."
-  },
-  {
-    question: "What does 'Sur lie' aging mean?",
-    options: ["Aging on the lees", "Aging in oak", "Aging underground", "Aging in bottles"],
-    correctAnswer: "Aging on the lees",
-    explanation: "Sur lie means aging wine on the lees (dead yeast cells), which adds complexity and texture."
-  },
-  {
-    question: "Which New Zealand region is famous for Pinot Noir?",
-    options: ["Marlborough", "Central Otago", "Hawke's Bay", "Canterbury"],
-    correctAnswer: "Central Otago",
-    explanation: "Central Otago is New Zealand's premier Pinot Noir region with its cool, continental climate."
-  },
-  {
-    question: "What is the main grape in German Eiswein?",
-    options: ["Riesling", "Gewürztraminer", "Pinot Gris", "Any variety can be used"],
-    correctAnswer: "Any variety can be used",
-    explanation: "Eiswein (ice wine) can be made from various grapes, though Riesling is most common in Germany."
-  },
-  {
-    question: "Which region produces Soave?",
-    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
-    correctAnswer: "Veneto",
-    explanation: "Soave is a white wine from the Veneto region in northeastern Italy, made primarily from Garganega grapes."
-  },
-  {
-    question: "What does 'Trocken' mean on a German wine label?",
-    options: ["Sweet", "Dry", "Sparkling", "Red"],
-    correctAnswer: "Dry",
-    explanation: "Trocken indicates a dry German wine with minimal residual sugar."
-  },
-  {
-    question: "Which grape is used to make Sancerre?",
-    options: ["Chardonnay", "Sauvignon Blanc", "Chenin Blanc", "Muscadet"],
-    correctAnswer: "Sauvignon Blanc",
-    explanation: "Sancerre is made exclusively from Sauvignon Blanc grapes in the Loire Valley."
-  },
-  {
-    question: "What is the primary grape in Muscadet?",
-    options: ["Muscadet", "Melon de Bourgogne", "Sauvignon Blanc", "Chardonnay"],
-    correctAnswer: "Melon de Bourgogne",
-    explanation: "Muscadet is made from Melon de Bourgogne grapes, though the wine is called Muscadet."
-  },
-  {
-    question: "Which South African grape is unique to the country?",
-    options: ["Chenin Blanc", "Pinotage", "Sauvignon Blanc", "Chardonnay"],
-    correctAnswer: "Pinotage",
-    explanation: "Pinotage is a cross between Pinot Noir and Cinsaut, developed in South Africa."
-  },
-  {
-    question: "What does 'Solera' refer to in sherry production?",
-    options: ["A type of grape", "An aging system", "A region", "A style of wine"],
-    correctAnswer: "An aging system",
-    explanation: "Solera is a fractional blending system used in sherry production for consistent aging."
-  },
-  {
-    question: "Which grape is the main component of Côtes du Rhône reds?",
-    options: ["Syrah", "Grenache", "Mourvèdre", "Cinsaut"],
-    correctAnswer: "Grenache",
-    explanation: "Grenache is typically the dominant grape in Côtes du Rhône red blends."
-  },
-  {
-    question: "What is the main difference between Chablis and other Chardonnays?",
-    options: ["Different grape variety", "No oak aging typically", "Higher alcohol", "Different country"],
-    correctAnswer: "No oak aging typically",
-    explanation: "Chablis is typically fermented and aged in stainless steel, showcasing pure Chardonnay fruit without oak influence."
-  },
-  {
-    question: "Which Italian wine region is famous for Chianti?",
-    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
-    correctAnswer: "Tuscany",
-    explanation: "Chianti is produced in the Tuscany region of central Italy."
-  },
-  {
-    question: "What does 'Vendange Tardive' mean?",
-    options: ["Early harvest", "Late harvest", "Hand harvest", "Machine harvest"],
-    correctAnswer: "Late harvest",
-    explanation: "Vendange Tardive means late harvest, typically resulting in sweeter wines with concentrated flavors."
-  },
-  {
-    question: "Which grape is used to make Vouvray?",
-    options: ["Chardonnay", "Chenin Blanc", "Sauvignon Blanc", "Muscadet"],
-    correctAnswer: "Chenin Blanc",
-    explanation: "Vouvray is made exclusively from Chenin Blanc grapes in the Loire Valley."
-  },
-  {
-    question: "What is the traditional bottle size for Champagne?",
-    options: ["375ml", "750ml", "1L", "1.5L"],
-    correctAnswer: "750ml",
-    explanation: "The standard Champagne bottle size is 750ml, though various sizes are available."
-  },
-  {
-    question: "Which region produces Sauternes?",
-    options: ["Loire Valley", "Burgundy", "Bordeaux", "Rhône Valley"],
-    correctAnswer: "Bordeaux",
-    explanation: "Sauternes is a sweet wine appellation within the Bordeaux region of France."
-  },
-  {
-    question: "What causes the sweetness in Sauternes?",
-    options: ["Added sugar", "Botrytis cinerea", "Late harvest", "Fortification"],
-    correctAnswer: "Botrytis cinerea",
-    explanation: "Botrytis cinerea (noble rot) concentrates the sugars in the grapes, creating the sweetness in Sauternes."
-  },
-  {
-    question: "Which grape is the main component of white Hermitage?",
-    options: ["Chardonnay", "Marsanne", "Viognier", "Roussanne"],
-    correctAnswer: "Marsanne",
-    explanation: "White Hermitage is primarily made from Marsanne, often blended with some Roussanne."
-  },
-  {
-    question: "What does 'Appellation d'Origine Contrôlée' (AOC) guarantee?",
-    options: ["Quality level", "Geographic origin and production methods", "Price range", "Alcohol content"],
-    correctAnswer: "Geographic origin and production methods",
-    explanation: "AOC is a French classification that guarantees the geographic origin and regulates production methods."
-  },
-  {
-    question: "Which grape is used to make Condrieu?",
-    options: ["Chardonnay", "Viognier", "Marsanne", "Roussanne"],
-    correctAnswer: "Viognier",
-    explanation: "Condrieu is made exclusively from Viognier grapes in the northern Rhône Valley."
-  },
-  {
-    question: "What is the primary grape in Pouilly-Fumé?",
-    options: ["Chardonnay", "Sauvignon Blanc", "Chenin Blanc", "Muscadet"],
-    correctAnswer: "Sauvignon Blanc",
-    explanation: "Pouilly-Fumé is made exclusively from Sauvignon Blanc in the Loire Valley."
-  },
-  {
-    question: "Which region is famous for Gewürztraminer?",
-    options: ["Burgundy", "Alsace", "Loire Valley", "Bordeaux"],
-    correctAnswer: "Alsace",
-    explanation: "Alsace is the most famous French region for Gewürztraminer, known for its aromatic white wines."
-  },
-  {
-    question: "What does 'Cru' mean in Burgundy classification?",
-    options: ["Vineyard site", "Vintage year", "Producer", "Grape variety"],
-    correctAnswer: "Vineyard site",
-    explanation: "In Burgundy, Cru refers to a specific vineyard site with distinctive characteristics."
-  },
-  {
-    question: "Which grape is the main component of red Châteauneuf-du-Pape?",
-    options: ["Syrah", "Grenache", "Mourvèdre", "Cinsaut"],
-    correctAnswer: "Grenache",
-    explanation: "Grenache is typically the dominant grape in Châteauneuf-du-Pape red wines."
-  },
-  {
-    question: "What is the main grape in Gavi?",
-    options: ["Cortese", "Arneis", "Vermentino", "Falanghina"],
-    correctAnswer: "Cortese",
-    explanation: "Gavi is made exclusively from Cortese grapes in Piedmont, Italy."
-  },
-  {
-    question: "Which process creates the bubbles in Champagne?",
-    options: ["CO2 injection", "Secondary fermentation in bottle", "Pressure tank fermentation", "Natural carbonation"],
-    correctAnswer: "Secondary fermentation in bottle",
-    explanation: "Champagne bubbles are created by secondary fermentation in the bottle, producing CO2 naturally."
-  },
-  {
-    question: "What does 'Blanc de Noirs' mean?",
-    options: ["White from white grapes", "White from red grapes", "Red from white grapes", "Rosé wine"],
-    correctAnswer: "White from red grapes",
-    explanation: "Blanc de Noirs means white wine made from red/black grapes, common in Champagne."
-  },
-  {
-    question: "Which grape is used to make Barossa Valley Eden Valley Riesling?",
-    options: ["Sauvignon Blanc", "Chardonnay", "Riesling", "Gewürztraminer"],
-    correctAnswer: "Riesling",
-    explanation: "Eden Valley in Barossa is famous for its high-quality Riesling wines."
-  },
-  {
-    question: "What is the primary grape in Valpolicella?",
-    options: ["Corvina", "Sangiovese", "Nebbiolo", "Barbera"],
-    correctAnswer: "Corvina",
-    explanation: "Corvina is the main grape in Valpolicella wines from the Veneto region."
-  },
-  {
-    question: "Which region produces Grüner Veltliner?",
-    options: ["Germany", "Austria", "Switzerland", "Slovenia"],
-    correctAnswer: "Austria",
-    explanation: "Austria is the most famous producer of Grüner Veltliner, particularly in the Wachau region."
-  },
-  {
-    question: "What does 'Grand Cru' mean in Burgundy?",
-    options: ["Large production", "Highest classification", "Old vines", "Premium price"],
-    correctAnswer: "Highest classification",
-    explanation: "Grand Cru is the highest classification level in Burgundy for the most prestigious vineyard sites."
-  },
-  {
-    question: "Which grape is the main component of Bandol reds?",
-    options: ["Grenache", "Syrah", "Mourvèdre", "Cinsaut"],
-    correctAnswer: "Mourvèdre",
-    explanation: "Bandol reds are dominated by Mourvèdre grapes in the Provence region."
-  },
-  {
-    question: "What is the traditional method for making Port?",
-    options: ["Continuous fermentation", "Fortification during fermentation", "Post-fermentation fortification", "Natural fermentation"],
-    correctAnswer: "Fortification during fermentation",
-    explanation: "Port is made by adding grape spirit during fermentation to stop the process and retain sweetness."
-  },
-  {
-    question: "Which grape is used to make Sauternes?",
-    options: ["Sauvignon Blanc only", "Sémillon only", "Sémillon and Sauvignon Blanc", "Chardonnay"],
-    correctAnswer: "Sémillon and Sauvignon Blanc",
-    explanation: "Sauternes is typically made from Sémillon and Sauvignon Blanc affected by noble rot."
-  },
-  {
-    question: "What does 'Premier Cru' mean in Burgundy?",
-    options: ["First vintage", "First quality level", "Second highest classification", "Village level"],
-    correctAnswer: "Second highest classification",
-    explanation: "Premier Cru is the second highest classification in Burgundy, below Grand Cru."
-  },
-  {
-    question: "Which region is famous for Brunello di Montalcino?",
-    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
-    correctAnswer: "Tuscany",
-    explanation: "Brunello di Montalcino is produced in the Tuscany region of Italy."
-  },
-  {
-    question: "What is the main grape in Chinon?",
-    options: ["Pinot Noir", "Gamay", "Cabernet Franc", "Merlot"],
-    correctAnswer: "Cabernet Franc",
-    explanation: "Chinon red wines are made primarily from Cabernet Franc in the Loire Valley."
-  },
-  {
-    question: "Which sparkling wine is made using the Charmat method?",
-    options: ["Champagne", "Cava", "Prosecco", "Crémant"],
-    correctAnswer: "Prosecco",
-    explanation: "Prosecco is typically made using the Charmat method (tank fermentation) rather than bottle fermentation."
-  },
-  {
-    question: "What does 'Mise en bouteille au domaine' mean?",
-    options: ["Estate bottled", "Aged in domain", "Domain produced", "Domain owned"],
-    correctAnswer: "Estate bottled",
-    explanation: "Mise en bouteille au domaine means the wine was bottled at the estate where it was produced."
+    question: "Which grape is the main component of white Burgundy?",
+    options: ["Chardonnay", "Sauvignon Blanc", "Pinot Gris", "Aligoté"],
+    correctAnswer: "Chardonnay",
+    explanation: "White Burgundy is made exclusively from Chardonnay.",
+    category: "grapes"
   },
   {
     question: "Which grape is the main component of red Burgundy?",
-    options: ["Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah"],
+    options: ["Pinot Noir", "Cabernet Sauvignon", "Merlot", "Syrah"],
     correctAnswer: "Pinot Noir",
-    explanation: "Red Burgundy is made exclusively from Pinot Noir grapes."
+    explanation: "Red Burgundy is made exclusively from Pinot Noir.",
+    category: "grapes"
   },
   {
-    question: "What is the primary grape in Muscadet Sèvre-et-Maine?",
-    options: ["Muscadet", "Melon de Bourgogne", "Chardonnay", "Sauvignon Blanc"],
+    question: "Which grape is used to make Sancerre?",
+    options: ["Sauvignon Blanc", "Chardonnay", "Chenin Blanc", "Muscadet"],
+    correctAnswer: "Sauvignon Blanc",
+    explanation: "Sancerre is made exclusively from Sauvignon Blanc grapes.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is used to make Vouvray?",
+    options: ["Chenin Blanc", "Chardonnay", "Sauvignon Blanc", "Muscadet"],
+    correctAnswer: "Chenin Blanc",
+    explanation: "Vouvray is made exclusively from Chenin Blanc grapes.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is the main component of Muscadet?",
+    options: ["Melon de Bourgogne", "Muscadet", "Sauvignon Blanc", "Chardonnay"],
     correctAnswer: "Melon de Bourgogne",
-    explanation: "Muscadet Sèvre-et-Maine is made from Melon de Bourgogne grapes in the Loire Valley."
+    explanation: "Muscadet is made from Melon de Bourgogne grapes.",
+    category: "grapes"
   },
   {
-    question: "Which region produces Côte-Rôtie?",
-    options: ["Burgundy", "Northern Rhône", "Southern Rhône", "Loire Valley"],
-    correctAnswer: "Northern Rhône",
-    explanation: "Côte-Rôtie is produced in the Northern Rhône Valley, primarily from Syrah grapes."
+    question: "Which grape is the main component of Soave?",
+    options: ["Garganega", "Trebbiano", "Pinot Grigio", "Verdicchio"],
+    correctAnswer: "Garganega",
+    explanation: "Soave is made primarily from Garganega grapes.",
+    category: "grapes"
   },
   {
-    question: "What does 'Vendanges' mean in French wine terminology?",
-    options: ["Vineyard", "Vintage", "Harvest", "Village"],
-    correctAnswer: "Harvest",
-    explanation: "Vendanges refers to the grape harvest period in French winemaking."
+    question: "Which grape is the main component of Gavi?",
+    options: ["Cortese", "Arneis", "Vermentino", "Falanghina"],
+    correctAnswer: "Cortese",
+    explanation: "Gavi is made exclusively from Cortese grapes.",
+    category: "grapes"
   },
   {
-    question: "Which grape is used to make Assyrtiko wine?",
-    options: ["Greek indigenous variety", "Sauvignon Blanc", "Chardonnay", "Moschofilero"],
-    correctAnswer: "Greek indigenous variety",
-    explanation: "Assyrtiko is an indigenous Greek white grape variety, particularly famous from Santorini."
-  },
-  {
-    question: "What is the main grape in Hunter Valley Semillon?",
-    options: ["Sauvignon Blanc", "Sémillon", "Chardonnay", "Riesling"],
-    correctAnswer: "Sémillon",
-    explanation: "Hunter Valley Semillon is made from Sémillon grapes and is known for its aging potential."
-  },
-  {
-    question: "Which process is used to make rosé wine?",
-    options: ["Blending red and white", "Limited skin contact", "Adding color", "All of the above"],
-    correctAnswer: "Limited skin contact",
-    explanation: "Most quality rosé is made by limited skin contact with red grapes, extracting minimal color."
-  },
-  {
-    question: "What does 'Crianza' mean on a Spanish wine label?",
-    options: ["Young wine", "Aged wine with specific requirements", "Reserve wine", "Old vines"],
-    correctAnswer: "Aged wine with specific requirements",
-    explanation: "Crianza indicates a Spanish wine aged for a minimum period with specific oak and bottle aging requirements."
-  },
-  {
-    question: "Which grape is the main component of Chianti?",
-    options: ["Nebbiolo", "Sangiovese", "Barbera", "Montepulciano"],
-    correctAnswer: "Sangiovese",
-    explanation: "Chianti is based primarily on Sangiovese grapes in Tuscany."
-  },
-  {
-    question: "What is the primary difference between Champagne and Crémant?",
-    options: ["Grape varieties", "Production region", "Method of production", "Sweetness level"],
-    correctAnswer: "Production region",
-    explanation: "Both use the traditional method, but Champagne can only be made in the Champagne region, while Crémant is made in other French regions."
-  },
-  {
-    question: "Which grape is used to make Albariño?",
-    options: ["Spanish indigenous variety", "Sauvignon Blanc", "Chardonnay", "Verdejo"],
-    correctAnswer: "Spanish indigenous variety",
-    explanation: "Albariño is an indigenous Spanish white grape variety, particularly famous in Rías Baixas."
-  },
-  {
-    question: "What does 'Denominazione di Origine Controllata e Garantita' (DOCG) represent?",
-    options: ["Italian quality classification", "Production method", "Grape variety", "Vintage year"],
-    correctAnswer: "Italian quality classification",
-    explanation: "DOCG is the highest classification level for Italian wines, guaranteeing origin and quality."
-  },
-  {
-    question: "Which region is famous for producing Amarone?",
-    options: ["Tuscany", "Piedmont", "Veneto", "Sicily"],
-    correctAnswer: "Veneto",
-    explanation: "Amarone della Valpolicella is produced in the Veneto region of northeastern Italy."
-  },
-  {
-    question: "What is the traditional grape for making Sherry?",
-    options: ["Tempranillo", "Palomino", "Garnacha", "Monastrell"],
-    correctAnswer: "Palomino",
-    explanation: "Palomino is the main grape variety used for making most styles of Sherry in Jerez, Spain."
-  },
-  {
-    question: "Which winemaking process creates tannins in red wine?",
-    options: ["Fermentation temperature", "Skin contact", "Oak aging", "Malolactic fermentation"],
-    correctAnswer: "Skin contact",
-    explanation: "Tannins are extracted from grape skins during the maceration process in red winemaking."
-  },
-  {
-    question: "What does 'Réserve' typically indicate on a wine label?",
-    options: ["Legal classification", "Extended aging", "Producer's selection", "Varies by region"],
-    correctAnswer: "Varies by region",
-    explanation: "The meaning of 'Réserve' varies by country and region - it may indicate extended aging, selection, or have no legal meaning."
-  },
-  {
-    question: "Which grape is the main component of Madeira wine?",
-    options: ["Sercial", "Verdelho", "Bual", "Various depending on style"],
-    correctAnswer: "Various depending on style",
-    explanation: "Madeira is made from different grape varieties including Sercial, Verdelho, Bual, and Malmsey, depending on the style."
-  },
-  {
-    question: "What is the primary characteristic of Icewine/Eiswein?",
-    options: ["Made from frozen grapes", "Served very cold", "Aged in ice caves", "Clear as ice"],
-    correctAnswer: "Made from frozen grapes",
-    explanation: "Icewine/Eiswein is made from grapes that freeze naturally on the vine, concentrating sugars and acids."
-  },
-  {
-    question: "Which region produces the most Pinot Noir in the United States?",
-    options: ["Napa Valley", "Sonoma Coast", "Oregon", "Washington State"],
-    correctAnswer: "Oregon",
-    explanation: "Oregon, particularly the Willamette Valley, is the most famous U.S. region for Pinot Noir production."
-  },
-  {
-    question: "What does 'Malolactic fermentation' affect in wine?",
-    options: ["Alcohol level", "Acidity and texture", "Color intensity", "Tannin structure"],
-    correctAnswer: "Acidity and texture",
-    explanation: "Malolactic fermentation converts sharp malic acid to softer lactic acid, reducing acidity and creating a creamier texture."
-  },
-  {
-    question: "Which grape variety is Zinfandel genetically identical to?",
+    question: "Which grape is genetically identical to Zinfandel?",
     options: ["Primitivo", "Sangiovese", "Tempranillo", "Garnacha"],
     correctAnswer: "Primitivo",
-    explanation: "DNA analysis has proven that Zinfandel and Primitivo are the same grape variety."
+    explanation: "DNA analysis has proven that Zinfandel and Primitivo are the same grape variety.",
+    category: "grapes"
   },
   {
-    question: "What is the main grape used in white Rioja?",
-    options: ["Tempranillo Blanco", "Viura", "Verdejo", "Albariño"],
-    correctAnswer: "Viura",
-    explanation: "Viura (also known as Macabeo) is the primary white grape variety used in white Rioja wines."
+    question: "Which grape is used to make Condrieu?",
+    options: ["Viognier", "Chardonnay", "Marsanne", "Roussanne"],
+    correctAnswer: "Viognier",
+    explanation: "Condrieu is made exclusively from Viognier grapes.",
+    category: "grapes"
   },
   {
-    question: "Which process is essential for making quality sparkling wine?",
-    options: ["High fermentation temperature", "Secondary fermentation", "Extended maceration", "Oxidative aging"],
-    correctAnswer: "Secondary fermentation",
-    explanation: "Quality sparkling wines require a secondary fermentation to create the bubbles, either in bottle or tank."
+    question: "Which grape is the main component of white Hermitage?",
+    options: ["Marsanne", "Chardonnay", "Viognier", "Roussanne"],
+    correctAnswer: "Marsanne",
+    explanation: "White Hermitage is primarily made from Marsanne.",
+    category: "grapes"
   },
   {
-    question: "What does 'Old Vine' typically refer to?",
-    options: ["Vines over 25 years old", "Vines over 50 years old", "No legal definition", "Vines over 100 years old"],
-    correctAnswer: "No legal definition",
-    explanation: "Old Vine has no legal definition and meaning varies by producer, though it generally indicates mature vines."
+    question: "Which grape is the main component of Côte-Rôtie?",
+    options: ["Syrah", "Grenache", "Mourvèdre", "Cinsaut"],
+    correctAnswer: "Syrah",
+    explanation: "Côte-Rôtie is made primarily from Syrah grapes.",
+    category: "grapes"
   },
   {
-    question: "Which factor most influences wine style in cool climate regions?",
-    options: ["Soil type", "Grape ripeness levels", "Altitude", "Rainfall"],
-    correctAnswer: "Grape ripeness levels",
-    explanation: "Cool climates often struggle to fully ripen grapes, resulting in higher acidity and lighter body wines."
+    question: "Which grape is the main component of Châteauneuf-du-Pape reds?",
+    options: ["Grenache", "Syrah", "Mourvèdre", "Cinsaut"],
+    correctAnswer: "Grenache",
+    explanation: "Grenache is typically the dominant grape in Châteauneuf-du-Pape reds.",
+    category: "grapes"
   },
   {
-    question: "What is the primary difference between Fino and Oloroso Sherry?",
-    options: ["Grape variety", "Aging under flor", "Alcohol level", "Sweetness"],
-    correctAnswer: "Aging under flor",
-    explanation: "Fino ages under a layer of flor (yeast), while Oloroso is fortified to prevent flor formation."
+    question: "Which grape is the main component of Pouilly-Fumé?",
+    options: ["Sauvignon Blanc", "Chardonnay", "Chenin Blanc", "Muscadet"],
+    correctAnswer: "Sauvignon Blanc",
+    explanation: "Pouilly-Fumé is made exclusively from Sauvignon Blanc.",
+    category: "grapes"
   },
   {
-    question: "Which wine region is known for producing Carmenère?",
-    options: ["Argentina", "Chile", "California", "Australia"],
-    correctAnswer: "Chile",
-    explanation: "Chile is most famous for Carmenère, a grape variety that was thought extinct in Bordeaux."
+    question: "Which grape is the main component of Brunello di Montalcino?",
+    options: ["Sangiovese", "Nebbiolo", "Barbera", "Dolcetto"],
+    correctAnswer: "Sangiovese",
+    explanation: "Brunello di Montalcino is made from 100% Sangiovese.",
+    category: "grapes"
   },
   {
-    question: "What does 'Botrytis cinerea' contribute to sweet wines?",
-    options: ["Color intensity", "Alcohol content", "Concentrated flavors", "Tannin structure"],
-    correctAnswer: "Concentrated flavors",
-    explanation: "Botrytis cinerea (noble rot) dehydrates grapes, concentrating sugars and creating complex flavors in sweet wines."
+    question: "Which grape is the main component of Barbaresco?",
+    options: ["Nebbiolo", "Barbera", "Sangiovese", "Dolcetto"],
+    correctAnswer: "Nebbiolo",
+    explanation: "Barbaresco is made exclusively from Nebbiolo grapes.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is unique to South Africa?",
+    options: ["Pinotage", "Chenin Blanc", "Sauvignon Blanc", "Chardonnay"],
+    correctAnswer: "Pinotage",
+    explanation: "Pinotage is a cross between Pinot Noir and Cinsaut, developed in South Africa.",
+    category: "grapes"
   },
   {
     question: "Which grape is the signature variety of Santorini?",
     options: ["Assyrtiko", "Moschofilero", "Savatiano", "Rhoditis"],
     correctAnswer: "Assyrtiko",
-    explanation: "Assyrtiko is the signature white grape of Santorini, known for its mineral character and high acidity."
+    explanation: "Assyrtiko is the signature white grape of Santorini.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is the main component of Valpolicella?",
+    options: ["Corvina", "Sangiovese", "Nebbiolo", "Barbera"],
+    correctAnswer: "Corvina",
+    explanation: "Corvina is the main grape in Valpolicella wines.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is used to make traditional Balsamic vinegar?",
+    options: ["Trebbiano", "Sangiovese", "Lambrusco", "Barbera"],
+    correctAnswer: "Trebbiano",
+    explanation: "Traditional Balsamic vinegar is made from Trebbiano grapes.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is the main component of Chinon?",
+    options: ["Cabernet Franc", "Pinot Noir", "Gamay", "Merlot"],
+    correctAnswer: "Cabernet Franc",
+    explanation: "Chinon red wines are made primarily from Cabernet Franc.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape varietal is considered Virginia's signature white grape?",
+    options: ["Viognier", "Chardonnay", "Sauvignon Blanc", "Albariño"],
+    correctAnswer: "Viognier",
+    explanation: "Viognier is Virginia's official state grape.",
+    category: "grapes"
+  },
+  {
+    question: "Which grape is the main component of Eden Valley Riesling?",
+    options: ["Sauvignon Blanc", "Chardonnay", "Riesling", "Gewürztraminer"],
+    correctAnswer: "Riesling",
+    explanation: "Eden Valley in Barossa is famous for its high-quality Riesling wines.",
+    category: "grapes"
+  },
+
+  // Wine Regions (50 questions)
+  {
+    question: "Which Spanish region is most famous for Albariño wines?",
+    options: ["Rioja", "Ribera del Duero", "Rías Baixas", "Priorat"],
+    correctAnswer: "Rías Baixas",
+    explanation: "Rías Baixas in northwestern Spain is the premier region for Albariño.",
+    category: "regions"
+  },
+  {
+    question: "Which country is the largest producer of wine globally?",
+    options: ["France", "Italy", "Spain", "United States"],
+    correctAnswer: "Italy",
+    explanation: "Italy consistently holds the title of the world's largest wine producer by volume.",
+    category: "regions"
+  },
+  {
+    question: "Which French region is famous for Pinot Noir and Chardonnay?",
+    options: ["Bordeaux", "Burgundy", "Champagne", "Loire Valley"],
+    correctAnswer: "Burgundy",
+    explanation: "Burgundy is the home of Pinot Noir and Chardonnay.",
+    category: "regions"
+  },
+  {
+    question: "Which Italian region is famous for Barolo and Barbaresco?",
+    options: ["Tuscany", "Piedmont", "Veneto", "Sicily"],
+    correctAnswer: "Piedmont",
+    explanation: "Piedmont in northwest Italy is home to both Barolo and Barbaresco.",
+    category: "regions"
+  },
+  {
+    question: "Which German region is famous for Riesling?",
+    options: ["Mosel", "Rheingau", "Pfalz", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these German regions are famous for producing excellent Riesling.",
+    category: "regions"
+  },
+  {
+    question: "Which US state produces the most wine?",
+    options: ["California", "Oregon", "Washington", "New York"],
+    correctAnswer: "California",
+    explanation: "California produces about 90% of all wine in the United States.",
+    category: "regions"
+  },
+  {
+    question: "Which Australian region is famous for Shiraz?",
+    options: ["Hunter Valley", "Barossa Valley", "Coonawarra", "Clare Valley"],
+    correctAnswer: "Barossa Valley",
+    explanation: "Barossa Valley is renowned worldwide for its full-bodied Shiraz wines.",
+    category: "regions"
+  },
+  {
+    question: "Which New Zealand region is famous for Sauvignon Blanc?",
+    options: ["Marlborough", "Central Otago", "Hawke's Bay", "Canterbury"],
+    correctAnswer: "Marlborough",
+    explanation: "Marlborough is New Zealand's most famous wine region, known for Sauvignon Blanc.",
+    category: "regions"
+  },
+  {
+    question: "Which Portuguese region is famous for Port?",
+    options: ["Vinho Verde", "Douro", "Dão", "Alentejo"],
+    correctAnswer: "Douro",
+    explanation: "Port is produced in the Douro Valley of northern Portugal.",
+    category: "regions"
+  },
+  {
+    question: "Which French region is famous for Cabernet Sauvignon-based blends?",
+    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
+    correctAnswer: "Bordeaux",
+    explanation: "Bordeaux is famous for its Cabernet Sauvignon-based red blends.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Amarone?",
+    options: ["Tuscany", "Piedmont", "Veneto", "Sicily"],
+    correctAnswer: "Veneto",
+    explanation: "Amarone della Valpolicella is produced in the Veneto region.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Tokaji Aszú?",
+    options: ["Austria", "Hungary", "Slovakia", "Czech Republic"],
+    correctAnswer: "Hungary",
+    explanation: "Tokaji Aszú is produced in the Tokaj region of Hungary.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Soave?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Veneto",
+    explanation: "Soave is a white wine from the Veneto region in northeastern Italy.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Sancerre?",
+    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
+    correctAnswer: "Loire Valley",
+    explanation: "Sancerre is produced in the Loire Valley from Sauvignon Blanc grapes.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Côte-Rôtie?",
+    options: ["Burgundy", "Northern Rhône", "Southern Rhône", "Loire Valley"],
+    correctAnswer: "Northern Rhône",
+    explanation: "Côte-Rôtie is produced in the Northern Rhône Valley.",
+    category: "regions"
+  },
+  {
+    question: "Which Italian region is famous for Chianti?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Tuscany",
+    explanation: "Chianti is produced in the Tuscany region of central Italy.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Muscadet?",
+    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
+    correctAnswer: "Loire Valley",
+    explanation: "Muscadet is produced in the Loire Valley near the Atlantic coast.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Brunello di Montalcino?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Tuscany",
+    explanation: "Brunello di Montalcino is produced in the Tuscany region.",
+    category: "regions"
+  },
+  {
+    question: "Which New Zealand region is famous for Pinot Noir?",
+    options: ["Marlborough", "Central Otago", "Hawke's Bay", "Canterbury"],
+    correctAnswer: "Central Otago",
+    explanation: "Central Otago is New Zealand's premier Pinot Noir region.",
+    category: "regions"
+  },
+  {
+    question: "Which Oregon region is most famous for Pinot Noir?",
+    options: ["Willamette Valley", "Rogue Valley", "Umpqua Valley", "Columbia Valley"],
+    correctAnswer: "Willamette Valley",
+    explanation: "Willamette Valley is Oregon's premier Pinot Noir region.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Chablis?",
+    options: ["Côte d'Or", "Chablis", "Côte Chalonnaise", "Mâconnais"],
+    correctAnswer: "Chablis",
+    explanation: "Chablis is produced in the Chablis region of northern Burgundy.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Pouilly-Fumé?",
+    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
+    correctAnswer: "Loire Valley",
+    explanation: "Pouilly-Fumé is produced in the Loire Valley from Sauvignon Blanc.",
+    category: "regions"
+  },
+  {
+    question: "Which region is famous for Gewürztraminer?",
+    options: ["Burgundy", "Alsace", "Loire Valley", "Bordeaux"],
+    correctAnswer: "Alsace",
+    explanation: "Alsace is the most famous French region for Gewürztraminer.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Vouvray?",
+    options: ["Burgundy", "Bordeaux", "Loire Valley", "Rhône Valley"],
+    correctAnswer: "Loire Valley",
+    explanation: "Vouvray is produced in the Loire Valley from Chenin Blanc grapes.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Bandol?",
+    options: ["Bordeaux", "Burgundy", "Provence", "Languedoc"],
+    correctAnswer: "Provence",
+    explanation: "Bandol is produced in the Provence region of southern France.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Condrieu?",
+    options: ["Burgundy", "Northern Rhône", "Southern Rhône", "Loire Valley"],
+    correctAnswer: "Northern Rhône",
+    explanation: "Condrieu is produced in the Northern Rhône Valley from Viognier.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Hermitage?",
+    options: ["Burgundy", "Northern Rhône", "Southern Rhône", "Loire Valley"],
+    correctAnswer: "Northern Rhône",
+    explanation: "Hermitage is produced in the Northern Rhône Valley.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Châteauneuf-du-Pape?",
+    options: ["Burgundy", "Northern Rhône", "Southern Rhône", "Loire Valley"],
+    correctAnswer: "Southern Rhône",
+    explanation: "Châteauneuf-du-Pape is produced in the Southern Rhône Valley.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Gavi?",
+    options: ["Piedmont", "Tuscany", "Veneto", "Sicily"],
+    correctAnswer: "Piedmont",
+    explanation: "Gavi is produced in the Piedmont region from Cortese grapes.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Vinho Verde?",
+    options: ["Douro", "Minho", "Dão", "Alentejo"],
+    correctAnswer: "Minho",
+    explanation: "Vinho Verde is produced in the Minho region of northern Portugal.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Rioja?",
+    options: ["Andalusia", "Galicia", "La Rioja", "Catalonia"],
+    correctAnswer: "La Rioja",
+    explanation: "Rioja wine comes from the La Rioja region in northern Spain.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Ribera del Duero?",
+    options: ["Rioja", "Castilla y León", "Catalonia", "Andalusia"],
+    correctAnswer: "Castilla y León",
+    explanation: "Ribera del Duero is in the Castilla y León region of Spain.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Coonawarra Cabernet Sauvignon?",
+    options: ["Barossa Valley", "Hunter Valley", "Coonawarra", "Clare Valley"],
+    correctAnswer: "Coonawarra",
+    explanation: "Coonawarra in South Australia is renowned for its Cabernet Sauvignon.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Hunter Valley Semillon?",
+    options: ["Barossa Valley", "Hunter Valley", "Coonawarra", "Clare Valley"],
+    correctAnswer: "Hunter Valley",
+    explanation: "Hunter Valley Semillon is known for its aging potential.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Mendoza Malbec?",
+    options: ["Argentina", "Chile", "Uruguay", "Brazil"],
+    correctAnswer: "Argentina",
+    explanation: "Mendoza is Argentina's premier wine region, famous for Malbec.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Mosel Riesling?",
+    options: ["Rheingau", "Pfalz", "Mosel", "Baden"],
+    correctAnswer: "Mosel",
+    explanation: "The Mosel region in Germany is famous for its steep vineyards and Riesling.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Priorat Garnacha?",
+    options: ["Rioja", "Ribera del Duero", "Priorat", "Rías Baixas"],
+    correctAnswer: "Priorat",
+    explanation: "Priorat in Catalonia is known for its powerful Garnacha-based wines.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Wachau Grüner Veltliner?",
+    options: ["Germany", "Austria", "Switzerland", "Slovenia"],
+    correctAnswer: "Austria",
+    explanation: "The Wachau region in Austria is famous for Grüner Veltliner.",
+    category: "regions"
+  },
+  {
+    question: "Which region is known for Assyrtiko wine?",
+    options: ["Santorini", "Crete", "Rhodes", "Paros"],
+    correctAnswer: "Santorini",
+    explanation: "Santorini is famous for its Assyrtiko wines.",
+    category: "regions"
+  },
+  {
+    question: "Which Chilean region is most famous for wine?",
+    options: ["Maipo Valley", "Casablanca Valley", "Colchagua Valley", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these Chilean valleys are important wine regions.",
+    category: "regions"
+  },
+  {
+    question: "Which South African region is most famous for wine?",
+    options: ["Stellenbosch", "Paarl", "Constantia", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these South African regions are important for wine production.",
+    category: "regions"
+  },
+  {
+    question: "Which Spanish region is known for Tempranillo?",
+    options: ["Rioja", "Ribera del Duero", "Toro", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these Spanish regions are famous for Tempranillo.",
+    category: "regions"
+  },
+  {
+    question: "Which Washington State region is most famous for wine?",
+    options: ["Columbia Valley", "Yakima Valley", "Walla Walla Valley", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these Washington State regions are important for wine production.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Barossa Valley wines?",
+    options: ["New South Wales", "Victoria", "South Australia", "Western Australia"],
+    correctAnswer: "South Australia",
+    explanation: "Barossa Valley is located in South Australia.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Marlborough wines?",
+    options: ["North Island", "South Island", "Both islands", "Stewart Island"],
+    correctAnswer: "South Island",
+    explanation: "Marlborough is located on New Zealand's South Island.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Central Otago wines?",
+    options: ["North Island", "South Island", "Both islands", "Stewart Island"],
+    correctAnswer: "South Island",
+    explanation: "Central Otago is located on New Zealand's South Island.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Hunter Valley wines?",
+    options: ["New South Wales", "Victoria", "South Australia", "Western Australia"],
+    correctAnswer: "New South Wales",
+    explanation: "Hunter Valley is located in New South Wales, Australia.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Coonawarra wines?",
+    options: ["New South Wales", "Victoria", "South Australia", "Western Australia"],
+    correctAnswer: "South Australia",
+    explanation: "Coonawarra is located in South Australia.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Yarra Valley wines?",
+    options: ["New South Wales", "Victoria", "South Australia", "Western Australia"],
+    correctAnswer: "Victoria",
+    explanation: "Yarra Valley is located in Victoria, Australia.",
+    category: "regions"
+  },
+  {
+    question: "Which region produces Margaret River wines?",
+    options: ["New South Wales", "Victoria", "South Australia", "Western Australia"],
+    correctAnswer: "Western Australia",
+    explanation: "Margaret River is located in Western Australia.",
+    category: "regions"
+  },
+
+  // Production & Techniques (40 questions)
+  {
+    question: "What is 'terroir' in winemaking?",
+    options: [
+      "A type of wine barrel",
+      "The complete natural environment in which a wine is produced",
+      "A winemaking technique",
+      "A wine tasting term"
+    ],
+    correctAnswer: "The complete natural environment in which a wine is produced",
+    explanation: "Terroir refers to the unique combination of environmental factors including climate, soil, and topography.",
+    category: "production"
+  },
+  {
+    question: "What is the process of aging wine in oak barrels called?",
+    options: ["Fermentation", "Malolactic fermentation", "Oaking", "Racking"],
+    correctAnswer: "Oaking",
+    explanation: "Oaking is the process of aging wine in oak barrels to impart flavors.",
+    category: "production"
+  },
+  {
+    question: "What is the process of converting grape juice into wine called?",
+    options: ["Distillation", "Fermentation", "Maceration", "Clarification"],
+    correctAnswer: "Fermentation",
+    explanation: "Fermentation is the process by which yeast converts sugars into alcohol.",
+    category: "production"
+  },
+  {
+    question: "What does 'malolactic fermentation' accomplish in winemaking?",
+    options: ["Increases alcohol", "Converts harsh acids to softer ones", "Adds tannins", "Creates bubbles"],
+    correctAnswer: "Converts harsh acids to softer ones",
+    explanation: "Malolactic fermentation converts sharp malic acid to softer lactic acid.",
+    category: "production"
+  },
+  {
+    question: "What is the traditional method of making sparkling wine called?",
+    options: ["Charmat method", "Méthode Champenoise", "Tank method", "Transfer method"],
+    correctAnswer: "Méthode Champenoise",
+    explanation: "Méthode Champenoise involves secondary fermentation in the bottle.",
+    category: "production"
+  },
+  {
+    question: "What does 'Sur lie' aging mean?",
+    options: ["Aging on the lees", "Aging in oak", "Aging underground", "Aging in bottles"],
+    correctAnswer: "Aging on the lees",
+    explanation: "Sur lie means aging wine on dead yeast cells for added complexity.",
+    category: "production"
+  },
+  {
+    question: "What is the process of removing grape skins called in white wine production?",
+    options: ["Pressing", "Crushing", "Destemming", "Punching down"],
+    correctAnswer: "Pressing",
+    explanation: "Pressing separates the juice from skins in white wine production.",
+    category: "production"
+  },
+  {
+    question: "What is the process of removing sediment from wine called?",
+    options: ["Filtering", "Fining", "Racking", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Filtering, fining, and racking are all methods to clarify wine.",
+    category: "production"
+  },
+  {
+    question: "What is the process of removing yeast from sparkling wine called?",
+    options: ["Riddling", "Disgorgement", "Dosage", "Tirage"],
+    correctAnswer: "Disgorgement",
+    explanation: "Disgorgement removes the sediment from sparkling wine.",
+    category: "production"
+  },
+  {
+    question: "What is the process of adding sugar to a wine called?",
+    options: ["Chaptalization", "Enrichment", "Fortification", "Dosage"],
+    correctAnswer: "Chaptalization",
+    explanation: "Chaptalization is the addition of sugar to increase alcohol levels.",
+    category: "production"
+  },
+  {
+    question: "What is the process of exposing wine to oxygen before serving called?",
+    options: ["Breathing", "Decanting", "Aerating", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms refer to exposing wine to oxygen before serving.",
+    category: "production"
+  },
+  {
+    question: "What is the process of chilling grapes before fermentation called?",
+    options: ["Cold soaking", "Pre-fermentation maceration", "Cold stabilization", "Cryoextraction"],
+    correctAnswer: "Cold soaking",
+    explanation: "Cold soaking extracts color and flavor before fermentation begins.",
+    category: "production"
+  },
+  {
+    question: "What is the process of making rosé wine called?",
+    options: ["Blending red and white", "Limited skin contact", "Saignée method", "All methods are used"],
+    correctAnswer: "All methods are used",
+    explanation: "Rosé can be made by limited skin contact, blending, or saignée method.",
+    category: "production"
+  },
+  {
+    question: "What is the process of removing grape stems called?",
+    options: ["Destemming", "Crushing", "Pressing", "Sorting"],
+    correctAnswer: "Destemming",
+    explanation: "Destemming removes stems from grape clusters before fermentation.",
+    category: "production"
+  },
+  {
+    question: "What is the process of blending different grape varieties called?",
+    options: ["Assemblage", "Cuvée", "Blend", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms refer to blending different wines or grape varieties.",
+    category: "production"
+  },
+  {
+    question: "What is the process of fortifying wine called?",
+    options: ["Adding spirits", "Mutage", "Fortification", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Fortification involves adding spirits to wine to increase alcohol content.",
+    category: "production"
+  },
+  {
+    question: "What is the process of making ice wine called?",
+    options: ["Freezing fermented wine", "Harvesting frozen grapes", "Adding ice to must", "Cryoextraction"],
+    correctAnswer: "Harvesting frozen grapes",
+    explanation: "Ice wine is made from grapes that freeze naturally on the vine.",
+    category: "production"
+  },
+  {
+    question: "What is the process of making orange wine called?",
+    options: ["Adding orange flavoring", "Skin contact with white grapes", "Using orange grapes", "Aging in orange wood"],
+    correctAnswer: "Skin contact with white grapes",
+    explanation: "Orange wine is made by fermenting white grapes with skin contact.",
+    category: "production"
+  },
+  {
+    question: "What causes the sweetness in Sauternes?",
+    options: ["Added sugar", "Botrytis cinerea", "Late harvest", "Fortification"],
+    correctAnswer: "Botrytis cinerea",
+    explanation: "Botrytis cinerea (noble rot) concentrates sugars in Sauternes grapes.",
+    category: "production"
+  },
+  {
+    question: "What is the traditional method for making Port?",
+    options: ["Continuous fermentation", "Fortification during fermentation", "Post-fermentation fortification", "Natural fermentation"],
+    correctAnswer: "Fortification during fermentation",
+    explanation: "Port is made by adding grape spirit during fermentation.",
+    category: "production"
+  },
+  {
+    question: "Which winemaking process creates tannins in red wine?",
+    options: ["Fermentation temperature", "Skin contact", "Oak aging", "Malolactic fermentation"],
+    correctAnswer: "Skin contact",
+    explanation: "Tannins are extracted from grape skins during maceration.",
+    category: "production"
   },
   {
     question: "What is the primary purpose of riddling in Champagne production?",
     options: ["Blending", "Clarification", "Pressure adjustment", "Flavor development"],
     correctAnswer: "Clarification",
-    explanation: "Riddling moves sediment to the bottle neck for removal during disgorgement, clarifying the wine."
+    explanation: "Riddling moves sediment to the bottle neck for removal.",
+    category: "production"
   },
   {
-    question: "Which Australian wine region is famous for Cabernet Sauvignon?",
-    options: ["Barossa Valley", "Hunter Valley", "Coonawarra", "Clare Valley"],
-    correctAnswer: "Coonawarra",
-    explanation: "Coonawarra in South Australia is renowned for its Cabernet Sauvignon wines, particularly from terra rossa soils."
-  },
-  {
-    question: "What does 'Estate Grown' mean on a wine label?",
-    options: ["Large production", "Grapes grown on producer's property", "Family owned", "Organic farming"],
-    correctAnswer: "Grapes grown on producer's property",
-    explanation: "Estate Grown indicates that the grapes were grown on vineyards owned or controlled by the winery."
-  },
-  {
-    question: "Which grape variety is used to make traditional Balsamic vinegar?",
-    options: ["Sangiovese", "Trebbiano", "Lambrusco", "Barbera"],
-    correctAnswer: "Trebbiano",
-    explanation: "Traditional Balsamic vinegar is made from Trebbiano grapes in the Modena region of Italy."
+    question: "What does 'Botrytis cinerea' contribute to sweet wines?",
+    options: ["Color intensity", "Alcohol content", "Concentrated flavors", "Tannin structure"],
+    correctAnswer: "Concentrated flavors",
+    explanation: "Botrytis dehydrates grapes, concentrating sugars and creating complex flavors.",
+    category: "production"
   },
   {
     question: "What is the main characteristic of wines from high altitude vineyards?",
     options: ["Higher alcohol", "Greater acidity retention", "Darker color", "More tannins"],
     correctAnswer: "Greater acidity retention",
-    explanation: "High altitude vineyards have cooler temperatures that help preserve acidity in grapes."
+    explanation: "High altitude vineyards have cooler temperatures that preserve acidity.",
+    category: "production"
+  },
+  {
+    question: "What is the primary characteristic of Icewine/Eiswein?",
+    options: ["Made from frozen grapes", "Served very cold", "Aged in ice caves", "Clear as ice"],
+    correctAnswer: "Made from frozen grapes",
+    explanation: "Icewine is made from grapes that freeze naturally on the vine.",
+    category: "production"
+  },
+  {
+    question: "What does 'Estate Grown' mean on a wine label?",
+    options: ["Large production", "Grapes grown on producer's property", "Family owned", "Organic farming"],
+    correctAnswer: "Grapes grown on producer's property",
+    explanation: "Estate Grown indicates grapes were grown on the winery's own vineyards.",
+    category: "production"
+  },
+  {
+    question: "What does 'Old Vine' typically refer to?",
+    options: ["Vines over 25 years old", "Vines over 50 years old", "No legal definition", "Vines over 100 years old"],
+    correctAnswer: "No legal definition",
+    explanation: "Old Vine has no legal definition and meaning varies by producer.",
+    category: "production"
+  },
+  {
+    question: "Which factor most influences wine style in cool climate regions?",
+    options: ["Soil type", "Grape ripeness levels", "Altitude", "Rainfall"],
+    correctAnswer: "Grape ripeness levels",
+    explanation: "Cool climates often struggle to fully ripen grapes, affecting wine style.",
+    category: "production"
+  },
+  {
+    question: "Which process is essential for making quality sparkling wine?",
+    options: ["High fermentation temperature", "Secondary fermentation", "Extended maceration", "Oxidative aging"],
+    correctAnswer: "Secondary fermentation",
+    explanation: "Quality sparkling wines require secondary fermentation to create bubbles.",
+    category: "production"
+  },
+  {
+    question: "What is the primary difference between Fino and Oloroso Sherry?",
+    options: ["Grape variety", "Aging under flor", "Alcohol level", "Sweetness"],
+    correctAnswer: "Aging under flor",
+    explanation: "Fino ages under flor yeast, while Oloroso is fortified to prevent flor.",
+    category: "production"
+  },
+  {
+    question: "What does 'Solera' refer to in sherry production?",
+    options: ["A type of grape", "An aging system", "A region", "A style of wine"],
+    correctAnswer: "An aging system",
+    explanation: "Solera is a fractional blending system used in sherry production.",
+    category: "production"
+  },
+  {
+    question: "What is the process of making sparkling wine in Champagne called?",
+    options: ["Charmat method", "Traditional method", "Tank method", "Transfer method"],
+    correctAnswer: "Traditional method",
+    explanation: "The traditional method involves secondary fermentation in bottle.",
+    category: "production"
+  },
+  {
+    question: "What is the process of allowing wine to age in the bottle called?",
+    options: ["Bottle aging", "Cellaring", "Maturation", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms refer to aging wine in bottles over time.",
+    category: "production"
+  },
+  {
+    question: "What is the process of fermenting wine in stainless steel called?",
+    options: ["Cold fermentation", "Steel fermentation", "Tank fermentation", "All terms are used"],
+    correctAnswer: "All terms are used",
+    explanation: "Various terms describe fermentation in stainless steel tanks.",
+    category: "production"
+  },
+  {
+    question: "What is the process of fermenting wine in amphorae called?",
+    options: ["Amphora fermentation", "Clay fermentation", "Ancient method", "All terms are used"],
+    correctAnswer: "All terms are used",
+    explanation: "Various terms describe fermentation in clay amphorae.",
+    category: "production"
+  },
+  {
+    question: "What is the process of making natural wine called?",
+    options: ["Minimal intervention", "Natural winemaking", "Low sulfite winemaking", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Natural wine involves minimal intervention and low sulfite use.",
+    category: "production"
+  },
+  {
+    question: "What is the process of making biodynamic wine called?",
+    options: ["Organic winemaking", "Biodynamic viticulture", "Sustainable winemaking", "Holistic winemaking"],
+    correctAnswer: "Biodynamic viticulture",
+    explanation: "Biodynamic winemaking follows specific holistic farming principles.",
+    category: "production"
+  },
+  {
+    question: "Which sparkling wine is made using the Charmat method?",
+    options: ["Champagne", "Cava", "Prosecco", "Crémant"],
+    correctAnswer: "Prosecco",
+    explanation: "Prosecco is typically made using the Charmat (tank) method.",
+    category: "production"
+  },
+  {
+    question: "What does 'Mise en bouteille au domaine' mean?",
+    options: ["Estate bottled", "Aged in domain", "Domain produced", "Domain owned"],
+    correctAnswer: "Estate bottled",
+    explanation: "This means the wine was bottled at the estate where it was produced.",
+    category: "production"
+  },
+  {
+    question: "What does 'Vendanges' mean in French wine terminology?",
+    options: ["Vineyard", "Vintage", "Harvest", "Village"],
+    correctAnswer: "Harvest",
+    explanation: "Vendanges refers to the grape harvest period in French winemaking.",
+    category: "production"
+  },
+
+  // Wine Styles & Characteristics (40 questions)
+  {
+    question: "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
+    options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Zinfandel"],
+    correctAnswer: "Sauvignon Blanc",
+    explanation: "Sauvignon Blanc is known for its high acidity and aromatic profile.",
+    category: "styles"
+  },
+  {
+    question: "What does 'tannin' refer to in wine?",
+    options: ["Sweetness", "Acidity", "Bitterness and astringency", "Alcohol content"],
+    correctAnswer: "Bitterness and astringency",
+    explanation: "Tannins contribute to a wine's bitterness, astringency, and structure.",
+    category: "styles"
+  },
+  {
+    question: "What is the ideal serving temperature for most red wines?",
+    options: ["Chilled (40-45°F)", "Room temperature (68-72°F)", "Cool (60-65°F)", "Warm (75-80°F)"],
+    correctAnswer: "Cool (60-65°F)",
+    explanation: "Most red wines are best served slightly cooler than room temperature.",
+    category: "styles"
+  },
+  {
+    question: "Which red grape is known for its light body, high acidity, and red fruit flavors?",
+    options: ["Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah"],
+    correctAnswer: "Pinot Noir",
+    explanation: "Pinot Noir is a delicate red grape that thrives in cooler climates.",
+    category: "styles"
+  },
+  {
+    question: "What is the ideal serving temperature for white wine?",
+    options: ["35-40°F", "45-50°F", "55-60°F", "65-70°F"],
+    correctAnswer: "45-50°F",
+    explanation: "White wines are best served chilled to highlight their freshness.",
+    category: "styles"
+  },
+  {
+    question: "What is the ideal serving temperature for sparkling wine?",
+    options: ["35-40°F", "45-50°F", "55-60°F", "65-70°F"],
+    correctAnswer: "35-40°F",
+    explanation: "Sparkling wines should be served well-chilled to maintain bubbles.",
+    category: "styles"
+  },
+  {
+    question: "What is the ideal serving temperature for rosé wine?",
+    options: ["35-40°F", "45-50°F", "55-60°F", "65-70°F"],
+    correctAnswer: "45-50°F",
+    explanation: "Rosé wines are best served chilled like white wines.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the smell of a wine?",
+    options: ["Bouquet", "Aroma", "Nose", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms refer to the smell or scent of wine.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the aftertaste of a wine?",
+    options: ["Finish", "Length", "Persistence", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms describe how long flavors linger after swallowing.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the color of a wine?",
+    options: ["Hue", "Intensity", "Depth", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms are used to describe wine color characteristics.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the body of a wine?",
+    options: ["Weight", "Mouthfeel", "Texture", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Body refers to the weight and texture of wine in the mouth.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the acidity of a wine?",
+    options: ["Tartness", "Freshness", "Crispness", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms can describe wine acidity characteristics.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the sweetness of a wine?",
+    options: ["Residual sugar", "Sweetness level", "Sugar content", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms relate to the sweetness perception in wine.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the alcohol content of a wine?",
+    options: ["ABV", "Alcohol by volume", "Strength", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "All these terms refer to the alcohol percentage in wine.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the legs of a wine?",
+    options: ["Tears", "Glycerol trails", "Viscosity", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Wine legs indicate alcohol and glycerol content.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the bouquet of a wine?",
+    options: ["Aroma", "Nose", "Scent", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Bouquet specifically refers to aromas from winemaking and aging.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the mouthfeel of a wine?",
+    options: ["Texture", "Body", "Weight", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Mouthfeel encompasses all tactile sensations of wine.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the minerality of a wine?",
+    options: ["Mineral character", "Terroir expression", "Soil influence", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Minerality refers to mineral-like characteristics in wine.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the complexity of a wine?",
+    options: ["Depth", "Layers", "Sophistication", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Complexity refers to multiple layers of flavors and aromas.",
+    category: "styles"
+  },
+  {
+    question: "What is the term for the balance of a wine?",
+    options: ["Harmony", "Integration", "Equilibrium", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Balance refers to harmony between wine components.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Brut' mean on a bottle of sparkling wine?",
+    options: ["Sweet", "Dry", "Semi-dry", "Extra dry"],
+    correctAnswer: "Dry",
+    explanation: "Brut indicates a dry sparkling wine with minimal residual sugar.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Sec' mean on a wine label?",
+    options: ["Sweet", "Dry", "Semi-dry", "Off-dry"],
+    correctAnswer: "Dry",
+    explanation: "Sec means dry in French wine terminology.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Demi-Sec' mean on a wine label?",
+    options: ["Very dry", "Dry", "Semi-dry", "Sweet"],
+    correctAnswer: "Semi-dry",
+    explanation: "Demi-Sec indicates a semi-dry wine with some sweetness.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Extra Dry' mean on a sparkling wine label?",
+    options: ["Driest style", "Slightly sweeter than Brut", "Very sweet", "Medium dry"],
+    correctAnswer: "Slightly sweeter than Brut",
+    explanation: "Extra Dry is actually slightly sweeter than Brut in sparkling wine.",
+    category: "styles"
+  },
+  {
+    question: "What is the ideal storage temperature for wine?",
+    options: ["45-50°F", "55-60°F", "65-70°F", "70-75°F"],
+    correctAnswer: "55-60°F",
+    explanation: "Wine should be stored at a consistent cool temperature around 55°F.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Trocken' mean on a German wine label?",
+    options: ["Sweet", "Dry", "Sparkling", "Red"],
+    correctAnswer: "Dry",
+    explanation: "Trocken indicates a dry German wine with minimal residual sugar.",
+    category: "styles"
+  },
+  {
+    question: "What is the main difference between Chablis and other Chardonnays?",
+    options: ["Different grape variety", "No oak aging typically", "Higher alcohol", "Different country"],
+    correctAnswer: "No oak aging typically",
+    explanation: "Chablis is typically fermented in stainless steel without oak influence.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Vendange Tardive' mean?",
+    options: ["Early harvest", "Late harvest", "Hand harvest", "Machine harvest"],
+    correctAnswer: "Late harvest",
+    explanation: "Vendange Tardive means late harvest, resulting in sweeter wines.",
+    category: "styles"
+  },
+  {
+    question: "What is the traditional bottle size for Champagne?",
+    options: ["375ml", "750ml", "1L", "1.5L"],
+    correctAnswer: "750ml",
+    explanation: "The standard Champagne bottle size is 750ml.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Blanc de Blancs' mean on a Champagne label?",
+    options: ["White from whites", "White from blacks", "Mixed blend", "Sweet style"],
+    correctAnswer: "White from whites",
+    explanation: "Blanc de Blancs means white wine made from white grapes only.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Blanc de Noirs' mean?",
+    options: ["White from white grapes", "White from red grapes", "Red from white grapes", "Rosé wine"],
+    correctAnswer: "White from red grapes",
+    explanation: "Blanc de Noirs means white wine made from red/black grapes.",
+    category: "styles"
+  },
+  {
+    question: "What does 'NV' mean on a wine label?",
+    options: ["New Vintage", "No Vintage", "Nevada", "Natural Vinification"],
+    correctAnswer: "No Vintage",
+    explanation: "NV indicates a non-vintage wine blended from multiple years.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Vintage' mean on a wine label?",
+    options: ["Old wine", "Year of harvest", "Quality level", "Aging method"],
+    correctAnswer: "Year of harvest",
+    explanation: "Vintage indicates the year the grapes were harvested.",
+    category: "styles"
+  },
+  {
+    question: "What does 'Réserve' typically indicate on a wine label?",
+    options: ["Legal classification", "Extended aging", "Producer's selection", "Varies by region"],
+    correctAnswer: "Varies by region",
+    explanation: "The meaning of Réserve varies by country and region.",
+    category: "styles"
+  },
+  {
+    question: "What is the largest wine bottle size?",
+    options: ["Magnum", "Double Magnum", "Nebuchadnezzar", "Melchizedek"],
+    correctAnswer: "Melchizedek",
+    explanation: "Melchizedek (30L) is the largest standard Champagne bottle size.",
+    category: "styles"
+  },
+  {
+    question: "What is the smallest wine bottle size?",
+    options: ["Split", "Half bottle", "Piccolo", "Quarter bottle"],
+    correctAnswer: "Piccolo",
+    explanation: "Piccolo (187.5ml) is the smallest standard wine bottle size.",
+    category: "styles"
+  },
+  {
+    question: "Which of these is a sweet, fortified wine from Portugal?",
+    options: ["Sherry", "Port", "Madeira", "Marsala"],
+    correctAnswer: "Port",
+    explanation: "Port is a sweet, fortified wine from the Douro Valley of Portugal.",
+    category: "styles"
+  },
+  {
+    question: "Which grape is the main component of Madeira wine?",
+    options: ["Sercial", "Verdelho", "Bual", "Various depending on style"],
+    correctAnswer: "Various depending on style",
+    explanation: "Madeira uses different grapes including Sercial, Verdelho, Bual, and Malmsey.",
+    category: "styles"
+  },
+  {
+    question: "What is the primary grape used in traditional Champagne production?",
+    options: ["Chardonnay", "Pinot Noir", "Pinot Meunier", "All three are used"],
+    correctAnswer: "All three are used",
+    explanation: "Traditional Champagne uses Chardonnay, Pinot Noir, and Pinot Meunier.",
+    category: "styles"
+  },
+  {
+    question: "Which of these is a sparkling wine from Spain?",
+    options: ["Prosecco", "Champagne", "Cava", "Lambrusco"],
+    correctAnswer: "Cava",
+    explanation: "Cava is Spain's traditional method sparkling wine.",
+    category: "styles"
+  },
+
+  // Wine Law & Classification (30 questions)
+  {
+    question: "What does 'Reserva' mean on a Spanish wine label?",
+    options: ["Young wine", "Aged wine with specific requirements", "Reserve wine", "Old vines"],
+    correctAnswer: "Aged wine with specific requirements",
+    explanation: "Reserva indicates Spanish wine aged for minimum periods in oak and bottle.",
+    category: "law"
+  },
+  {
+    question: "What does 'Gran Reserva' mean on a Spanish wine label?",
+    options: ["Great reserve", "Longest aging requirements", "Premium quality", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Gran Reserva requires the longest aging and indicates premium quality.",
+    category: "law"
+  },
+  {
+    question: "What does 'Riserva' mean on an Italian wine label?",
+    options: ["Reserve quality", "Extended aging", "Higher alcohol", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Riserva indicates extended aging and often higher quality standards.",
+    category: "law"
+  },
+  {
+    question: "What does 'Superiore' mean on an Italian wine label?",
+    options: ["Superior quality", "Higher alcohol", "Longer aging", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "Superiore indicates higher alcohol and often stricter production standards.",
+    category: "law"
+  },
+  {
+    question: "What does 'Premier Cru' mean in Burgundy?",
+    options: ["First vintage", "First quality level", "Second highest classification", "Village level"],
+    correctAnswer: "Second highest classification",
+    explanation: "Premier Cru is the second highest classification in Burgundy.",
+    category: "law"
+  },
+  {
+    question: "What does 'Grand Cru' mean in Burgundy?",
+    options: ["Large production", "Highest classification", "Old vines", "Premium price"],
+    correctAnswer: "Highest classification",
+    explanation: "Grand Cru is the highest classification level in Burgundy.",
+    category: "law"
+  },
+  {
+    question: "What does 'DOCG' stand for in Italian wine?",
+    options: ["Denominazione di Origine Controllata e Garantita", "Quality classification", "Highest Italian classification", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "DOCG is the highest classification level for Italian wines.",
+    category: "law"
+  },
+  {
+    question: "What does 'AOC' stand for in French wine?",
+    options: ["Appellation d'Origine Contrôlée", "Quality classification", "Geographic designation", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "AOC guarantees geographic origin and regulates production methods.",
+    category: "law"
+  },
+  {
+    question: "What does 'AVA' stand for in American wine?",
+    options: ["American Viticultural Area", "Geographic designation", "Appellation system", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "AVA is the American system for designating wine regions.",
+    category: "law"
+  },
+  {
+    question: "What does 'Appellation d'Origine Contrôlée' (AOC) guarantee?",
+    options: ["Quality level", "Geographic origin and production methods", "Price range", "Alcohol content"],
+    correctAnswer: "Geographic origin and production methods",
+    explanation: "AOC guarantees geographic origin and regulates production methods.",
+    category: "law"
+  },
+  {
+    question: "What does 'Denominazione di Origine Controllata e Garantita' (DOCG) represent?",
+    options: ["Italian quality classification", "Production method", "Grape variety", "Vintage year"],
+    correctAnswer: "Italian quality classification",
+    explanation: "DOCG is the highest classification level for Italian wines.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a grape variety required for varietal labeling in the US?",
+    options: ["51%", "75%", "85%", "100%"],
+    correctAnswer: "75%",
+    explanation: "US law requires 75% of the named grape variety for varietal labeling.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a grape variety required for varietal labeling in Australia?",
+    options: ["75%", "80%", "85%", "90%"],
+    correctAnswer: "85%",
+    explanation: "Australia requires 85% of the named grape variety for varietal labeling.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a grape variety required for varietal labeling in the EU?",
+    options: ["75%", "80%", "85%", "100%"],
+    correctAnswer: "85%",
+    explanation: "EU law requires 85% of the named grape variety for varietal labeling.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a vintage required for vintage labeling in the US?",
+    options: ["75%", "85%", "95%", "100%"],
+    correctAnswer: "85%",
+    explanation: "US law requires 85% of wine from the stated vintage year.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a vintage required for vintage labeling in the EU?",
+    options: ["75%", "85%", "95%", "100%"],
+    correctAnswer: "85%",
+    explanation: "EU law requires 85% of wine from the stated vintage year.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a region required for regional labeling in the US?",
+    options: ["75%", "85%", "95%", "100%"],
+    correctAnswer: "75%",
+    explanation: "US law requires 75% of grapes from the named region.",
+    category: "law"
+  },
+  {
+    question: "What is the legal minimum percentage of a region required for regional labeling in the EU?",
+    options: ["75%", "85%", "95%", "100%"],
+    correctAnswer: "85%",
+    explanation: "EU law requires 85% of grapes from the named region.",
+    category: "law"
+  },
+  {
+    question: "What does 'Cru' mean in Burgundy classification?",
+    options: ["Vineyard site", "Vintage year", "Producer", "Grape variety"],
+    correctAnswer: "Vineyard site",
+    explanation: "In Burgundy, Cru refers to a specific vineyard site.",
+    category: "law"
+  },
+  {
+    question: "What does 'Crianza' mean on a Spanish wine label?",
+    options: ["Young wine", "Aged wine with specific requirements", "Reserve wine", "Old vines"],
+    correctAnswer: "Aged wine with specific requirements",
+    explanation: "Crianza indicates minimum aging requirements in oak and bottle.",
+    category: "law"
+  },
+  {
+    question: "What is the primary difference between Champagne and Crémant?",
+    options: ["Grape varieties", "Production region", "Method of production", "Sweetness level"],
+    correctAnswer: "Production region",
+    explanation: "Champagne can only be made in Champagne region, Crémant in other French regions.",
+    category: "law"
+  },
+  {
+    question: "What does 'VdP' stand for in French wine classification?",
+    options: ["Vin de Pays", "Regional wine", "Country wine", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "VdP (Vin de Pays) indicates regional or country wine classification.",
+    category: "law"
+  },
+  {
+    question: "What does 'IGT' stand for in Italian wine classification?",
+    options: ["Indicazione Geografica Tipica", "Regional wine", "Geographic indication", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "IGT indicates geographic typicity in Italian wine classification.",
+    category: "law"
+  },
+  {
+    question: "What does 'QbA' stand for in German wine classification?",
+    options: ["Qualitätswein bestimmter Anbaugebiete", "Quality wine from specific regions", "Regional quality wine", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "QbA indicates quality wine from specific German regions.",
+    category: "law"
+  },
+  {
+    question: "What does 'QmP' stand for in German wine classification?",
+    options: ["Qualitätswein mit Prädikat", "Quality wine with distinction", "Highest German classification", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "QmP is the highest classification for German wines.",
+    category: "law"
+  },
+  {
+    question: "What does 'DO' stand for in Spanish wine classification?",
+    options: ["Denominación de Origen", "Denomination of Origin", "Quality designation", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "DO indicates controlled denomination of origin in Spanish wines.",
+    category: "law"
+  },
+  {
+    question: "What does 'DOCa' stand for in Spanish wine classification?",
+    options: ["Denominación de Origen Calificada", "Qualified Denomination of Origin", "Highest Spanish classification", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "DOCa is the highest classification level for Spanish wines.",
+    category: "law"
+  },
+  {
+    question: "What does 'GI' stand for in Australian wine classification?",
+    options: ["Geographic Indication", "Regional designation", "Australian appellation system", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "GI is the Australian system for geographic wine designations.",
+    category: "law"
+  },
+  {
+    question: "What does 'VQA' stand for in Canadian wine classification?",
+    options: ["Vintners Quality Alliance", "Quality designation", "Canadian appellation system", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "VQA is Canada's wine quality and appellation system.",
+    category: "law"
+  },
+  {
+    question: "What does 'WO' stand for in South African wine classification?",
+    options: ["Wine of Origin", "Geographic designation", "South African appellation system", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "WO is South Africa's wine of origin designation system.",
+    category: "law"
   }
 ];
+
+// Enhanced diversity function for question selection
+const getQuestionCategory = (question) => {
+  return question.category || 'general';
+};
+
+const getTenRandomQuestions = () => {
+  const shuffled = shuffleArray([...WINE_QUIZ_QUESTIONS]);
+  const selected = [];
+  const usedCategories = [];
+  
+  // First, try to get diverse questions by category
+  for (const question of shuffled) {
+    if (selected.length >= 10) break;
+    
+    const category = getQuestionCategory(question);
+    const lastCategory = usedCategories[usedCategories.length - 1];
+    
+    // Avoid consecutive questions from the same category
+    if (category !== lastCategory || selected.length === 0) {
+      selected.push(question);
+      usedCategories.push(category);
+    }
+  }
+  
+  // If we don't have 10 questions due to category restrictions, fill remaining slots
+  if (selected.length < 10) {
+    for (const question of shuffled) {
+      if (selected.length >= 10) break;
+      if (!selected.includes(question)) {
+        selected.push(question);
+      }
+    }
+  }
+  
+  return selected.slice(0, 10);
+};
 
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
   return array;
-};
-
-const getTenRandomQuestions = () => {
-  const shuffled = shuffleArray([...WINE_QUIZ_QUESTIONS]);
-  return shuffled.slice(0, 10);
 };
 
 const WINE_VARIETAL_NAMES_SET = new Set(WINE_VARIETALS.map(v => v.name));
@@ -937,21 +1745,36 @@ const App = () => {
   const [showVarietalModal, setShowVarietalModal] = useState(false);
   const [newQuestionTopic, setNewQuestionTopic] = useState('');
   const [showGenerateQuestionModal, setShowGenerateQuestionModal] = useState(false);
+  
+  // New state for connectivity and reconnection
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [resumeGameInfo, setResumeGameInfo] = useState(null);
+  const [reconnecting, setReconnecting] = useState(false);
 
-  // Connectivity Detection
+  // Enhanced connectivity detection
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      if (activeGameId && userId) {
+        syncGameState();
+      }
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+    
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [activeGameId, userId]);
 
-  // Firebase initialization
+  // Enhanced Firebase initialization with reconnection logic
   useEffect(() => {
     try {
       app = initializeApp(firebaseConfig);
@@ -962,12 +1785,33 @@ const App = () => {
         if (user) {
           setUserId(user.uid);
           
-          // Try to restore from localStorage first
-          const local = loadLocalState();
-          if (local && local.userId === user.uid && local.userName) {
-            setUserName(local.userName);
-            setActiveGameId(local.activeGameId || null);
-            setMode(local.mode || 'initial');
+          // Check for previous session first
+          const savedState = loadLocalState();
+          const resumeInfo = getResumeInfo();
+          
+          if (savedState && savedState.userId === user.uid) {
+            setUserName(savedState.userName);
+            if (savedState.activeGameId) {
+              const gameExists = await checkGameExists(savedState.activeGameId);
+              if (gameExists) {
+                setResumeGameInfo(savedState);
+                setShowResumeModal(true);
+              } else {
+                clearLocalState();
+                setMode('enterName');
+              }
+            } else {
+              setMode('initial');
+            }
+          } else if (resumeInfo) {
+            const gameExists = await checkGameExists(resumeInfo.gameId);
+            if (gameExists) {
+              setResumeGameInfo(resumeInfo);
+              setShowResumeModal(true);
+            } else {
+              clearLocalState();
+              setMode('enterName');
+            }
           } else {
             const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', user.uid, 'profile', 'userProfile');
             const docSnap = await getDoc(userProfileRef);
@@ -979,6 +1823,7 @@ const App = () => {
               setMode('enterName');
             }
           }
+          
           setIsAuthReady(true);
           setLoading(false);
         } else {
@@ -994,12 +1839,13 @@ const App = () => {
     }
   }, []);
 
-  // Multiplayer game data subscription
+  // Enhanced game data subscription with better error handling
   useEffect(() => {
     let unsubscribe;
     if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
       const normalizedGameId = activeGameId.toUpperCase();
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedGameId);
+      
       unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -1008,55 +1854,161 @@ const App = () => {
           setQuizEnded(data.quizEnded || false);
           setQuestions(Array.isArray(data.questions) ? data.questions : []);
           
-          // Only update score when answers are revealed or quiz ended
-          if (data.revealAnswers || data.quizEnded) {
-            const currentPlayerScore = Array.isArray(data.players) ? 
-              (data.players.find(p => p.id === userId)?.score || 0) : 0;
-            setScore(currentPlayerScore);
+          // Enhanced score synchronization - always sync the current player's score
+          const currentPlayer = Array.isArray(data.players) ? 
+            data.players.find(p => p.id === userId) : null;
+          
+          if (currentPlayer) {
+            setScore(currentPlayer.score || 0);
+            
+            // Restore selected answer if not revealed yet
+            if (!data.revealAnswers && currentPlayer.selectedAnswerForQuestion) {
+              setSelectedAnswer(currentPlayer.selectedAnswerForQuestion);
+              setAnswerSelected(true);
+            } else if (data.revealAnswers) {
+              setAnswerSelected(false);
+              setSelectedAnswer(null);
+            }
           }
           
-          setFeedback('');
-          setAnswerSelected(false);
-          setSelectedAnswer(null);
-          
-          // Save to localStorage for reconnection
+          // Save current state for reconnection
           saveLocalState({
             userId,
             userName,
             activeGameId,
             mode,
             currentQuestionIndex: data.currentQuestionIndex || 0,
-            score: data.players?.find(p => p.id === userId)?.score || 0
+            score: currentPlayer?.score || 0,
+            isHost: data.hostId === userId,
+            selectedAnswer: currentPlayer?.selectedAnswerForQuestion || null
           });
+          
+          // Save resume info
+          saveResumeInfo(activeGameId, userName, data.hostId === userId);
+          
+          setFeedback('');
         } else {
           setError('Game not found or ended.');
+          clearLocalState();
           setActiveGameId(null);
           setGameData(null);
           setMode('multiplayer');
         }
       }, (err) => {
         console.error("Error listening to game updates:", err);
-        setError("Failed to get real-time game updates.");
+        setError("Connection lost. Trying to reconnect...");
+        
+        setTimeout(() => {
+          if (isOnline) {
+            setError('');
+          }
+        }, 3000);
       });
     }
+    
     return () => {
       if (unsubscribe) unsubscribe();
     };
   }, [mode, activeGameId, isAuthReady, userId, userName]);
 
-  // Save state on changes
-  useEffect(() => {
-    if (userId && userName) {
-      saveLocalState({
-        userId,
-        userName,
-        activeGameId,
-        mode,
-        currentQuestionIndex,
-        score
-      });
+  // Helper function to check if game exists
+  const checkGameExists = async (gameId) => {
+    try {
+      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, gameId.toUpperCase());
+      const docSnap = await getDoc(gameDocRef);
+      return docSnap.exists();
+    } catch (e) {
+      console.error("Error checking game existence:", e);
+      return false;
     }
-  }, [userId, userName, activeGameId, mode, currentQuestionIndex, score]);
+  };
+
+  // Sync game state when reconnecting
+  const syncGameState = async () => {
+    if (!activeGameId || !userId) return;
+    
+    try {
+      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId.toUpperCase());
+      const docSnap = await getDoc(gameDocRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setGameData(data);
+        
+        const currentPlayer = data.players?.find(p => p.id === userId);
+        if (currentPlayer) {
+          setScore(currentPlayer.score || 0);
+        }
+      }
+    } catch (e) {
+      console.error("Error syncing game state:", e);
+    }
+  };
+
+  // Resume game functionality
+  const resumeGame = async (gameInfo) => {
+    try {
+      setReconnecting(true);
+      setShowResumeModal(false);
+      
+      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, gameInfo.activeGameId || gameInfo.gameId);
+      const docSnap = await getDoc(gameDocRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        const existingPlayer = data.players?.find(p => p.id === userId);
+        
+        if (existingPlayer) {
+          setActiveGameId(gameInfo.activeGameId || gameInfo.gameId);
+          setUserName(gameInfo.userName);
+          setMode('multiplayer');
+          setScore(existingPlayer.score || 0);
+        } else {
+          await rejoinGame(gameInfo.activeGameId || gameInfo.gameId);
+        }
+      } else {
+        setError('Game no longer exists.');
+        clearLocalState();
+      }
+    } catch (e) {
+      console.error("Error resuming game:", e);
+      setError("Failed to resume game. Please try joining manually.");
+    } finally {
+      setReconnecting(false);
+    }
+  };
+
+  // Rejoin game functionality
+  const rejoinGame = async (gameId) => {
+    try {
+      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, gameId.toUpperCase());
+      const docSnap = await getDoc(gameDocRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        const newPlayer = {
+          id: userId,
+          score: 0,
+          userName: userName,
+          selectedAnswerForQuestion: null,
+          feedbackForQuestion: null
+        };
+        
+        await updateDoc(gameDocRef, {
+          players: arrayUnion(newPlayer)
+        });
+        
+        setActiveGameId(gameId);
+        setMode('multiplayer');
+        setScore(0);
+      }
+    } catch (e) {
+      console.error("Error rejoining game:", e);
+      setError("Failed to rejoin game.");
+    }
+  };
 
   const handleSetName = async () => {
     if (!nameInput.trim()) {
@@ -1076,14 +2028,14 @@ const App = () => {
       setUserName(nameInput.trim());
       setMode('initial');
       
-      // Save to localStorage
       saveLocalState({
         userId,
         userName: nameInput.trim(),
-        activeGameId,
+        activeGameId: null,
         mode: 'initial',
-        currentQuestionIndex,
-        score
+        currentQuestionIndex: 0,
+        score: 0,
+        isHost: false
       });
     } catch (e) {
       console.error("Error saving user name:", e);
@@ -1110,14 +2062,14 @@ const App = () => {
       setFeedback('Incorrect.');
     }
     
-    // Save to localStorage
     saveLocalState({
       userId,
       userName,
       activeGameId,
       mode,
       currentQuestionIndex,
-      score: selectedOption === currentQuestion.correctAnswer ? score + 1 : score
+      score: selectedOption === currentQuestion.correctAnswer ? score + 1 : score,
+      isHost: false
     });
   };
 
@@ -1244,18 +2196,19 @@ const App = () => {
     }
   };
 
+  // Enhanced multiplayer answer handling - allows answer changes until revealed
   const handleMultiplayerAnswerClick = async (selectedOption) => {
-    const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false };
+    const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, revealAnswers: false };
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
     
-    if (currentPlayersArray.find(p => p.id === userId)?.selectedAnswerForQuestion || safeGameData.quizEnded) {
+    // Don't allow changes if quiz ended or answers have been revealed
+    if (safeGameData.quizEnded || safeGameData.revealAnswers) {
       return;
     }
 
     setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
 
-    // Only store the selected answer, don't update score yet
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const updatedPlayers = currentPlayersArray.map(p => {
       if (p.id === userId) {
@@ -1269,29 +2222,55 @@ const App = () => {
 
     try {
       await updateDoc(gameDocRef, { players: updatedPlayers });
+      
+      saveLocalState({
+        userId,
+        userName,
+        activeGameId,
+        mode,
+        currentQuestionIndex: safeGameData.currentQuestionIndex,
+        score,
+        isHost: safeGameData.hostId === userId,
+        selectedAnswer: selectedOption
+      });
     } catch (e) {
       console.error("Error updating answer:", e);
-      setError("Failed to submit your answer.");
+      setError("Failed to submit your answer. It will be retried when connection is restored.");
+      
+      const pendingAnswer = {
+        gameId: activeGameId,
+        selectedOption,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('pendingAnswer', JSON.stringify(pendingAnswer));
     }
   };
 
   const revealAnswersToAll = async () => {
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-    const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
-    const updatedPlayers = gameData.players.map(p => {
-      let increment = 0;
-      if (p.selectedAnswerForQuestion === currentQuestion.correctAnswer) {
-        increment = 1;
-      }
-      return {
-        ...p,
-        score: (p.score || 0) + increment,
-        feedbackForQuestion: (p.selectedAnswerForQuestion
-          ? (p.selectedAnswerForQuestion === currentQuestion.correctAnswer ? "Correct!" : "Incorrect.")
-          : null)
-      };
-    });
-    await updateDoc(gameDocRef, { players: updatedPlayers, revealAnswers: true });
+    if (!gameData || !activeGameId) return;
+    
+    try {
+      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+      const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
+      const updatedPlayers = gameData.players.map(p => {
+        let increment = 0;
+        if (p.selectedAnswerForQuestion === currentQuestion.correctAnswer) {
+          increment = 1;
+        }
+        return {
+          ...p,
+          score: (p.score || 0) + increment,
+          feedbackForQuestion: (p.selectedAnswerForQuestion
+            ? (p.selectedAnswerForQuestion === currentQuestion.correctAnswer ? "Correct!" : "Incorrect.")
+            : null)
+        };
+      });
+      
+      await updateDoc(gameDocRef, { players: updatedPlayers, revealAnswers: true });
+    } catch (e) {
+      console.error("Error revealing answers:", e);
+      setError("Failed to reveal answers. Please try again.");
+    }
   };
 
   const handleMultiplayerNextQuestion = async () => {
@@ -1499,6 +2478,42 @@ const App = () => {
 
   // Render content
   const renderContent = () => {
+    // Show resume modal if needed
+    if (showResumeModal && resumeGameInfo) {
+      return (
+        <div className="text-center space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Resume Previous Game?</h2>
+          <p className="text-gray-700">
+            We found a previous game session. Would you like to resume?
+          </p>
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <p className="text-sm text-gray-600">Game ID: {resumeGameInfo.activeGameId || resumeGameInfo.gameId}</p>
+            <p className="text-sm text-gray-600">Your Name: {resumeGameInfo.userName}</p>
+            <p className="text-sm text-gray-600">Role: {resumeGameInfo.isHost ? 'Proctor' : 'Player'}</p>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={() => resumeGame(resumeGameInfo)}
+              disabled={reconnecting}
+              className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors"
+            >
+              {reconnecting ? 'Resuming...' : 'Resume Game'}
+            </button>
+            <button
+              onClick={() => {
+                setShowResumeModal(false);
+                clearLocalState();
+                setMode('initial');
+              }}
+              className="flex-1 bg-gray-500 text-white py-3 rounded-lg text-xl font-bold hover:bg-gray-600 transition-colors"
+            >
+              Start Fresh
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     const safeGameData = gameData || { 
       players: [], 
       questions: [], 
@@ -1809,23 +2824,21 @@ const App = () => {
                     <button
                       key={index}
                       onClick={() => handleMultiplayerAnswerClick(option)}
-                      disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || safeGameData.quizEnded}
+                      disabled={safeGameData.quizEnded || safeGameData.revealAnswers}
                       className={`
                         w-full p-4 rounded-lg text-left text-lg font-medium
                         transition-all duration-200 ease-in-out
-                        ${currentPlayerGameData?.selectedAnswerForQuestion !== null
-                          ? safeGameData.revealAnswers
-                            ? option === currentQuestion.correctAnswer
-                              ? 'bg-green-100 text-green-800 ring-2 ring-green-500'
-                              : option === playerSelectedAnswer
-                                ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
-                                : 'bg-gray-100 text-gray-600 cursor-not-allowed'
+                        ${safeGameData.revealAnswers
+                          ? option === currentQuestion.correctAnswer
+                            ? 'bg-green-100 text-green-800 ring-2 ring-green-500'
                             : option === playerSelectedAnswer
-                              ? 'bg-blue-200 text-blue-800'
+                              ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
                               : 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                          : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
+                          : option === playerSelectedAnswer
+                            ? 'bg-blue-200 text-blue-800 ring-2 ring-blue-500'
+                            : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
                         }
-                        ${currentPlayerGameData?.selectedAnswerForQuestion === null && 'hover:scale-[1.02]'}
+                        ${!safeGameData.revealAnswers && !safeGameData.quizEnded && 'hover:scale-[1.02]'}
                       `}
                     >
                       {option}
@@ -1924,129 +2937,4 @@ const App = () => {
                 </p>
               ) : (
                 <p className="text-3xl font-extrabold text-green-700">
-                  It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
-                </p>
-              )}
-              {!isHost && (
-                <p className="text-2xl text-gray-700">
-                  Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                </p>
-              )}
-              {isHost && (
-                <button
-                  onClick={restartMultiplayerQuiz}
-                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                >
-                  Restart Game
-                </button>
-              )}
-              <a
-                href="https://www.vineyardvoyages.com/tours"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-              >
-                Book a Tour Now!
-              </a>
-            </div>
-          )}
-          <button
-            onClick={() => {
-              setMode('initial');
-              setActiveGameId(null);
-              setGameData(null);
-              clearLocalState();
-            }}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
-          >
-            Leave Game
-          </button>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
-      style={{
-        backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}>
-      
-      {/* Offline Banner */}
-      {!isOnline && (
-        <div className="fixed top-0 left-0 w-full bg-red-600 text-white text-center py-2 z-50">
-          You are offline. Some features may not work until you reconnect.
-        </div>
-      )}
-      
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
-        <div className="flex justify-center mb-4">
-          <img
-            src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
-            alt="Vineyard Voyages Logo"
-            className="h-24 w-auto object-contain"
-            onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
-          />
-        </div>
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
-          <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
-        </h1>
-        {renderContent()}
-
-        {/* Varietal Elaboration Modal */}
-        {showVarietalModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-              <h3 className="text-2xl font-bold text-gray-900">Varietal Insight</h3>
-              {llmLoading ? (
-                <p className="text-gray-700">Generating elaboration...</p>
-              ) : (
-                <p className="text-gray-800">{varietalElaboration}</p>
-              )}
-              <button
-                onClick={() => setShowVarietalModal(false)}
-                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold hover:bg-[#496E3E] transition-colors duration-200"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Generate Question Modal */}
-        {showGenerateQuestionModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-              <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-              <input
-                type="text"
-                placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-                className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                value={newQuestionTopic}
-                onChange={(e) => setNewQuestionTopic(e.target.value)}
-              />
-              <button
-                onClick={handleGenerateQuestion}
-                className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold hover:bg-[#496E3E] transition-colors duration-200"
-                disabled={llmLoading || !newQuestionTopic.trim()}
-              >
-                {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-              </button>
-              <button
-                onClick={() => setShowGenerateQuestionModal(false)}
-                className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default App;
+                  It's a tie! Winners: {winners.map(w => w.
