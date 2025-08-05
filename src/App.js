@@ -1069,7 +1069,7 @@ const WINE_VARIETAL_NAMES_SET = new Set(WINE_VARIETALS.map(v => v.name));
 const generateGameCode = () => {
   // Only use uppercase letters for the game code
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
+  let gameCode = '';
   for (let i = 0; i < 4; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
@@ -1379,7 +1379,7 @@ const App = () => {
     setLoading(true);
     setError('');
 
-    const operation = async () => {
+    const nameOperation = async () => {
       const userProfileRef = doc(db, `artifacts/${firestoreAppId}/users/${userId}/profile/userProfile`);
       await setDoc(userProfileRef, { userName: nameInput.trim() }, { merge: true });
       setUserName(nameInput.trim());
@@ -1448,7 +1448,7 @@ const App = () => {
     setLoading(true);
     setError('');
 
-    const operation = async () => {
+    const gameCreationOperation = async () => {
       let newGameId;
       let isUnique = false;
       let attempts = 0;
@@ -1514,7 +1514,7 @@ const App = () => {
 
     const normalizedIdToJoin = gameCodeInput.trim().toUpperCase();
 
-    const operation = async () => {
+    const joinOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedIdToJoin);
       const docSnap = await getDoc(gameDocRef);
       
@@ -1571,7 +1571,7 @@ const App = () => {
 
     setFeedback(newFeedback);
 
-    const operation = async () => {
+    const answerOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
       const updatedPlayers = gameData.players.map(p => {
         if (p.id === userId) {
@@ -1613,7 +1613,7 @@ const App = () => {
 
     const nextIndex = gameData.currentQuestionIndex + 1;
 
-    const operation = async () => {
+    const nextQuestionOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
       const resetPlayers = gameData.players.map(p => ({
         ...p,
@@ -1643,44 +1643,32 @@ const App = () => {
       setError('Failed to advance question.');
     }
   };
-const existingPlayer = players.find(p => p.id === userId);
-const existingScore = existingPlayer ? existingPlayer.score : 0;
+// Find the existing player and calculate new score
+const existingPlayer = gameData.players.find(p => p.id === userId);
+const currentScore = existingPlayer ? existingPlayer.score : 0;
 
-const tentativeScore = selectedOption === currentQuestion.correctAnswer ? existingScore + 1 : existingScore;
-const safeScore = Math.max(existingScore, tentativeScore);
+// Calculate the new score (only increase, never decrease)
+const newScore = selectedOption === currentQuestion.correctAnswer
+  ? currentScore + 1
+  : currentScore;
 
-const updatedPlayers = players.map(p => 
-  p.id === userId 
-    ? { ...p, score: safeScore, selectedAnswerForQuestion: selectedOption } 
-    : p
-);
-const currentPlayer = gameData.players.find(p => p.id === userId);
-const currentPlayerScore = existingPlayer ? existingPlayer.score : 0;
-
-// Calculate the would-be new score
-const tentativeScore = selectedOption === currentQuestion.correctAnswer
-  ? existingScore + 1
-  : existingScore;
-
-// Protect score: never decrease!
-const safeScore = Math.max(existingScore, tentativeScore);
+const finalScore = Math.max(currentScore, newScore);
 
 // Update this player object
-const updatedPlayers = gameData.players.map(p =>
+const playersUpdate = gameData.players.map(p =>
   p.id === userId
     ? {
         ...p,
-        score: safeScore,
+        score: finalScore,
         selectedAnswerForQuestion: selectedOption,
-        feedbackForQuestion: tentativeScore > existingScore ? "Correct!" : "Incorrect"
+        feedbackForQuestion: newScore > currentScore ? "Correct!" : "Incorrect"
       }
     : p
 );
 
 // Submit update to Firestore
-await updateDoc(gameDocRef, { players: updatedPlayers });
+await updateDoc(gameDocRef, { players: playersUpdate });
 
-await updateDoc(gameDocRef, { players: updatedPlayers });
 
   const restartMultiplayerQuiz = async () => {
     if (!gameData || gameData.hostId !== userId) {
@@ -1688,7 +1676,7 @@ await updateDoc(gameDocRef, { players: updatedPlayers });
       return;
     }
 
-    const operation = async () => {
+    const restartOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
       const resetPlayers = gameData.players.map(p => ({
         ...p,
@@ -1776,7 +1764,7 @@ await updateDoc(gameDocRef, { players: updatedPlayers });
     setShowGenerateQuestionModal(false);
     setError('');
 
-    const prompt = `Generate a multiple-choice quiz question about ${newQuestionTopic} at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format: {"question": "...", "options": ["...", "...", "...", "..."], "correctAnswer": "...", "explanation": "..."}`;
+    const questionPrompt = ... `Generate a multiple-choice quiz question about ${newQuestionTopic} at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format: {"question": "...", "options": ["...", "...", "...", "..."], "correctAnswer": "...", "explanation": "..."}`;
 
     const schema = {
       type: "OBJECT",
@@ -1795,7 +1783,7 @@ await updateDoc(gameDocRef, { players: updatedPlayers });
       setQuestions(prevQuestions => [...prevQuestions, generatedQuestion]);
 
       if (mode === 'multiplayer' && activeGameId) {
-        const operation = async () => {
+        const questionUpdateOperation = async () => {
           const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
           await updateDoc(gameDocRef, {
             questions: [...gameData.questions, generatedQuestion],
@@ -1820,7 +1808,7 @@ await updateDoc(gameDocRef, { players: updatedPlayers });
     setVarietalElaboration('');
     setError('');
 
-    const prompt = `Provide a concise, 2-3 sentence description of the wine varietal ${varietalName}. Focus on its typical characteristics and origin.`;
+   const varietalPrompt = ... `Provide a concise, 2-3 sentence description of the wine varietal ${varietalName}. Focus on its typical characteristics and origin.`;
     const elaboration = await callGeminiAPI(prompt);
 
     if (elaboration) {
@@ -1929,7 +1917,7 @@ await updateDoc(gameDocRef, { players: updatedPlayers });
         </div>
       );
     } else if (mode === 'singlePlayer') {
-      const currentQuestion = questions[currentQuestionIndex];
+     const singlePlayerQuestion = questions[currentQuestionIndex];
       const isVarietalAnswer = currentQuestion.correctAnswer.includes && WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
 
       return (
