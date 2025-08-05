@@ -1654,6 +1654,31 @@ const updatedPlayers = players.map(p =>
     ? { ...p, score: safeScore, selectedAnswerForQuestion: selectedOption } 
     : p
 );
+const existingPlayer = gameData.players.find(p => p.id === userId);
+const existingScore = existingPlayer ? existingPlayer.score : 0;
+
+// Calculate the would-be new score
+const tentativeScore = selectedOption === currentQuestion.correctAnswer
+  ? existingScore + 1
+  : existingScore;
+
+// Protect score: never decrease!
+const safeScore = Math.max(existingScore, tentativeScore);
+
+// Update this player object
+const updatedPlayers = gameData.players.map(p =>
+  p.id === userId
+    ? {
+        ...p,
+        score: safeScore,
+        selectedAnswerForQuestion: selectedOption,
+        feedbackForQuestion: tentativeScore > existingScore ? "Correct!" : "Incorrect"
+      }
+    : p
+);
+
+// Submit update to Firestore
+await updateDoc(gameDocRef, { players: updatedPlayers });
 
 await updateDoc(gameDocRef, { players: updatedPlayers });
 
