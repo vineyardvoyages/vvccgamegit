@@ -1762,7 +1762,7 @@ const playersUpdate = gameData.players.map(p =>
     setShowGenerateQuestionModal(false);
     setError('');
 
-    const questionPrompt = ... `Generate a multiple-choice quiz question about ${newQuestionTopic} at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format: {"question": "...", "options": ["...", "...", "...", "..."], "correctAnswer": "...", "explanation": "..."}`;
+    const questionPrompt = `Generate a multiple-choice quiz question about ${newQuestionTopic} at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format: {"question": "...", "options": ["...", "...", "...", "..."], "correctAnswer": "...", "explanation": "..."}`;
 
     const schema = {
       type: "OBJECT",
