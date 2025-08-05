@@ -1489,7 +1489,7 @@ const App = () => {
     };
 
     try {
-      await queueOperation(operation);
+      await queueOperation(gameCreationOperation)
     } catch (e) {
       console.error('Error creating game:', e);
       setError('Failed to create a new game.');
@@ -1543,7 +1543,7 @@ const App = () => {
     };
 
     try {
-      await queueOperation(operation);
+      await queueOperation(joinOperation)
     } catch (e) {
       console.error('Error joining game:', e);
       setError(e.message || 'Failed to join the game.');
@@ -1592,7 +1592,7 @@ const App = () => {
     };
 
     try {
-      await queueOperation(operation);
+      await queueOperation(answerOperation)
     } catch (e) {
       console.error('Error updating score:', e);
       setError('Failed to update your score.');
@@ -1637,7 +1637,7 @@ const App = () => {
     };
 
     try {
-      await queueOperation(operation);
+      await queueOperation(nextQuestionOperation)
     } catch (e) {
       console.error('Error advancing question:', e);
       setError('Failed to advance question.');
@@ -1695,7 +1695,7 @@ const playersUpdate = gameData.players.map(p =>
     };
 
     try {
-      await queueOperation(operation);
+      await queueOperation(restartOperation)
     } catch (e) {
       console.error('Error restarting multiplayer quiz:', e);
       setError('Failed to restart multiplayer quiz.');
