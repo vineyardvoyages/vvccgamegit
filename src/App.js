@@ -1655,7 +1655,7 @@ const updatedPlayers = players.map(p =>
     : p
 );
 const currentPlayer = gameData.players.find(p => p.id === userId);
-const existingScore = existingPlayer ? existingPlayer.score : 0;
+const currentPlayerScore = existingPlayer ? existingPlayer.score : 0;
 
 // Calculate the would-be new score
 const tentativeScore = selectedOption === currentQuestion.correctAnswer
