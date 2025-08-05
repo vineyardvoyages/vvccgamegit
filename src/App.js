@@ -1576,7 +1576,7 @@ const App = () => {
       const updatedPlayers = gameData.players.map(p => {
         if (p.id === userId) {
           return {
-            ...p,
+            p,
             score: newScore,
             selectedAnswerForQuestion: selectedOption,
             feedbackForQuestion: newFeedback
@@ -1616,7 +1616,7 @@ const App = () => {
     const nextQuestionOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
       const resetPlayers = gameData.players.map(p => ({
-        ...p,
+        p,
         selectedAnswerForQuestion: null,
         feedbackForQuestion: null
       }));
@@ -1658,7 +1658,7 @@ const finalScore = Math.max(currentScore, newScore);
 const playersUpdate = gameData.players.map(p =>
   p.id === userId
     ? {
-        ...p,
+        p,
         score: finalScore,
         selectedAnswerForQuestion: selectedOption,
         feedbackForQuestion: newScore > currentScore ? "Correct!" : "Incorrect"
@@ -1677,7 +1677,7 @@ const playersUpdate = gameData.players.map(p =>
     const restartOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
       const resetPlayers = gameData.players.map(p => ({
-        ...p,
+       p,
         score: 0,
         selectedAnswerForQuestion: null,
         feedbackForQuestion: null
@@ -1806,7 +1806,7 @@ const playersUpdate = gameData.players.map(p =>
     setVarietalElaboration('');
     setError('');
 
-   const varietalPrompt = ... `Provide a concise, 2-3 sentence description of the wine varietal ${varietalName}. Focus on its typical characteristics and origin.`;
+   const varietalPrompt = `Provide a concise, 2-3 sentence description of the wine varietal ${varietalName}. Focus on its typical characteristics and origin.`;
     const elaboration = await callGeminiAPI(prompt);
 
     if (elaboration) {
