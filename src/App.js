@@ -1069,11 +1069,11 @@ const WINE_VARIETAL_NAMES_SET = new Set(WINE_VARIETALS.map(v => v.name));
 const generateGameCode = () => {
   // Only use uppercase letters for the game code
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let gameCode = '';
-  for (let i = 0; i < 4; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
+let gameCode = '';
+for (let i = 0; i < 4; i++) {
+  gameCode += characters.charAt(Math.floor(Math.random() * characters.length)); // ✅ Use 'gameCode'
+}
+return gameCode; // ✅ Return 'gameCode'
 };
 
 // Connection status utilities
@@ -1667,8 +1667,6 @@ const playersUpdate = gameData.players.map(p =>
 );
 
 // Submit update to Firestore
-await updateDoc(gameDocRef, { players: playersUpdate });
-
 
   const restartMultiplayerQuiz = async () => {
     if (!gameData || gameData.hostId !== userId) {
