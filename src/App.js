@@ -2278,8 +2278,11 @@ const App = () => {
                             : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40 transform hover:scale-102 hover:-translate-y-1'
                       }`}
                     >
-                      {option} </button> 
-                    </div>
+<button
+  // ... button props
+>
+  {option}
+</div>  <!-- This should be </button> -->
                   ))
                 )}
               </div>
