@@ -1553,8 +1553,10 @@ const App = () => {
   };
 
   const handleMultiplayerAnswerClick = async (selectedOption) => {
-    if (gameData.players.find(p => p.id === userId)?.selectedAnswerForQuestion || gameData.quizEnded) return;
-
+if (
+  (gameData && Array.isArray(gameData.players) && gameData.players.find(p => p.id === userId)?.selectedAnswerForQuestion) 
+  || gameData?.quizEnded
+) return;
     setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
 
@@ -1573,7 +1575,9 @@ const App = () => {
 
     const answerOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-      const updatedPlayers = gameData.players.map(p => {
+      const playerArray = (gameData && Array.isArray(gameData.players)) ? gameData.players : [];
+      const updatedPlayers = playerArray.map(p => {
+
         if (p.id === userId) {
           return {
             ...p,
@@ -1613,13 +1617,14 @@ const App = () => {
 
     const nextIndex = gameData.currentQuestionIndex + 1;
 
-    const nextQuestionOperation = async () => {
-      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-      const resetPlayers = gameData.players.map(p => ({
-        ...p,
-        selectedAnswerForQuestion: null,
-        feedbackForQuestion: null
-      }));
+  const nextQuestionOperation = async () => {
+  const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+  const playerArray = (gameData && Array.isArray(gameData.players)) ? gameData.players : [];
+  const resetPlayers = playerArray.map(p => ({
+    ...p,
+    selectedAnswerForQuestion: null,
+    feedbackForQuestion: null
+  }));
 
       if (nextIndex < gameData.questions.length) {
         await updateDoc(gameDocRef, {
@@ -1651,7 +1656,8 @@ const App = () => {
 
     const restartOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-      const resetPlayers = gameData.players.map(p => ({
+      const playerArray = (gameData && Array.isArray(gameData.players)) ? gameData.players : [];
+      const resetPlayers = playerArray.map(p => ({
        ...p,
         score: 0,
         selectedAnswerForQuestion: null,
