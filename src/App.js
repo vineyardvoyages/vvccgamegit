@@ -1644,7 +1644,8 @@ const App = () => {
     }
   };
 // Find the existing player and calculate new score
-const existingPlayer = gameData.players.find(p => p.id === userId);
+const playerArray = gameData && Array.isArray(gameData.players) ? gameData.players : [];
+const existingPlayer = playerArray.find(p => p.id === userId);
 const currentScore = existingPlayer ? existingPlayer.score : 0;
 
 // Calculate the new score (only increase, never decrease)
