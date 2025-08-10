@@ -2264,27 +2264,20 @@ const App = () => {
                   currentQuestion.options.map((option, index) => (
                   <button
   onClick={() => handleMultiplayerAnswerClick(option)}
-  disabled={safeGameData.questionRevealed || safeGameData.quizEnded}
-  className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-300 ease-in-out ${
-    safeGameData.questionRevealed
-      ? option === currentQuestion.correctAnswer
-        ? 'bg-green-100 text-green-800 ring-2 ring-green-500 animate-pulse'
-        : option === playerSelectedAnswer
-          ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
-          : 'bg-gray-100 text-gray-600 cursor-not-allowed'
+disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || safeGameData.quizEnded}
+className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-300 ease-in-out ${
+  currentPlayerGameData?.selectedAnswerForQuestion !== null
+    ? option === currentQuestion.correctAnswer
+      ? 'bg-green-100 text-green-800 ring-2 ring-green-500 animate-pulse'
       : option === playerSelectedAnswer
-        ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500'
-        : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40 transform hover:scale-102 hover:-translate-y-1'
-  }`}
+        ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
+        : 'bg-gray-100 text-gray-600 cursor-not-allowed'
+    : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40 transform hover:scale-102 hover:-translate-y-1'
+}`}
 >
   {option}
-</button>  
+</button>
 
-  {option}
-</div>  <!-- This should be </button> -->
-                  ))
-                )}
-              </div>
 
               {/* Enhanced answer display logic */}
               {safeGameData.questionRevealed && (
