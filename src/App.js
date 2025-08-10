@@ -1643,32 +1643,6 @@ const App = () => {
       setError('Failed to advance question.');
     }
   };
-// Find the existing player and calculate new score
-const playerArray = gameData && Array.isArray(gameData.players) ? gameData.players : [];
-const existingPlayer = playerArray.find(p => p.id === userId);
-const currentScore = existingPlayer ? existingPlayer.score : 0;
-
-// Calculate the new score (only increase, never decrease)
-const newScore = selectedOption === currentQuestion.correctAnswer
-  ? currentScore + 1
-  : currentScore;
-
-const finalScore = Math.max(currentScore, newScore);
-
-// Update this player object
-const playersUpdate = gameData.players.map(p =>
-  p.id === userId
-    ? {
-        ...p,
-        score: finalScore,
-        selectedAnswerForQuestion: selectedOption,
-        feedbackForQuestion: newScore > currentScore ? "Correct!" : "Incorrect"
-      }
-    : p
-);
-
-// Submit update to Firestore
-
   const restartMultiplayerQuiz = async () => {
     if (!gameData || gameData.hostId !== userId) {
       setError('Only the Proctor (host) can restart the quiz.');
