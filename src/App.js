@@ -2278,7 +2278,7 @@ const App = () => {
   }`}
 >
   {option}
-</button>  ✅ <!-- CORRECT: Proper closing tag -->
+</button>  
 
   {option}
 </div>  <!-- This should be </button> -->
