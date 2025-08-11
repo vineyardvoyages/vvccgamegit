@@ -2277,14 +2277,7 @@ className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all d
 >
   {option}
 </button>
-              {safeGameData.questionRevealed && (
-                <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner animate-slide-up">
-                  {isHost && (
-                    <p className="text-gray-700 text-center mb-2">
-                      <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
-                    </p>
-                  )}
-                  
+                 
                   <p className="text-gray-700 text-center">
                     <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
                   </p>
