@@ -2277,9 +2277,6 @@ className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all d
 >
   {option}
 </button>
-
-
-              {/* Enhanced answer display logic */}
               {safeGameData.questionRevealed && (
                 <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner animate-slide-up">
                   {isHost && (
