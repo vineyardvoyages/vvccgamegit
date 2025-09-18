@@ -1479,21 +1479,21 @@ const App = () => {
   lastActivity: new Date().toISOString()
 });
       setActiveGameId(newGameId);
-      setMode('multiplayer');
       console.log('Mode:', mode);
 console.log('ActiveGameId:', activeGameId);
 console.log('GameData:', gameData);
 
     };
 
-    try {
-      await queueOperation(gameCreationOperation)
-    } catch (e) {
-      console.error('Error creating game:', e);
-      setError('Failed to create a new game.');
-    } finally {
-      setLoading(false);
-    }
+try {
+  await queueOperation(gameCreationOperation)
+  setMode('multiplayer') // ← Move it here instead
+} catch (e) {
+  console.error('Error creating game:', e)
+  setError('Failed to create a new game.')
+} finally {
+  setLoading(false)
+}
   };
 
   const joinExistingGame = async () => {
