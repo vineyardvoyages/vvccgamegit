@@ -2354,7 +2354,7 @@ className="w-full bg-orange-600 text-white py-3 rounded-lg text-xl font-bold hov
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
       style={{
-        backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyardatsunset.jpg')`,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
