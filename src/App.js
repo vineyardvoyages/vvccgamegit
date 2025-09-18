@@ -1467,17 +1467,17 @@ const App = () => {
       const selectedGameQuestions = getTenRandomQuestions();
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
       
-      await setDoc(gameDocRef, {
-        hostId: userId,
-        hostName: userName,
-        currentQuestionIndex: 0,
-        quizEnded: false,
-        players: [],
-        questions: selectedGameQuestions,
-        createdAt: new Date().toISOString(),
-        lastActivity: new Date().toISOString()
-      });
-
+     await setDoc(gameDocRef, {
+  hostId: userId,
+  hostName: userName,
+  currentQuestionIndex: 0,
+  quizEnded: false,
+  players: [],
+  questions: selectedGameQuestions,
+  showAnswers: false,
+  createdAt: new Date().toISOString(),
+  lastActivity: new Date().toISOString()
+});
       setActiveGameId(newGameId);
       setMode('multiplayer');
     };
@@ -1621,16 +1621,18 @@ const resetPlayers = playerArray.map(p => ({
 
       if (nextIndex < gameData.questions.length) {
         await updateDoc(gameDocRef, {
-          currentQuestionIndex: nextIndex,
-          players: resetPlayers,
-          lastActivity: new Date().toISOString()
-        });
+  currentQuestionIndex: nextIndex,
+  players: resetPlayers,
+  showAnswers: false,
+  lastActivity: new Date().toISOString()
+});
       } else {
-        await updateDoc(gameDocRef, {
-          quizEnded: true,
-          players: resetPlayers,
-          lastActivity: new Date().toISOString()
-        });
+       await updateDoc(gameDocRef, {
+  quizEnded: true,
+  players: resetPlayers,
+  showAnswers: false,
+  lastActivity: new Date().toISOString()
+});
       }
     };
 
@@ -2211,6 +2213,33 @@ return (
                   </button>
                 </div>
               )}
+{/* Proctor Reveal Answers Control */}
+{isHost && (
+  <>
+    {!gameData.showAnswers ? (
+      <button
+        onClick={async () => {
+          const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+          await updateDoc(gameDocRef, { showAnswers: true });
+        }}
+        className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105 mt-4"
+      >
+        Reveal Answers
+      </button>
+    ) : (
+      <button
+        onClick={async () => {
+          const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+          await updateDoc(gameDocRef, { showAnswers: false });
+        }}
+        className="w-full bg-gray-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-gray-400 active:bg-gray-800 transform hover:scale-105 mt-4"
+      >
+        Hide Answers
+      </button>
+    )}
+  </>
+)}
+
             </div>
           ) : (
             <div className="text-center space-y-6 mt-8 animate-fade-in">
