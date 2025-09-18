@@ -44,19 +44,19 @@ const WINE_VARIETALS = [
   { name: "Grenache", country: "France" },
   { name: "Nebbiolo", country: "Italy" },
   { name: "Barbera", country: "Italy" },
-  { name: "GrÃƒÂ¼ner Veltliner", country: "Austria" },
-  { name: "AlbariÃƒÂ±o", country: "Spain" },
+  { name: "Grüner Veltliner", country: "Austria" },
+  { name: "Albariño", country: "Spain" },
   { name: "Verdejo", country: "Spain" },
-  { name: "GewÃƒÂ¼rztraminer", country: "Germany" },
+  { name: "Gewürztraminer", country: "Germany" },
   { name: "Pinot Grigio", country: "Italy" },
   { name: "Gamay", country: "France" },
-  { name: "MourvÃƒÂ¨dre", country: "France" },
+  { name: "Mourvèdre", country: "France" },
   { name: "Petit Verdot", country: "France" },
-  { name: "CarmenÃƒÂ¨re", country: "Chile" },
+  { name: "Carmenère", country: "Chile" },
   { name: "Primitivo", country: "Italy" },
-  { name: "TorrontÃƒÂ©s", country: "Argentina" },
+  { name: "Torrontés", country: "Argentina" },
   { name: "Vermentino", country: "Italy" },
-  { name: "SÃƒÂ©millon", country: "France" },
+  { name: "Sémillon", country: "France" },
   { name: "Muscat", country: "Greece" },
   { name: "Pinotage", country: "South Africa" },
   { name: "Aglianico", country: "Italy" },
@@ -66,7 +66,7 @@ const WINE_VARIETALS = [
   { name: "Xinomavro", country: "Greece" },
   { name: "Assyrtiko", country: "Greece" },
   { name: "Furmint", country: "Hungary" },
-  { name: "BlaufrÃƒÂ¤nkisch", country: "Austria" },
+  { name: "Blaufränkisch", country: "Austria" },
   { name: "Zweigelt", country: "Austria" },
   { name: "Bonarda", country: "Argentina" },
   { name: "Concord", country: "USA" },
@@ -90,9 +90,9 @@ const WINE_VARIETALS = [
   { name: "Chasselas", country: "Switzerland" },
   { name: "Sylvaner", country: "Germany" },
   { name: "Dornfelder", country: "Germany" },
-  { name: "MÃƒÂ¼ller-Thurgau", country: "Germany" },
+  { name: "Müller-Thurgau", country: "Germany" },
   { name: "Portugieser", country: "Germany" },
-  { name: "SpÃƒÂ¤tburgunder", country: "Germany" }, // German Pinot Noir
+  { name: "Spätburgunder", country: "Germany" }, // German Pinot Noir
   { name: "Grillo", country: "Italy" },
   { name: "Inzolia", country: "Italy" },
   { name: "Catarratto", country: "Italy" },
@@ -126,7 +126,7 @@ const WINE_VARIETALS = [
   { name: "Mondeuse", country: "France" },
   { name: "Muscadelle", country: "France" },
   { name: "Nielluccio", country: "France" }, // Sangiovese
-  { name: "NÃƒÂ©grette", country: "France" },
+  { name: "Négrette", country: "France" },
   { name: "Pascal Blanc", country: "France" },
   { name: "Perdrix", country: "France" },
   { name: "Picardan", country: "France" },
@@ -138,7 +138,7 @@ const WINE_VARIETALS = [
   { name: "Sciaccarello", country: "France" },
   { name: "Tannat", country: "France" },
   { name: "Terret Noir", country: "France" },
-  { name: "ValdiguÃƒÂ©", country: "France" },
+  { name: "Valdigué", country: "France" },
   { name: "Ruby Cabernet", country: "USA" },
   { name: "Emerald Riesling", country: "USA" },
   { name: "Symphony", country: "USA" },
@@ -231,8 +231,8 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "What is the ideal serving temperature for most red wines?",
-    options: ["Chilled (40-45Ã‚Â°F)", "Room temperature (68-72Ã‚Â°F)", "Cool (60-65Ã‚Â°F)", "Warm (75-80Ã‚Â°F)"],
-    correctAnswer: "Cool (60-65Ã‚Â°F)",
+    options: ["Chilled (40-45°F)", "Room temperature (68-72°F)", "Cool (60-65°F)", "Warm (75-80°F)"],
+    correctAnswer: "Cool (60-65°F)",
     explanation: "Most red wines are best served slightly cooler than typical room temperature to highlight their fruit and acidity."
   },
   {
@@ -251,13 +251,7 @@ const WINE_QUIZ_QUESTIONS = [
     question: "Which white grape is typically used to make dry, aromatic wines in the Loire Valley, France?",
     options: ["Chardonnay", "Sauvignon Blanc", "Pinot Gris", "Riesling"],
     correctAnswer: "Sauvignon Blanc",
-    explanation: "Sauvignon Blanc is the key grape in regions like Sancerre and Pouilly-FumÃƒÂ© in the Loire Valley, producing crisp, mineral-driven wines."
-  },
-  {
-    question: "What is a Proctor?",
-    options: ["A winemaker", "A wine critic", "A trained and knowledgeable wine professional", "A wine seller"],
-    correctAnswer: "A trained and knowledgeable wine professional",
-    explanation: "A Proctor is a highly trained and knowledgeable wine professional, typically working in fine dining restaurants, now serving as the moderator."
+    explanation: "Sauvignon Blanc is the key grape in regions like Sancerre and Pouilly-Fumé in the Loire Valley, producing crisp, mineral-driven wines."
   },
   {
     question: "Which of these is a sweet, fortified wine from Portugal?",
@@ -320,7 +314,7 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "Dregs refer to the sediment, typically consisting of dead yeast cells, grape solids, and tartrates, found at the bottom of bottles of aged wine."
   },
   {
-    question: "This dark-skinned grape is famously called Shiraz in Australia and is known for producing full-bodied, spicy red wines in the RhÃƒÂ´ne Valley of France. What is its name?",
+    question: "This dark-skinned grape is famously called Shiraz in Australia and is known for producing full-bodied, spicy red wines in the Rhôe Valley of France. What is its name?",
     options: ["Pinot Noir", "Merlot", "Syrah", "Zinfandel"],
     correctAnswer: "Syrah",
     explanation: "Syrah or Shiraz is a versatile dark-skinned grape known for producing powerful, peppery, and dark-fruited wines in both the Old and New World."
@@ -385,10 +379,10 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "Residual sugar (RS) refers to the grape sugars that are not converted into alcohol during fermentation, contributing to a wine's sweetness."
   },
   {
-    question: "Which grape is known for producing full-bodied, often spicy red wines in the RhÃƒÂ´ne Valley, France?",
+    question: "Which grape is known for producing full-bodied, often spicy red wines in the Rhôe Valley, France?",
     options: ["Gamay", "Pinot Noir", "Syrah", "Merlot"],
     correctAnswer: "Syrah",
-    explanation: "Syrah or Shiraz is the dominant red grape in the Northern RhÃƒÂ´ne, producing powerful, peppery, and dark-fruited wines."
+    explanation: "Syrah or Shiraz is the dominant red grape in the Northern Rhôe, producing powerful, peppery, and dark-fruited wines."
   },
   {
     question: "What is the typical alcohol content of a dry table wine?",
@@ -404,7 +398,7 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "What is the name of the white wine region in Burgundy, France, famous for unoaked Chardonnay?",
-    options: ["Pouilly-FumÃƒÂ©", "Sancerre", "Chablis", "Vouvray"],
+    options: ["Pouilly-Fumé", "Sancerre", "Chablis", "Vouvray"],
     correctAnswer: "Chablis",
     explanation: "Chablis is a sub-region of Burgundy known for producing crisp, mineral-driven Chardonnay wines that are typically unoaked."
   },
@@ -505,9 +499,9 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "What is the ideal temperature range for storing most wines long-term?",
-    options: ["30-40Ã‚Â°F", "45-65Ã‚Â°F", "70-80Ã‚Â°F", "Below 30Ã‚Â°F"],
-    correctAnswer: "45-65Ã‚Â°F",
-    explanation: "Most wines are best stored at a consistent temperature between 45-65Ã‚Â°F (7-18Ã‚Â°C) to ensure proper aging and prevent spoilage."
+    options: ["30-40°F", "45-65°F", "70-80°F", "Below 30°F"],
+    correctAnswer: "45-65°F",
+    explanation: "Most wines are best stored at a consistent temperature between 45-65°F (7-18°C) to ensure proper aging and prevent spoilage."
   },
   {
     question: "Which of these terms describes a wine with high acidity?",
@@ -559,9 +553,9 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "Which grape varietal is the most widely planted in the world?",
-    options: ["Merlot", "AirÃƒÂ©n", "Cabernet Sauvignon", "Chardonnay"],
-    correctAnswer: "AirÃƒÂ©n",
-    explanation: "While Cabernet Sauvignon and Merlot are very popular, AirÃƒÂ©n, a white grape primarily grown in Spain, historically holds the title for most widely planted by area."
+    options: ["Merlot", "Airén", "Cabernet Sauvignon", "Chardonnay"],
+    correctAnswer: "Airén",
+    explanation: "While Cabernet Sauvignon and Merlot are very popular, Airén, a white grape primarily grown in Spain, historically holds the title for most widely planted by area."
   },
   {
     question: "What is the name of the sweet, fortified wine from Jerez, Spain?",
@@ -583,7 +577,7 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "Which type of wine is typically served very chilled, often as a dessert wine?",
-    options: ["Dry red wine", "Dry white wine", "Ice Wine", "RosÃƒÂ© wine"],
+    options: ["Dry red wine", "Dry white wine", "Ice Wine", "Rosé wine"],
     correctAnswer: "Ice Wine",
     explanation: "Ice wine or Eiswein is a sweet dessert wine that is best served very chilled to enhance its sweetness and acidity."
   },
@@ -591,7 +585,7 @@ const WINE_QUIZ_QUESTIONS = [
   // Northern Virginia Specific Questions (100 questions)
   {
     question: "Which grape varietal is considered Virginia's signature white grape?",
-    options: ["Chardonnay", "Viognier", "Sauvignon Blanc", "AlbariÃƒÂ±o"],
+    options: ["Chardonnay", "Viognier", "Sauvignon Blanc", "Albariño"],
     correctAnswer: "Viognier",
     explanation: "Viognier is Virginia's official state grape, known for its aromatic and full-bodied white wines that thrives in the state's climate."
   },
@@ -699,9 +693,9 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "What is a common food pairing for Virginia ham?",
-    options: ["Light white wine", "Sweet dessert wine", "Dry RosÃƒÂ© or light-bodied red like Cabernet Franc", "Sparkling wine"],
-    correctAnswer: "Dry RosÃƒÂ© or light-bodied red like Cabernet Franc",
-    explanation: "The saltiness and richness of Virginia ham pair well with a crisp dry rosÃƒÂ© or a fruit-forward, slightly herbal Cabernet Franc."
+    options: ["Light white wine", "Sweet dessert wine", "Dry Rosé or light-bodied red like Cabernet Franc", "Sparkling wine"],
+    correctAnswer: "Dry Rosé or light-bodied red like Cabernet Franc",
+    explanation: "The saltiness and richness of Virginia ham pair well with a crisp dry Rosé or a fruit-forward, slightly herbal Cabernet Franc."
   },
   {
     question: "True or False: All grapes grown in Northern Virginia are native American varietals.",
@@ -735,9 +729,9 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "Which white grape varietal, known for its crispness, is gaining popularity in Virginia?",
-    options: ["Pinot Grigio", "Riesling", "AlbariÃƒÂ±o", "GewÃƒÂ¼rztraminer"],
-    correctAnswer: "AlbariÃƒÂ±o",
-    explanation: "AlbariÃƒÂ±o, a Spanish white grape, is showing promise in Virginia, producing vibrant, aromatic wines with good acidity."
+    options: ["Pinot Grigio", "Riesling", "Albariño", "Gewürztraminer"],
+    correctAnswer: "Albariño",
+    explanation: "Albariño, a Spanish white grape, is showing promise in Virginia, producing vibrant, aromatic wines with good acidity."
   },
   // Additional 75 Northern Virginia questions to reach 100...
   {
@@ -934,9 +928,9 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "What is the typical fermentation temperature for Virginia white wines?",
-    options: ["45-55Ã‚Â°F", "55-65Ã‚Â°F", "65-75Ã‚Â°F", "75-85Ã‚Â°F"],
-    correctAnswer: "55-65Ã‚Â°F",
-    explanation: "Virginia white wines are typically fermented at cooler temperatures (55-65Ã‚Â°F) to preserve delicate aromas and flavors."
+    options: ["45-55°F", "55-65°F", "65-75°F", "75-85°F"],
+    correctAnswer: "55-65°F",
+    explanation: "Virginia white wines are typically fermented at cooler temperatures (55-65°F) to preserve delicate aromas and flavors."
   },
   {
     question: "Which harvest method is most common in Virginia?",
@@ -1024,7 +1018,7 @@ const WINE_QUIZ_QUESTIONS = [
   },
   {
     question: "Which wine style represents Virginia's unique terroir expression?",
-    options: ["Bordeaux-style blends", "RhÃƒÂ´ne-style blends", "Burgundian-style wines", "Virginia has its own unique style"],
+    options: ["Bordeaux-style blends", "Rhôe-style blends", "Burgundian-style wines", "Virginia has its own unique style"],
     correctAnswer: "Virginia has its own unique style",
     explanation: "Virginia has developed its own unique wine style that reflects the state's terroir and winemaking philosophy."
   },
@@ -1557,48 +1551,50 @@ setMode('multiplayer');
     }
   };
 
-  const handleMultiplayerAnswerClick = async (selectedOption) => {
-if (
-  (gameData && Array.isArray(gameData.players) && gameData.players.find(p => p.id === userId)?.selectedAnswerForQuestion) 
-  || gameData?.quizEnded
-) return;
-    setAnswerSelected(true);
-    setSelectedAnswer(selectedOption);
+const handleMultiplayerAnswerClick = async (selectedOption) => {
+  // Do not allow changes after answers are revealed or quiz ended
+  if (!gameData || gameData.quizEnded || gameData.showAnswers) return;
 
-    const currentQuestion = questions[currentQuestionIndex];
-    let newFeedback;
-    let newScore = score;
+  const currentPlayer = gameData.players.find(p => p.id === userId);
+  if (!currentPlayer) return;
 
-    if (selectedOption === currentQuestion.correctAnswer) {
-      newScore = score + 1;
-      newFeedback = 'Correct!';
-    } else {
-      newFeedback = 'Incorrect.';
-    }
+  const currentQuestion = questions[currentQuestionIndex];
+  if (!currentQuestion) return;
 
-    setFeedback(newFeedback);
+  let newScore = currentPlayer.score;
+  let feedbackMsg = '';
 
-    const answerOperation = async () => {
-      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-      const playerArray = (gameData && Array.isArray(gameData.players)) ? gameData.players : [];
-const updatedPlayers = playerArray.map(p =>
-  p.id === userId
-    ? { ...p, score: newScore, selectedAnswerForQuestion: selectedOption, feedbackForQuestion: newFeedback }
-    : p
-);
-      await updateDoc(gameDocRef, { 
-        players: updatedPlayers,
-        lastActivity: new Date().toISOString()
-      });
-    };
+  if (selectedOption === currentQuestion.correctAnswer) {
+    newScore += 1;
+    feedbackMsg = 'Correct!';
+  } else {
+    feedbackMsg = 'Incorrect.';
+  }
 
-    try {
-      await queueOperation(answerOperation)
-    } catch (e) {
-      console.error('Error updating score:', e);
-      setError('Failed to update your score.');
-    }
-  };
+  // Update player state locally for UI
+  setAnswerSelected(true);
+  setSelectedAnswer(selectedOption);
+  setFeedback(feedbackMsg);
+  setScore(newScore);
+
+  // Update Firestore
+  const updatedPlayers = gameData.players.map(p =>
+    p.id === userId
+      ? { ...p, score: newScore, selectedAnswerForQuestion: selectedOption, feedbackForQuestion: feedbackMsg }
+      : p
+  );
+
+  const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+  try {
+    await updateDoc(gameDocRef, {
+      players: updatedPlayers,
+      lastActivity: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Error updating score:', e);
+    setError('Failed to update your score.');
+  }
+};
 
   const handleMultiplayerNextQuestion = async () => {
     if (!gameData || gameData.hostId !== userId) {
@@ -2142,7 +2138,7 @@ return (
                     <button
                       key={index}
                       onClick={() => handleMultiplayerAnswerClick(option)}
-                      disabled={currentPlayerGameData?.selectedAnswerForQuestion !== null || safeGameData.quizEnded}
+                      disabled={gameData.showAnswers || safeGameData.quizEnded}
                       className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-300 ease-in-out ${
                         currentPlayerGameData?.selectedAnswerForQuestion !== null
                           ? option === currentQuestion.correctAnswer
