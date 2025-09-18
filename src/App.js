@@ -1219,6 +1219,47 @@ const App = () => {
 
   // Enhanced Firebase initialization with offline persistence
   useEffect(() => {
+      let unsubscribe;
+  
+  if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
+    const normalizedGameId = activeGameId.toUpperCase();
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedGameId);
+    
+    unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setGameData(data);
+        
+        // Update local state for multiplayer quiz
+        setCurrentQuestionIndex(data.currentQuestionIndex || 0);
+        setQuizEnded(data.quizEnded || false);
+        setQuestions(data.questions || []);
+        
+        // Find current player's score using userId
+        const currentPlayerScore = data.players?.find(p => p.id === userId)?.score || 0;
+        setScore(currentPlayerScore);
+        
+        // Reset answer state when questions change
+        setFeedback('');
+        setAnswerSelected(false);
+        setSelectedAnswer(null);
+      } else {
+        setError('Game not found or ended.');
+        setActiveGameId(null);
+        setGameData(null);
+        setMode('multiplayer');
+      }
+    }, (err) => {
+      console.error('Error listening to game updates:', err);
+      setError('Failed to get real-time game updates.');
+    });
+  }
+  
+  return () => {
+    if (unsubscribe) unsubscribe();
+  };
+}, [mode, activeGameId, isAuthReady, userId]);
+
     try {
       app = initializeApp(firebaseConfig);
       db = getFirestore(app);
