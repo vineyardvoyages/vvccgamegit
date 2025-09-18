@@ -2258,7 +2258,7 @@ return (
                 sortedPlayers.map((player, index) => (
                   <li key={player.id} className={`flex justify-between items-center text-lg text-gray-700 p-2 rounded transition-colors duration-200 ${index === 0 ? 'bg-yellow-100' : ''}`}>
                     <span className="font-semibold">
-                      {index === 0 && 'Ã°Å¸â€˜â€˜ '}
+                      {index === 0 && '👤˜ '}
                       {player.userName}
                       {player.id === safeGameData.hostId ? (
                         <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
