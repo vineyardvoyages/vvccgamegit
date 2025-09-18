@@ -1307,7 +1307,7 @@ const App = () => {
       setError('Failed to initialize Firebase. Please try again later.');
       setLoading(false);
     }
-  }, []);
+  },
 
   // Enhanced multiplayer game data subscription with offline handling
   useEffect(() => {
