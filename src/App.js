@@ -1442,57 +1442,57 @@ const App = () => {
     setLoading(true);
     setError('');
 
-    const gameCreationOperation = async () => {
-      let newGameId;
-      let isUnique = false;
-      let attempts = 0;
-      const maxAttempts = 100;
+const gameCreationOperation = async () => {
+  let newGameId;
+  let isUnique = false;
+  let attempts = 0;
+  const maxAttempts = 100;
 
-      while (!isUnique && attempts < maxAttempts) {
-        const generatedCode = generateGameCode();
-        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedCode);
-        const docSnap = await getDoc(gameDocRef);
+  while (!isUnique && attempts < maxAttempts) {
+    const generatedCode = generateGameCode();
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedCode);
+    const docSnap = await getDoc(gameDocRef);
+    if (!docSnap.exists()) {
+      newGameId = generatedCode;
+      isUnique = true;
+    }
+    attempts++;
+  }
 
-        if (!docSnap.exists()) {
-          newGameId = generatedCode;
-          isUnique = true;
-        }
-        attempts++;
-      }
+  if (!isUnique) {
+    throw new Error('Could not generate a unique game ID. Please try again.');
+  }
 
-      if (!isUnique) {
-        throw new Error('Could not generate a unique game ID. Please try again.');
-      }
+  const selectedGameQuestions = getTenRandomQuestions();
+  const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
 
-      const selectedGameQuestions = getTenRandomQuestions();
-      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
-      
-     await setDoc(gameDocRef, {
-  hostId: userId,
-  hostName: userName,
-  currentQuestionIndex: 0,
-  quizEnded: false,
-  players: [],
-  questions: selectedGameQuestions,
-  showAnswers: false,
-  createdAt: new Date().toISOString(),
-  lastActivity: new Date().toISOString()
-});
-      setActiveGameId(newGameId);
-      console.log('Mode:', mode);
-console.log('ActiveGameId:', activeGameId);
-console.log('GameData:', gameData);
+  await setDoc(gameDocRef, {
+    hostId: userId,
+    hostName: userName,
+    currentQuestionIndex: 0,
+    quizEnded: false,
+    players: [],
+    questions: selectedGameQuestions,
+    showAnswers: false,
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString()
+  });
 
-    };
+  setActiveGameId(newGameId);
+
+  console.log('Mode:', mode);
+  console.log('ActiveGameId:', activeGameId);
+  console.log('GameData:', gameData);
+};
 
 try {
-  await queueOperation(gameCreationOperation)
-  setMode('multiplayer') // ← Move it here instead
+  await queueOperation(gameCreationOperation);
+  setMode('multiplayer');  // Move setMode here after game creation
 } catch (e) {
-  console.error('Error creating game:', e)
-  setError('Failed to create a new game.')
+  console.error('Error creating game:', e);
+  setError('Failed to create a new game.');
 } finally {
-  setLoading(false)
+  setLoading(false);
 }
   };
 
