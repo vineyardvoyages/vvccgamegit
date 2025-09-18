@@ -2155,40 +2155,50 @@ return (
                 )}
               </div>
 
-              {isHost && (
-                <p className="text-gray-700 text-center">
-                  <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
-                </p>
-              )}
-              
-              <p className="text-gray-700 text-center">
-                <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-              </p>
+        {/* Only show correct answer and explanation when proctor reveals answers */}
+{gameData.showAnswers && (
+  <>
+    <div className="mt-4 p-4 rounded-lg bg-green-50 shadow-inner animate-slide-up border-l-4 border-green-500">
+      <p className="text-gray-700 text-center text-lg">
+        <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
+      </p>
+      <p className="text-gray-700 text-center mt-2">
+        <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+      </p>
+      
+      {isVarietalAnswer && (
+        <div className="text-center mt-3">
+          <button 
+            onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
+            className="bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-md transform hover:scale-105"
+            disabled={llmLoading}
+          >
+            {llmLoading ? <LoadingSpinner size="sm" text="" /> : 'Elaborate on Varietal'}
+          </button>
+        </div>
+      )}
+    </div>
 
-              {playerFeedback && !isHost && (
-                <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner animate-slide-up">
-                  <p className={`text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                    {playerFeedback}
-                  </p>
-                  {playerFeedback === 'Incorrect.' && (
-                    <p className="text-gray-700 mt-2">
-                      <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                    </p>
-                  )}
-                  <p className="text-gray-700 mt-2">
-                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                  </p>
-                  
-                  {isVarietalAnswer && (
-                    <button 
-                      onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-md transform hover:scale-105"
-                      disabled={llmLoading}
-                    >
-                      {llmLoading ? <LoadingSpinner size="sm" text="" /> : 'Elaborate on Varietal'}
-                    </button>
-                  )}
-                </div>
+    {/* Show individual feedback only after reveal */}
+    {playerFeedback && (
+      <div className="mt-2 p-3 rounded-lg bg-blue-50 shadow-inner">
+        <p className={`text-center font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+          Your answer: {playerFeedback}
+        </p>
+      </div>
+    )}
+  </>
+)}
+
+{/* Before reveal, only show that player has selected an answer */}
+{!gameData.showAnswers && playerSelectedAnswer && (
+  <div className="mt-4 p-3 rounded-lg bg-blue-50 shadow-inner text-center">
+    <p className="text-blue-700 font-medium">
+      ✓ Answer submitted! Waiting for proctor to reveal results...
+    </p>
+  </div>
+)}
+
               )}
 
               {isHost && !safeGameData.quizEnded && (
@@ -2220,9 +2230,10 @@ return (
           const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
           await updateDoc(gameDocRef, { showAnswers: true });
         }}
-        className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105 mt-4"
-      >
-        Reveal Answers
+className="w-full bg-orange-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-orange-300 active:bg-orange-800 transform hover:scale-105 mt-4"
+>
+🔍 Reveal Answers
+
       </button>
     ) : (
       <button
@@ -2285,7 +2296,7 @@ return (
                 sortedPlayers.map((player, index) => (
                   <li key={player.id} className={`flex justify-between items-center text-lg text-gray-700 p-2 rounded transition-colors duration-200 ${index === 0 ? 'bg-yellow-100' : ''}`}>
                     <span className="font-semibold">
-                      {index === 0 && '👤˜ '}
+                      {index === 0 && '👤 '}
                       {player.userName}
                       {player.id === safeGameData.hostId ? (
                         <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
