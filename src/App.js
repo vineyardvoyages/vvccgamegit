@@ -1794,8 +1794,22 @@ const resetPlayers = playerArray.map(p => ({
 
   // Render based on mode with enhanced animations and design
   const renderContent = () => {
-    const safeGameData = gameData || { players: [], questions: [], currentQuestionIndex: 0, quizEnded: false, hostId: '', hostName: '' };
-
+    const safeGameData = gameData || {
+    players: [],
+    questions: [],
+    currentQuestionIndex: 0,
+    quizEnded: false,
+    hostId: null,
+    hostName: '',
+    showAnswers: false
+};
+    if (mode === 'multiplayer' && !gameData) {
+    return (
+        <div className="text-center space-y-4">
+            <LoadingSpinner size="lg" text="Creating game..." />
+        </div>
+    );
+}
     const isHost = safeGameData.hostId === userId;
     const currentQuestion = Array.isArray(questions) && questions.length > currentQuestionIndex 
       ? questions[currentQuestionIndex] 
