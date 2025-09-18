@@ -1480,6 +1480,10 @@ const App = () => {
 });
       setActiveGameId(newGameId);
       setMode('multiplayer');
+      console.log('Mode:', mode);
+console.log('ActiveGameId:', activeGameId);
+console.log('GameData:', gameData);
+
     };
 
     try {
@@ -2045,7 +2049,8 @@ return (
   </button>
 </div>
 );
-} else if (mode === 'multiplayer' && activeGameId) {
+} else if (mode === 'multiplayer' && (activeGameId || gameData)) {
+
 return (
 <div className="space-y-6 animate-fade-in">
   {/* Proctor Reconnect Banner */}
