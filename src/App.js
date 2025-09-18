@@ -1522,18 +1522,23 @@ const App = () => {
         const data = docSnap.data();
         const players = data.players;
         
-        if (!players.some(p => p.id === userId)) {
-          players.push({
-            id: userId,
-            score: 0,
-            userName: userName
-          });
-          
-          await updateDoc(gameDocRef, { 
-            players: players,
-            lastActivity: new Date().toISOString()
-          });
-        }
+       if (!players.some(p => p.id === userId)) {
+  players.push({
+    id: userId,
+    score: 0,
+    userName: userName,
+    selectedAnswerForQuestion: null,
+    feedbackForQuestion: null
+  });
+  await updateDoc(gameDocRef, {
+    players: players,
+    lastActivity: new Date().toISOString()
+  });
+}
+// Don't reset a returning player's score/data!
+setActiveGameId(normalizedIdToJoin);
+setMode('multiplayer');
+
 
         setActiveGameId(normalizedIdToJoin);
         setMode('multiplayer');
@@ -1576,19 +1581,11 @@ if (
     const answerOperation = async () => {
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
       const playerArray = (gameData && Array.isArray(gameData.players)) ? gameData.players : [];
-      const updatedPlayers = playerArray.map(p => {
-
-        if (p.id === userId) {
-          return {
-            ...p,
-            score: newScore,
-            selectedAnswerForQuestion: selectedOption,
-            feedbackForQuestion: newFeedback
-          };
-        }
-        return p;
-      });
-
+const updatedPlayers = playerArray.map(p =>
+  p.id === userId
+    ? { ...p, score: newScore, selectedAnswerForQuestion: selectedOption, feedbackForQuestion: newFeedback }
+    : p
+);
       await updateDoc(gameDocRef, { 
         players: updatedPlayers,
         lastActivity: new Date().toISOString()
@@ -1620,11 +1617,11 @@ if (
   const nextQuestionOperation = async () => {
   const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
   const playerArray = (gameData && Array.isArray(gameData.players)) ? gameData.players : [];
-  const resetPlayers = playerArray.map(p => ({
-    ...p,
-    selectedAnswerForQuestion: null,
-    feedbackForQuestion: null
-  }));
+const resetPlayers = playerArray.map(p => ({
+  ...p,
+  selectedAnswerForQuestion: null,
+  feedbackForQuestion: null // keep their score!
+}));
 
       if (nextIndex < gameData.questions.length) {
         await updateDoc(gameDocRef, {
@@ -1919,170 +1916,167 @@ if (
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {currentQuestion.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSinglePlayerAnswerClick(option)}
-                    disabled={answerSelected}
-                    className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-300 ease-in-out ${
-                      answerSelected
-                        ? option === currentQuestion.correctAnswer
-                          ? 'bg-green-100 text-green-800 ring-2 ring-green-500 animate-pulse'
-                          : selectedAnswer === option
-                            ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
-                            : 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                        : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40 transform hover:scale-102 hover:-translate-y-1'
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
+  {currentQuestion.options.map((option, index) => (
+    <button
+      key={index}
+      onClick={() => handleSinglePlayerAnswerClick(option)}
+      disabled={answerSelected}
+      className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-300 ease-in-out ${
+        answerSelected
+          ? option === currentQuestion.correctAnswer
+            ? 'bg-green-100 text-green-800 ring-2 ring-green-500 animate-pulse'
+            : selectedAnswer === option
+              ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
+              : 'bg-gray-100 text-gray-600 cursor-not-allowed'
+          : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40 transform hover:scale-102 hover:-translate-y-1'
+      }`}
+    >
+      {option}
+    </button>
+  ))}
+</div>
+{feedback && (
+  <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner animate-slide-up">
+    <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+      {feedback}
+    </p>
+    {feedback === 'Incorrect.' && (
+      <p className="text-gray-700 mt-2">
+        <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
+      </p>
+    )}
+    <p className="text-gray-700 mt-2">
+      <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+    </p>
 
-              {feedback && (
-                <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner animate-slide-up">
-                  <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                    {feedback}
-                  </p>
-                  {feedback === 'Incorrect.' && (
-                    <p className="text-gray-700 mt-2">
-                      <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                    </p>
-                  )}
-                  <p className="text-gray-700 mt-2">
-                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                  </p>
-                  
-                  {isVarietalAnswer && (
-                    <button 
-                      onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                      className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-md transform hover:scale-105"
-                      disabled={llmLoading}
-                    >
-                      {llmLoading ? <LoadingSpinner size="sm" text="" /> : 'Elaborate on Varietal'}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {answerSelected && (
-                <button
-                  onClick={handleSinglePlayerNextQuestion}
-                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6 hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105"
-                >
-                  {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="text-center space-y-6 animate-fade-in">
-              <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
-              <div className="text-6xl animate-bounce">Ã°Å¸Å½â€°</div>
-              <p className="text-2xl text-gray-700">
-                You scored <span className="font-extrabold text-[#6b2a58] text-3xl">{score}</span> out of <span className="font-extrabold text-[#6b2a58] text-3xl">{questions.length}</span>!
-              </p>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div 
-                  className="bg-gradient-to-r from-[#6b2a58] to-[#9CAC3E] h-4 rounded-full transition-all duration-1000"
-                  style={{ width: `${(score / questions.length) * 100}%` }}
-                ></div>
-              </div>
-              <p className="text-lg text-gray-600">Ready to explore more wines?</p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={restartSinglePlayerQuiz}
-                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105"
-                >
-                  Play Again
-                </button>
-                
-                <a
-                  href="https://www.vineyardvoyages.com/tours"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] transform hover:scale-105"
-                >
-                  Book a Tour Now!
-                </a>
-              </div>
-            </div>
-          )}
-          
+    {isVarietalAnswer && (
+      <button 
+        onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
+        className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-md transform hover:scale-105"
+        disabled={llmLoading}
+      >
+        {llmLoading ? <LoadingSpinner size="sm" text="" /> : 'Elaborate on Varietal'}
+      </button>
+    )}
+  </div>
+)}
+{answerSelected && (
+  <button
+    onClick={handleSinglePlayerNextQuestion}
+    className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6 hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105"
+  >
+    {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+  </button>
+)}
+</div>
+) : (
+<div className="text-center space-y-6 animate-fade-in">
+  <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
+  <div className="text-6xl animate-bounce">🎉</div>
+  <p className="text-2xl text-gray-700">
+    You scored <span className="font-extrabold text-[#6b2a58] text-3xl">{score}</span> out of <span className="font-extrabold text-[#6b2a58] text-3xl">{questions.length}</span>!
+  </p>
+  <div className="w-full bg-gray-200 rounded-full h-4">
+    <div 
+      className="bg-gradient-to-r from-[#6b2a58] to-[#9CAC3E] h-4 rounded-full transition-all duration-1000"
+      style={{ width: `${(score / questions.length) * 100}%` }}
+    ></div>
+  </div>
+  <p className="text-lg text-gray-600">Ready to explore more wines?</p>
+  
+  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+    <button
+      onClick={restartSinglePlayerQuiz}
+      className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105"
+    >
+      Play Again
+    </button>
+    
+    <a
+      href="https://www.vineyardvoyages.com/tours"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] transform hover:scale-105"
+    >
+      Book a Tour Now!
+    </a>
+  </div>
+</div>
+)}
+<button
+  onClick={() => setMode('initial')}
+  className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+>
+  Back to Mode Selection
+</button>
+</div>
+);
+} else if (mode === 'multiplayer' && !activeGameId) {
+return (
+<div className="text-center space-y-6 animate-fade-in">
+  <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
+  <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
+  
+  <button
+    onClick={createNewGame}
+    className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105"
+    disabled={loading}
+  >
+    {loading ? <LoadingSpinner size="sm" text="" /> : 'Create New Game (Proctor Mode)'}
+  </button>
+  
+  <div className="flex flex-col md:flex-row gap-4">
+    <input
+      type="text"
+      placeholder="Enter 4-character Game ID"
+      className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800 transition-colors duration-200"
+      value={gameCodeInput}
+      onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
+      maxLength={4}
+    />
+    <button
+      onClick={joinExistingGame}
+      disabled={gameCodeInput.length !== 4 || loading}
+      className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+    >
+      {loading ? <LoadingSpinner size="sm" text="" /> : 'Join Game (Player Mode)'}
+    </button>
+  </div>
+  
+  <button
+    onClick={() => setMode('initial')}
+    className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+  >
+    Back to Mode Selection
+  </button>
+</div>
+);
+} else if (mode === 'multiplayer' && activeGameId) {
+return (
+<div className="space-y-6 animate-fade-in">
+  {/* Proctor Reconnect Banner */}
+  {showReconnectBanner && isHost && (
+    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg animate-slide-down">
+      <div className="flex items-center justify-between">
+        <p className="font-semibold">Connection restored! Resume your game?</p>
+        <div className="flex space-x-2">
           <button
-            onClick={() => setMode('initial')}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            onClick={handleProctorReconnect}
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors"
+            disabled={isConnecting}
           >
-            Back to Mode Selection
+            {isConnecting ? <LoadingSpinner size="sm" text="" /> : 'Resume Game'}
+          </button>
+          <button
+            onClick={() => setShowReconnectBanner(false)}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+          >
+            Dismiss
           </button>
         </div>
-      );
-    } else if (mode === 'multiplayer' && !activeGameId) {
-      return (
-        <div className="text-center space-y-6 animate-fade-in">
-          <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
-          <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
-          
-          <button
-            onClick={createNewGame}
-            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E] transform hover:scale-105"
-            disabled={loading}
-          >
-            {loading ? <LoadingSpinner size="sm" text="" /> : 'Create New Game (Proctor Mode)'}
-          </button>
-          
-          <div className="flex flex-col md:flex-row gap-4">
-            <input
-              type="text"
-              placeholder="Enter 4-character Game ID"
-              className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800 transition-colors duration-200"
-              value={gameCodeInput}
-              onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
-              maxLength={4}
-            />
-            <button
-              onClick={joinExistingGame}
-              disabled={gameCodeInput.length !== 4 || loading}
-              className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
-            >
-              {loading ? <LoadingSpinner size="sm" text="" /> : 'Join Game (Player Mode)'}
-            </button>
-          </div>
-          
-          <button
-            onClick={() => setMode('initial')}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
-          >
-            Back to Mode Selection
-          </button>
-        </div>
-      );
-    } else if (mode === 'multiplayer' && activeGameId) {
-      return (
-        <div className="space-y-6 animate-fade-in">
-          {/* Proctor Reconnect Banner */}
-          {showReconnectBanner && isHost && (
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg animate-slide-down">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold">Connection restored! Resume your game?</p>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleProctorReconnect}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors"
-                    disabled={isConnecting}
-                  >
-                    {isConnecting ? <LoadingSpinner size="sm" text="" /> : 'Resume Game'}
-                  </button>
-                  <button
-                    onClick={() => setShowReconnectBanner(false)}
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+      </div>
+    </div>
+  )}
 
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
           <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
@@ -2225,7 +2219,7 @@ if (
           ) : (
             <div className="text-center space-y-6 mt-8 animate-fade-in">
               <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
-              <div className="text-6xl animate-bounce">Ã°Å¸Ââ€ </div>
+              <div className="text-6xl animate-bounce">🏆</div>
               {winners.length === 1 ? (
                 <p className="text-3xl font-extrabold text-green-700">Winner: {winners[0].userName}!</p>
               ) : (
