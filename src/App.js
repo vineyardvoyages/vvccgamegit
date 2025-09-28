@@ -1602,12 +1602,6 @@ const App = () => {
     }
   };
 
-  // Add reveal function
-  const revealAnswersToAll = async () => {
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-    await updateDoc(gameDocRef, { revealAnswers: true });
-  };
-
   const joinExistingGame = async () => { // No longer takes idToJoin as arg, uses gameCodeInput
     if (!gameCodeInput.trim() || gameCodeInput.trim().length !== 4) {
       setError("Please enter a 4-character game ID.");
@@ -1679,6 +1673,9 @@ const App = () => {
 
     try {
       await updateDoc(gameDocRef, { players: updatedPlayers });
+      // Reset local score back to true score, as only Firestore reveal should modify it
+      // This is a crucial reset to prevent premature score viewing by player
+      setScore(gameData.players.find(p => p.id === userId)?.score || 0); 
     } catch (e) {
       console.error("Error updating answer selection:", e);
       setError("Failed to submit your answer selection.");
