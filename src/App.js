@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'; 
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore'; 
 
 // Firebase Configuration (will read from Netlify Environment Variable)
 const firebaseConfig = {
@@ -1088,7 +1088,7 @@ const WINE_QUIZ_QUESTIONS = [
     wrongAnswerExplanations: {
       "Spring Blossom Festival": "While some spring events occur, harvest festivals are more prominent and seasonal.",
       "Summer Jazz Concerts": "Summer events happen but aren't as universally celebrated as harvest festivals.",
-      "Winter Sledding Competitions": "Wineries don't typically host sledding events."
+      "Winter Sledding Competitions": "Wineries don't typically host sledging events."
     }
   },
   {
@@ -1647,42 +1647,31 @@ const App = () => {
   };
 
   const handleMultiplayerAnswerClick = async (selectedOption) => {
-    console.log('Multiplayer: Clicked option:', selectedOption);
-    console.log('Multiplayer: Current Question:', gameData.questions[gameData.currentQuestionIndex]);
-    console.log('Multiplayer: Correct answer:', gameData.questions[gameData.currentQuestionIndex].correctAnswer);
-    console.log('Multiplayer: Is correct (direct comparison):', selectedOption === gameData.questions[gameData.currentQuestionIndex].correctAnswer);
-    console.log('Multiplayer: answerSelected state before update:', answerSelected);
-
-    // Prevent multiple answers or answers after quiz ended
-    if (gameData.players.find(p => p.id === userId)?.selectedAnswerForQuestion || gameData.quizEnded) {
-        return;
+    // CRITICAL GUARD: Only allow action if answers haven't been revealed
+    if (gameData?.revealAnswers || gameData?.quizEnded) {
+      setError("Answers have been revealed or quiz is over. Cannot change answer.");
+      return;
     }
 
-    setAnswerSelected(true); // Disable local buttons immediately
-    setSelectedAnswer(selectedOption); // Store selected answer locally for immediate visual feedback
+    // Update local state immediately for visual feedback
+    setAnswerSelected(true); 
+    setSelectedAnswer(selectedOption);
 
-    const currentQuestion = questions[currentQuestionIndex]; // Changed to use 'questions' state directly
-    let newFeedback = '';
-    let newScore = score;
-
-    if (selectedOption === currentQuestion.correctAnswer) {
-      newScore = score + 1;
-      newFeedback = 'Correct!';
-    } else {
-      newFeedback = 'Incorrect.';
-    }
-    setFeedback(newFeedback); // Set feedback immediately
-
-    // Update player's score and feedback in Firestore
+    // Update player's selection in Firestore (without immediate score change)
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const currentQuestion = questions[currentQuestionIndex]; // Get the question to check correctness
+    
+    // Store temporary feedback state locally for player's reference
+    const newFeedback = (selectedOption === currentQuestion.correctAnswer) ? 'Correct!' : 'Incorrect.';
+    setFeedback(newFeedback); 
+
     const updatedPlayers = gameData.players.map(p => {
         if (p.id === userId) {
             return {
                 ...p,
-                score: newScore,
-                // Store selected answer and feedback on player object in Firestore
+                // Only store the selection, score update is on reveal
                 selectedAnswerForQuestion: selectedOption,
-                feedbackForQuestion: newFeedback
+                feedbackForQuestion: newFeedback 
             };
         }
         return p;
@@ -1691,8 +1680,8 @@ const App = () => {
     try {
       await updateDoc(gameDocRef, { players: updatedPlayers });
     } catch (e) {
-      console.error("Error updating score:", e);
-      setError("Failed to update your score.");
+      console.error("Error updating answer selection:", e);
+      setError("Failed to submit your answer selection.");
     }
   };
 
@@ -1700,6 +1689,10 @@ const App = () => {
   const handleMultiplayerNextQuestion = async () => {
     if (!gameData || gameData.hostId !== userId) { // Only Proctor can advance questions
       setError("Only the Proctor (host) can advance questions.");
+      return;
+    }
+    if (!gameData.revealAnswers) { // Check if Proctor revealed answers
+      setError("Please reveal answers before proceeding to the next question.");
       return;
     }
 
@@ -1754,6 +1747,7 @@ const App = () => {
       await updateDoc(gameDocRef, {
         currentQuestionIndex: 0,
         quizEnded: false,
+        revealAnswers: false, // Reset reveal state
         players: resetPlayers,
         questions: newRandomQuestions,
       });
@@ -1763,10 +1757,35 @@ const App = () => {
     }
   };
 
-  // Add reveal function
+  // Add reveal function (UPDATED to calculate score on reveal)
   const revealAnswersToAll = async () => {
+    if (!gameData || gameData.hostId !== userId) {
+      setError("Only the Proctor (host) can reveal answers.");
+      return;
+    }
+
+    const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
+    const updatedPlayers = gameData.players.map(p => {
+        const isCorrect = p.selectedAnswerForQuestion === currentQuestion.correctAnswer;
+        const scoreChange = isCorrect ? 1 : 0;
+        
+        return {
+            ...p,
+            score: (p.score || 0) + scoreChange,
+            feedbackForQuestion: isCorrect ? "Correct!" : "Incorrect."
+        };
+    });
+
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-    await updateDoc(gameDocRef, { revealAnswers: true });
+    try {
+      await updateDoc(gameDocRef, { 
+        players: updatedPlayers, 
+        revealAnswers: true 
+      });
+    } catch (e) {
+      console.error("Error revealing answers:", e);
+      setError("Failed to reveal answers.");
+    }
   };
 
   // --- LLM Functions ---
@@ -2366,27 +2385,36 @@ const App = () => {
             </div>
           )}
 
-          {isHost && !safeGameData.quizEnded && ( // Proctor's Next/Finish button (always visible for host)
-            <button
-              onClick={handleMultiplayerNextQuestion}
-              className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-            >
-              {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
-            </button>
-          )}
-
-          {isHost && ( // Proctor-only button for generating new questions
-            <button
-              onClick={() => setShowGenerateQuestionModal(true)}
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold mt-6
-                                     hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-              disabled={llmLoading}
-            >
-              {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-            </button>
+          {isHost && !safeGameData.quizEnded && ( // Proctor controls
+            <div className="flex flex-col gap-4 mt-6">
+              {!safeGameData.revealAnswers ? (
+                <button
+                  onClick={revealAnswersToAll}
+                  className="w-full bg-orange-600 text-white py-3 rounded-lg text-xl font-bold
+                             hover:bg-orange-700 transition-colors duration-200 shadow-lg"
+                >
+                  Reveal Answers
+                </button>
+              ) : (
+                <button
+                  onClick={handleMultiplayerNextQuestion}
+                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg"
+                >
+                  {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
+                </button>
+              )}
+              {isHost && ( // Proctor-only button for generating new questions
+                <button
+                  onClick={() => setShowGenerateQuestionModal(true)}
+                  className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold
+                                         hover:bg-indigo-700 transition-colors duration-200 shadow-lg"
+                  disabled={llmLoading}
+                >
+                  {llmLoading ? 'Generating...' : '✨ Generate New Question'}
+                </button>
+              )}
+            </div>
           )}
 
           <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
@@ -2431,119 +2459,4 @@ const App = () => {
                 <button
                   onClick={restartMultiplayerQuiz}
                   className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                >
-                  Restart Game
-                </button>
-              )}
-              <a
-                href="https://www.vineyardvoyages.com/tours"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-              >
-                Book a Tour Now!
-              </a>
-            </div>
-          )}
-          <button
-            onClick={() => {
-              setMode('initial');
-              setActiveGameId(null); 
-              setGameData(null);
-            }}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
-          >
-            Leave Game
-          </button>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
-      style={{
-        backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, 
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}>
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
-            {/* Logo Integration */}
-            <div className="flex justify-center mb-4">
-              <img
-                src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
-                alt="Vineyard Voyages Logo"
-                className="h-24 w-auto object-contain"
-                onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
-              />
-            </div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
-              <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
-            </h1>
-            {renderContent()}
-
-            {/* Varietal Elaboration Modal */}
-            {showVarietalModal && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Varietal Insight</h3>
-                  {llmLoading ? (
-                    <p className="text-gray-700">Generating elaboration...</p>
-                  ) : (
-                    <p className="text-gray-800">{varietalElaboration}</p>
-                  )}
-                  <button
-                    onClick={() => setShowVarietalModal(false)}
-                    className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Generate Question Modal (Proctor only) */}
-            {showGenerateQuestionModal && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-                  <input
-                    type="text"
-                    placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-                    className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                    value={newQuestionTopic}
-                    onChange={(e) => setNewQuestionTopic(e.target.value)}
-                  />
-                  <button
-                    onClick={handleGenerateQuestion}
-                    className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
-                    disabled={llmLoading || !newQuestionTopic.trim()}
-                  >
-                    {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-                  </button>
-                  <button
-                    onClick={() => setShowGenerateQuestionModal(false)}
-                    className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    };
-
-    export default App;
-    ```
-    
+                                     hover:bg-[#496E3E] transition-colors duration-20
