@@ -240,7 +240,7 @@ const WINE_VARIETALS = [
 const WINE_QUIZ_QUESTIONS = [
   // --- General Wine Knowledge (100 questions) ---
   {
-    question: "Which of the following is a red grape varietal?",
+    question:" \"Which of the following is a red grape varietal?\"",
     options: ["Chardonnay", "Sauvignon Blanc", "Merlot", "Pinot Grigio"],
     correctAnswer: "Merlot",
     explanation: "Merlot is a popular red grape varietal known for its soft, approachable wines.",
@@ -251,7 +251,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is 'terroir' in winemaking?",
+    question:" \"What is 'terroir' in winemaking?\"",
     options: [
       "A type of wine barrel",
       "The complete natural environment in which a wine is produced, including factors such as soil, topography, and climate.",
@@ -267,7 +267,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which country is the largest producer of wine globally?",
+    question:" \"Which country is the largest producer of wine globally?\"",
     options: ["France", "Italy", "Spain", "United States"],
     correctAnswer: "Italy",
     explanation: "While France is famous for its wines, Italy consistently holds the title of the world's largest wine producer by volume.",
@@ -278,7 +278,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the primary grape used in traditional Champagne production?",
+    question:" \"What is the primary grape used in traditional Champagne production?\"",
     options: ["Riesling", "Pinot Noir", "Syrah", "Zinfandel"],
     correctAnswer: "Pinot Noir",
     explanation: "Traditional Champagne is typically made from a blend of Chardonnay, Pinot Noir, and Pinot Meunier grapes. Pinot Noir is one of the key red grapes used.",
@@ -289,7 +289,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
+    question:" \"Which of these wines is typically dry and crisp, often with notes of green apple and citrus?\"",
     options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Zinfandel"],
     correctAnswer: "Sauvignon Blanc",
     explanation: "Sauvignon Blanc is known for its high acidity and aromatic profile, often featuring notes of green apple, lime, and herbaceousness.",
@@ -300,7 +300,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the process of aging wine in oak barrels called?",
+    question:" \"What is the process of aging wine in oak barrels called?\"",
     options: ["Fermentation", "Malolactic fermentation", "Oaking", "Racking"],
     correctAnswer: "Oaking",
     explanation: "Oaking is the term for aging wine in oak barrels, which can impart flavors like vanilla, spice, and toast.",
@@ -311,7 +311,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which wine region is famous for its Cabernet Sauvignon wines?",
+    question:" \"Which wine region is famous for its Cabernet Sauvignon wines?\"",
     options: ["Bordeaux, France", "Napa Valley, USA", "Barossa Valley, Australia", "All of the above"],
     correctAnswer: "All of the above",
     explanation: "Cabernet Sauvignon is a widely planted grape, and all listed regions are renowned for producing high-quality Cabernet Sauvignon wines.",
@@ -322,7 +322,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the ideal serving temperature for most red wines?",
+    question:" \"What is the ideal serving temperature for most red wines?\"",
     options: ["Chilled (40-45°F)", "Room temperature (68-72°F)", "Cool (60-65°F)", "Warm (75-80°F)"],
     correctAnswer: "Cool (60-65°F)",
     explanation: "Most red wines are best served slightly cooler than typical room temperature to highlight their fruit and acidity.",
@@ -333,7 +333,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a sparkling wine from Spain?",
+    question:" \"Which of these is a sparkling wine from Spain?\"",
     options: ["Prosecco", "Champagne", "Cava", "Lambrusco"],
     correctAnswer: "Cava",
     explanation: "Cava is a popular sparkling wine from Spain, produced using the traditional method, similar to Champagne.",
@@ -344,7 +344,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What does 'tannin' refer to in wine?",
+    question:" \"What does 'tannin' refer to in wine?\"",
     options: ["Sweetness", "Acidity", "Bitterness and astringency", "Alcohol content"],
     correctAnswer: "Bitterness and astringency",
     explanation: "Tannins are naturally occurring compounds found in grape skins, seeds, and stems, contributing to a wine's bitterness, astringency, and structure.",
@@ -355,7 +355,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which white grape is typically used to make dry, aromatic wines in the Loire Valley, France?",
+    question:" \"Which white grape is typically used to make dry, aromatic wines in the Loire Valley, France?\"",
     options: ["Chardonnay", "Sauvignon Blanc", "Pinot Gris", "Riesling"],
     correctAnswer: "Sauvignon Blanc",
     explanation: "Sauvignon Blanc is the key grape in regions like Sancerre and Pouilly-Fumé in the Loire Valley, producing crisp, mineral-driven wines.",
@@ -366,7 +366,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a 'Proctor'?",
+    question:" \"What is a 'Proctor'?\"",
     options: ["A winemaker", "A wine critic", "A trained and knowledgeable wine professional", "A wine seller"],
     correctAnswer: "A trained and knowledgeable wine professional",
     explanation: "A Proctor is a highly trained and knowledgeable wine professional, typically working in fine dining restaurants, now serving as the moderator.",
@@ -377,7 +377,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a sweet, fortified wine from Portugal?",
+    question:" \"Which of these is a sweet, fortified wine from Portugal?\"",
     options: ["Sherry", "Port", "Madeira", "Marsala"],
     correctAnswer: "Port",
     explanation: "Port is a sweet, fortified wine produced in the Douro Valley of northern Portugal.",
@@ -388,7 +388,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the process of converting grape juice into wine called?",
+    question:" \"What is the process of converting grape juice into wine called?\"",
     options: ["Distillation", "Fermentation", "Maceration", "Clarification"],
     correctAnswer: "Fermentation",
     explanation: "Fermentation is the chemical process by which yeast converts the sugars in grape juice into alcohol and carbon dioxide.",
@@ -399,7 +399,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which red grape is known for its light body, high acidity, and red fruit flavors, often associated with Burgundy?",
+    question:" \"Which red grape is known for its light body, high acidity, and red fruit flavors, often associated with Burgundy?\"",
     options: ["Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah"],
     correctAnswer: "Pinot Noir",
     explanation: "Pinot Noir is a delicate red grape varietal that thrives in cooler climates and is the primary grape of Burgundy, France.",
@@ -410,7 +410,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the legs or tears that form on the inside of a wine glass?",
+    question:" \"What is the term for the legs or tears that form on the inside of a wine glass?\"",
     options: ["Viscosity", "Acidity", "Alcohol content", "Tannin level"],
     correctAnswer: "Alcohol content",
     explanation: "Wine legs are an indicator of a wine's alcohol content and, to some extent, its glycerol content, which contributes to viscosity.",
@@ -421,7 +421,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common fault in wine, often described as smelling like wet cardboard or moldy basement?",
+    question:" \"Which of these is a common fault in wine, often described as smelling like wet cardboard or moldy basement?\"",
     options: ["Brettanomyces", "Cork taint (TCA)", "Oxidation", "Volatile Acidity"],
     correctAnswer: "Cork taint (TCA)",
     explanation: "Cork taint, caused by TCA, is a common wine fault that imparts unpleasant musty or moldy aromas.",
@@ -432,7 +432,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of wine is typically served with oysters?",
+    question:" \"Which type of wine is typically served with oysters?\"",
     options: ["Cabernet Sauvignon", "Chardonnay (oaked)", "Sauvignon Blanc", "Merlot"],
     correctAnswer: "Sauvignon Blanc",
     explanation: "Crisp, high-acid white wines like Sauvignon Blanc are excellent pairings for oysters, as they cut through the brininess.",
@@ -443,7 +443,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which noble rot-affected sweet wine, often described as 'liquid gold', comes from a specific region in Bordeaux?",
+    question:" \"Which noble rot-affected sweet wine, often described as 'liquid gold', comes from a specific region in Bordeaux?\"",
     options: ["Tokaji", "Ice Wine", "Sauternes", "Port"],
     correctAnswer: "Sauternes",
     explanation: "Sauternes is a highly prized sweet wine from the Bordeaux region of France, made from grapes affected by Botrytis cinerea (noble rot).",
@@ -454,7 +454,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the primary grape used in the production of Chianti wine?",
+    question:" \"What is the primary grape used in the production of Chianti wine?\"",
     options: ["Nebbiolo", "Barbera", "Sangiovese", "Montepulciano"],
     correctAnswer: "Sangiovese",
     explanation: "Sangiovese is the signature red grape of Tuscany, Italy, and the primary component of Chianti wine.",
@@ -465,7 +465,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which wine glass shape is generally recommended for enjoying red wines?",
+    question:" \"Which wine glass shape is generally recommended for enjoying red wines?\"",
     options: ["Flute", "Coupe", "Tulip", "Bordeaux or Burgundy glass"],
     correctAnswer: "Bordeaux or Burgundy glass",
     explanation: "Larger, wider-bowled glasses like Bordeaux or Burgundy allow red wines to breathe and express their aromas fully.",
@@ -476,7 +476,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the sediment found in aged red wines?",
+    question:" \"What is the term for the sediment found in aged red wines?\"",
     options: ["Tartrates", "Lees", "Fining agents", "Dregs"],
     correctAnswer: "Dregs",
     explanation: "Dregs refer to the sediment, typically consisting of dead yeast cells, grape solids, and tartrates, found at the bottom of bottles of aged wine.",
@@ -487,7 +487,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "This dark-skinned grape is famously called Shiraz in Australia and is known for producing full-bodied, spicy red wines in the Rhône Valley of France. What is its name?",
+    question:" \"This dark-skinned grape is famously called Shiraz in Australia and is known for producing full-bodied, spicy red wines in the Rhône Valley of France. What is its name?\"",
     options: ["Pinot Noir", "Merlot", "Syrah", "Zinfandel"],
     correctAnswer: "Syrah",
     explanation: "Syrah or Shiraz is a versatile dark-skinned grape known for producing powerful, peppery, and dark-fruited wines in both the Old and New World.",
@@ -498,7 +498,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is vintage on a wine label?",
+    question:" \"What is vintage on a wine label?\"",
     options: ["The year the wine was bottled", "The year the grapes were harvested", "The age of the winery", "The specific vineyard site"],
     correctAnswer: "The year the grapes were harvested",
     explanation: "The vintage year on a wine label indicates when the grapes used to make that wine were picked.",
@@ -509,7 +509,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common characteristic of an oaked Chardonnay?",
+    question:" \"Which of these is a common characteristic of an oaked Chardonnay?\"",
     options: ["Light and crisp", "Notes of butter, vanilla, and toast", "High acidity and citrus", "Sweet and fruity"],
     correctAnswer: "Notes of butter, vanilla, and toast",
     explanation: "Aging Chardonnay in oak barrels imparts flavors and aromas of butter, vanilla, and toast.",
@@ -520,7 +520,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the purpose of decanting wine?",
+    question:" \"What is the purpose of decanting wine?\"",
     options: ["To chill the wine", "To remove sediment and allow the wine to breathe", "To add flavors to the wine", "To warm the wine"],
     correctAnswer: "To remove sediment and allow the wine to breathe",
     explanation: "Decanting separates sediment from the wine and exposes the wine to oxygen, helping it open up and develop aromas.",
@@ -531,7 +531,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which Italian wine is famous for being produced in the Piedmont region and made from Nebbiolo grapes?",
+    question:" \"Which Italian wine is famous for being produced in the Piedmont region and made from Nebbiolo grapes?\"",
     options: ["Chianti", "Prosecco", "Barolo", "Soave"],
     correctAnswer: "Barolo",
     explanation: "Barolo is a highly esteemed red wine from Piedmont, Italy, known for its powerful tannins and aging potential, made from Nebbiolo grapes.",
@@ -542,7 +542,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for a wine that tastes sweet?",
+    question:" \"What is the term for a wine that tastes sweet?\"",
     options: ["Dry", "Off-dry", "Sweet", "Semi-sweet"],
     correctAnswer: "Sweet",
     explanation: "A sweet wine has a noticeable amount of residual sugar, making it taste sweet.",
@@ -553,7 +553,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which region is known for producing high-quality Riesling wines?",
+    question:" \"Which region is known for producing high-quality Riesling wines?\"",
     options: ["Bordeaux, France", "Mosel, Germany", "Napa Valley, USA", "Tuscany, Italy"],
     correctAnswer: "Mosel, Germany",
     explanation: "The Mosel region in Germany is world-renowned for its crisp, aromatic, and often off-dry Riesling wines.",
@@ -564,7 +564,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the difference between red and white wine production?",
+    question:" \"What is the difference between red and white wine production?\"",
     options: [
       "Red wine uses red grapes, white wine uses white grapes",
       "Red wine ferments with grape skins, white wine typically does not",
@@ -580,7 +580,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common food pairing for Pinot Noir?",
+    question:" \"Which of these is a common food pairing for Pinot Noir?\"",
     options: ["Grilled steak", "Spicy Asian cuisine", "Salmon or duck", "Heavy cream sauces"],
     correctAnswer: "Salmon or duck",
     explanation: "Pinot Noir's lighter body and red fruit notes make it an excellent match for fattier fish like salmon and poultry like duck.",
@@ -591,7 +591,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the natural sugars remaining in wine after fermentation?",
+    question:" \"What is the term for the natural sugars remaining in wine after fermentation?\"",
     options: ["Glucose", "Fructose", "Residual Sugar", "Sucrose"],
     correctAnswer: "Residual Sugar",
     explanation: "Residual sugar (RS) refers to the grape sugars that are not converted into alcohol during fermentation, contributing to a wine's sweetness.",
@@ -602,7 +602,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape is known for producing full-bodied, often spicy red wines in the Rhône Valley, France?",
+    question:" \"Which grape is known for producing full-bodied, often spicy red wines in the Rhône Valley, France?\"",
     options: ["Gamay", "Pinot Noir", "Syrah", "Merlot"],
     correctAnswer: "Syrah",
     explanation: "Syrah or Shiraz is the dominant red grape in the Northern Rhône, producing powerful, peppery, and dark-fruited wines.",
@@ -613,7 +613,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the typical alcohol content of a dry table wine?",
+    question:" \"What is the typical alcohol content of a dry table wine?\"",
     options: ["2-5%", "8-10%", "11-15%", "18-20%"],
     correctAnswer: "11-15%",
     explanation: "Most dry table wines fall within the 11-15% ABV (Alcohol by Volume) range.",
@@ -624,7 +624,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common characteristic of a dry wine?",
+    question:" \"Which of these is a common characteristic of a dry wine?\"",
     options: ["Sweet taste", "Absence of sweetness", "High acidity", "Low alcohol"],
     correctAnswer: "Absence of sweetness",
     explanation: "A dry wine is one in which all or most of the grape sugars have been converted to alcohol during fermentation, resulting in no perceptible sweetness.",
@@ -635,7 +635,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the name of the white wine region in Burgundy, France, famous for unoaked Chardonnay?",
+    question:" \"What is the name of the white wine region in Burgundy, France, famous for unoaked Chardonnay?\"",
     options: ["Pouilly-Fumé", "Sancerre", "Chablis", "Vouvray"],
     correctAnswer: "Chablis",
     explanation: "Chablis is a sub-region of Burgundy known for producing crisp, mineral-driven Chardonnay wines that are typically unoaked.",
@@ -646,7 +646,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape varietal is often described as having notes of blackcurrant, cedar, and tobacco?",
+    question:" \"Which grape varietal is often described as having notes of blackcurrant, cedar, and tobacco?\"",
     options: ["Pinot Noir", "Merlot", "Cabernet Sauvignon", "Zinfandel"],
     correctAnswer: "Cabernet Sauvignon",
     explanation: "Cabernet Sauvignon is renowned for its classic aromas and flavors of blackcurrant (cassis), alongside herbal, cedar, and tobacco notes.",
@@ -657,7 +657,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the process of allowing wine to age in the bottle before release?",
+    question:" \"What is the term for the process of allowing wine to age in the bottle before release?\"",
     options: ["Malolactic fermentation", "Racking", "Bottle aging", "Fining"],
     correctAnswer: "Bottle aging",
     explanation: "Bottle aging allows wine to develop more complex flavors and aromas over time.",
@@ -668,7 +668,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of wine is typically served as an aperitif (before a meal)?",
+    question:" \"Which type of wine is typically served as an aperitif (before a meal)?\"",
     options: ["Sweet dessert wine", "Full-bodied red wine", "Dry sparkling wine", "Oaked Chardonnay"],
     correctAnswer: "Dry sparkling wine",
     explanation: "Dry sparkling wines like Brut Champagne or Cava are excellent aperitifs, stimulating the palate without being too heavy.",
@@ -679,7 +679,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a 'blend' in winemaking?",
+    question:" \"What is a 'blend' in winemaking?\"",
     options: [
       "Mixing different vintages of the same wine",
       "Mixing different grape varietals to create a single wine",
@@ -695,7 +695,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common characteristic of a full-bodied wine?",
+    question:" \"Which of these is a common characteristic of a full-bodied wine?\"",
     options: ["Light and watery texture", "Rich, heavy, and mouth-filling sensation", "High acidity", "Sweet taste"],
     correctAnswer: "Rich, heavy, and mouth-filling sensation",
     explanation: "Full-bodied wines have a rich, weighty, and sometimes viscous feel in the mouth, often due to higher alcohol content and extract.",
@@ -706,7 +706,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the purpose of a wine stopper or preserver?",
+    question:" \"What is the purpose of a wine stopper or preserver?\"",
     options: ["To chill the wine", "To remove sediment", "To prevent oxidation and keep wine fresh after opening", "To add bubbles"],
     correctAnswer: "To prevent oxidation and keep wine fresh after opening",
     explanation: "Wine stoppers and preservers are designed to create an airtight seal or remove oxygen from an opened bottle, extending the wine's freshness.",
@@ -717,7 +717,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape varietal is the primary component of most white wines from Alsace, France?",
+    question:" \"Which grape varietal is the primary component of most white wines from Alsace, France?\"",
     options: ["Chardonnay", "Sauvignon Blanc", "Riesling", "Pinot Grigio"],
     correctAnswer: "Riesling",
     explanation: "Alsace is unique in France for producing varietally labeled wines, with Riesling being one of its noble grapes.",
@@ -728,7 +728,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the practice of cultivating grapes for winemaking?",
+    question:" \"What is the term for the practice of cultivating grapes for winemaking?\"",
     options: ["Agriculture", "Horticulture", "Viticulture", "Vinification"],
     correctAnswer: "Viticulture",
     explanation: "Viticulture is the science, production, and study of grapes, which primarily deals with grape cultivation for wine.",
@@ -739,7 +739,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common aroma found in Sauvignon Blanc?",
+    question:" \"Which of these is a common aroma found in Sauvignon Blanc?\"",
     options: ["Black cherry", "Vanilla", "Grass or gooseberry", "Chocolate"],
     correctAnswer: "Grass or gooseberry",
     explanation: "Sauvignon Blanc is often characterized by its herbaceous notes, including grass, bell pepper, and gooseberry.",
@@ -750,7 +750,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the name of the sweet wine made from grapes frozen on the vine?",
+    question:" \"What is the name of the sweet wine made from grapes frozen on the vine?\"",
     options: ["Port", "Sherry", "Ice Wine", "Marsala"],
     correctAnswer: "Ice Wine",
     explanation: "Ice wine or Eiswein is a type of dessert wine produced from grapes that have been frozen while still on the vine.",
@@ -761,7 +761,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which red grape is a key component of 'Super Tuscan' wines?",
+    question:" \"Which red grape is a key component of 'Super Tuscan' wines?\"",
     options: ["Nebbiolo", "Sangiovese", "Primitivo", "Montepulciano"],
     correctAnswer: "Sangiovese",
     explanation: "While Super Tuscans often include international varietals like Cabernet Sauvignon, Sangiovese remains the backbone of many, if not all, of them.",
@@ -772,7 +772,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What does 'DOCG' signify on an Italian wine label?",
+    question:" \"What does 'DOCG' signify on an Italian wine label?\"",
     options: ["Denomination of Controlled Origin", "Highest level of Italian wine classification", "Table wine", "Sweet wine"],
     correctAnswer: "Highest level of Italian wine classification",
     explanation: "DOCG (Denominazione di Origine Controllata e Garantita) is the highest classification for Italian wines, indicating strict quality control.",
@@ -783,7 +783,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is typically a light-bodied red wine?",
+    question:" \"Which of these is typically a light-bodied red wine?\"",
     options: ["Cabernet Sauvignon", "Syrah", "Pinot Noir", "Zinfandel"],
     correctAnswer: "Pinot Noir",
     explanation: "Pinot Noir is known for its delicate structure and lighter body compared to other red varietals.",
@@ -794,7 +794,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the 'bouquet' of a wine?",
+    question:" \"What is the term for the 'bouquet' of a wine?\"",
     options: ["Its color", "Its taste", "Its aromas developed from aging", "Its sweetness level"],
     correctAnswer: "Its aromas developed from aging",
     explanation: "The bouquet refers to the complex aromas that develop in a wine as a result of fermentation and aging, particularly in the bottle.",
@@ -805,7 +805,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which white grape is known for producing full-bodied, often buttery wines, especially when oaked?",
+    question:" \"Which white grape is known for producing full-bodied, often buttery wines, especially when oaked?\"",
     options: ["Riesling", "Sauvignon Blanc", "Pinot Grigio", "Chardonnay"],
     correctAnswer: "Chardonnay",
     explanation: "Chardonnay is a versatile grape that can produce a wide range of styles, but it's particularly known for its full-bodied, buttery, and often oak-influenced expressions.",
@@ -816,7 +816,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the ideal temperature range for storing most wines long-term?",
+    question:" \"What is the ideal temperature range for storing most wines long-term?\"",
     options: ["30-40°F", "45-65°F", "70-80°F", "Below 30°F"],
     correctAnswer: "45-65°F",
     explanation: "Most wines are best stored at a consistent temperature between 45-65°F (7-18°C) to ensure proper aging and prevent spoilage.",
@@ -827,7 +827,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these terms describes a wine with high acidity?",
+    question:" \"Which of these terms describes a wine with high acidity?\"",
     options: ["Flabby", "Crisp", "Soft", "Round"],
     correctAnswer: "Crisp",
     explanation: "A wine with high acidity is often described as crisp or tart, providing a refreshing sensation on the palate.",
@@ -838,7 +838,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the purpose of sulfur dioxide (SO2) in winemaking?",
+    question:" \"What is the purpose of sulfur dioxide (SO2) in winemaking?\"",
     options: ["To add sweetness", "To remove color", "As an antioxidant and antimicrobial agent", "To increase alcohol content"],
     correctAnswer: "As an antioxidant and antimicrobial agent",
     explanation: "SO2 is commonly used in winemaking to protect the wine from oxidation and inhibit unwanted microbial growth.",
@@ -849,7 +849,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape is used to make the famous sparkling wine Prosecco?",
+    question:" \"Which grape is used to make the famous sparkling wine Prosecco?\"",
     options: ["Chardonnay", "Pinot Noir", "Glera", "Riesling"],
     correctAnswer: "Glera",
     explanation: "Prosecco is an Italian sparkling wine made primarily from the Glera grape.",
@@ -860,7 +860,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for a wine that has a strong, unpleasant smell of vinegar?",
+    question:" \"What is the term for a wine that has a strong, unpleasant smell of vinegar?\"",
     options: ["Oxidized", "Corked", "Volatile Acidity", "Brettanomyces"],
     correctAnswer: "Volatile Acidity",
     explanation: "Volatile acidity (VA) is a wine fault characterized by aromas of vinegar or nail polish remover, caused by acetic acid bacteria.",
@@ -871,7 +871,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of wine is typically served with chocolate desserts?",
+    question:" \"Which type of wine is typically served with chocolate desserts?\"",
     options: ["Dry red wine", "Dry white wine", "Sweet fortified wine (e.g., Port)", "Sparkling wine"],
     correctAnswer: "Sweet fortified wine (e.g., Port)",
     explanation: "Sweet, rich wines like Port or Banyuls pair well with chocolate, as their sweetness and intensity can stand up to the dessert.",
@@ -882,7 +882,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What does 'non-vintage' (NV) mean on a sparkling wine label?",
+    question:" \"What does 'non-vintage' (NV) mean on a sparkling wine label?\"",
     options: ["It's a very old wine", "It's a blend of wines from different harvest years", "It's a low-quality wine", "It's a wine made without grapes"],
     correctAnswer: "It's a blend of wines from different harvest years",
     explanation: "Non-vintage wines are blends of wines from multiple years, created to maintain a consistent house style.",
@@ -893,7 +893,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common characteristic of a tannic red wine?",
+    question:" \"Which of these is a common characteristic of a tannic red wine?\"",
     options: ["Smooth and soft", "Drying sensation in the mouth", "Fruity and sweet", "Light-bodied"],
     correctAnswer: "Drying sensation in the mouth",
     explanation: "Tannins create a drying, sometimes bitter, sensation in the mouth, especially noticeable on the gums and tongue.",
@@ -904,7 +904,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the process of removing dead yeast cells and other solids from wine after fermentation?",
+    question:" \"What is the term for the process of removing dead yeast cells and other solids from wine after fermentation?\"",
     options: ["Racking", "Fining", "Filtration", "All of the above"],
     correctAnswer: "All of the above",
     explanation: "Racking, fining, and filtration are all methods used to clarify wine by removing suspended solids and impurities.",
@@ -915,7 +915,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape varietal is the most widely planted in the world?",
+    question:" \"Which grape varietal is the most widely planted in the world?\"",
     options: ["Merlot", "Airén", "Cabernet Sauvignon", "Chardonnay"],
     correctAnswer: "Airén",
     explanation: "While Cabernet Sauvignon and Merlot are very popular, Airén, a white grape primarily grown in Spain, historically holds the title for most widely planted by area.",
@@ -926,7 +926,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the name of the sweet, fortified wine from Jerez, Spain?",
+    question:" \"What is the name of the sweet, fortified wine from Jerez, Spain?\"",
     options: ["Port", "Madeira", "Sherry", "Marsala"],
     correctAnswer: "Sherry",
     explanation: "Sherry is a fortified wine made from white grapes that are grown near the city of Jerez de la Frontera in Andalusia, Spain.",
@@ -937,7 +937,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common aroma found in aged Pinot Noir?",
+    question:" \"Which of these is a common aroma found in aged Pinot Noir?\"",
     options: ["Green apple", "Citrus", "Forest floor or mushroom", "Tropical fruit"],
     correctAnswer: "Forest floor or mushroom",
     explanation: "As Pinot Noir ages, it often develops complex tertiary aromas of forest floor, mushroom, and savory notes.",
@@ -948,7 +948,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the term for the body of a wine?",
+    question:" \"What is the term for the body of a wine?\"",
     options: ["Its color intensity", "Its perceived weight or fullness in the mouth", "Its sweetness level", "Its alcohol content"],
     correctAnswer: "Its perceived weight or fullness in the mouth",
     explanation: "The body of a wine refers to its perceived weight and fullness on the palate, often influenced by alcohol, residual sugar, and extract.",
@@ -959,7 +959,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of wine is typically served very chilled, often as a dessert wine?",
+    question:" \"Which type of wine is typically served very chilled, often as a dessert wine?\"",
     options: ["Dry red wine", "Dry white wine", "Ice Wine", "Rosé wine"],
     correctAnswer: "Ice Wine",
     explanation: "Ice wine or Eiswein is a sweet dessert wine that is best served very chilled to enhance its sweetness and acidity.",
@@ -971,7 +971,7 @@ const WINE_QUIZ_QUESTIONS = [
   },
   // --- Northern Virginia Specific Questions (100 questions) ---
   {
-    question: "Which grape varietal is considered Virginia's signature white grape?",
+    question:" \"Which grape varietal is considered Virginia's signature white grape?\"",
     options: ["Chardonnay", "Viognier", "Sauvignon Blanc", "Albariño"],
     correctAnswer: "Viognier",
     explanation: "Viognier is Virginia's official state grape, known for its aromatic and full-bodied white wines that thrive in the state's climate.",
@@ -982,7 +982,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which Virginia AVA is known for its high-quality Chardonnay and Cabernet Franc, located near the town of Middleburg?",
+    question:" \"Which Virginia AVA is known for its high-quality Chardonnay and Cabernet Franc, located near the town of Middleburg?\"",
     options: ["Monticello AVA", "Virginia Peninsula AVA", "Middleburg AVA", "Shenandoah Valley AVA"],
     correctAnswer: "Middleburg AVA",
     explanation: "The Middleburg AVA (American Viticultural Area) is a prominent wine region in Northern Virginia, known for its rolling hills and diverse soils.",
@@ -993,7 +993,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which red grape varietal is often referred to as Virginia's answer to Cabernet Franc due to its success in the state?",
+    question:" \"Which red grape varietal is often referred to as Virginia's answer to Cabernet Franc due to its success in the state?\"",
     options: ["Merlot", "Cabernet Franc", "Petit Verdot", "Norton"],
     correctAnswer: "Cabernet Franc",
     explanation: "Cabernet Franc thrives in Virginia's climate, producing wines with red fruit, herbal notes, and often a distinctive peppery character.",
@@ -1004,7 +1004,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common challenge for grape growing in Northern Virginia's climate?",
+    question:" \"What is a common challenge for grape growing in Northern Virginia's climate?\"",
     options: ["Too much sun", "Lack of rainfall", "Humidity and late spring frosts", "Too cold in winter"],
     correctAnswer: "Humidity and late spring frosts",
     explanation: "Virginia's humid summers and unpredictable spring frosts can pose significant challenges for grape growers, requiring careful vineyard management.",
@@ -1015,7 +1015,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: Which of the following are Loudoun County wineries that are part of your program?,
+    question: "Which of the following are Loudoun County wineries that are part of your program?",
     options: ["868 Estate Vineyards", "Fabbioli Cellars", "Hillsborough Winery & Brewery", "All of the above"],
     correctAnswer: "All of the above",
     explanation: "868 Estate Vineyards, Fabbioli Cellars, and Hillsborough Winery & Brewery are all valued partners.",
@@ -1026,7 +1026,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?,
+    question: "What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?",
     options: ["Mass production of wine for the tours", "Lower prices on all wines", "Exclusive access and unique tasting experiences", "Only full bottle sales"],
     correctAnswer: "Exclusive access and unique tasting experiences",
     explanation: "Partnerships allow Vineyard Voyages to provide unique, behind-the-scenes experiences and direct access for guests.",
@@ -1037,7 +1037,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common red grape varietal grown in Northern Virginia, known for its deep color and firm tannins?",
+    question:" \"What is a common red grape varietal grown in Northern Virginia, known for its deep color and firm tannins?\"",
     options: ["Pinot Noir", "Petit Verdot", "Gamay", "Zinfandel"],
     correctAnswer: "Petit Verdot",
     explanation: "Petit Verdot, traditionally a blending grape in Bordeaux, has found success in Virginia as a standalone varietal, producing bold, structured wines.",
@@ -1048,7 +1048,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which historical figure is credited with early attempts to grow European grapes in Virginia?",
+    question:" \"Which historical figure is credited with early attempts to grow European grapes in Virginia?\"",
     options: ["George Washington", "Thomas Jefferson", "James Madison", "Patrick Henry"],
     correctAnswer: "Thomas Jefferson",
     explanation: "Thomas Jefferson was a passionate advocate for viticulture and made significant efforts to establish European grapevines at Monticello.",
@@ -1059,7 +1059,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of climate does Northern Virginia have, generally suitable for grape growing?",
+    question:" \"Which type of climate does Northern Virginia have, generally suitable for grape growing?\"",
     options: ["Mediterranean", "Desert", "Humid Continental", "Tropical"],
     correctAnswer: "Humid Continental",
     explanation: "Northern Virginia experiences a humid continental climate, characterized by warm, humid summers and cold winters, which presents both opportunities and challenges for viticulture.",
@@ -1070,7 +1070,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Many Virginia wineries offer tasting room experiences. What is a common practice in these rooms?",
+    question:" \"Many Virginia wineries offer tasting room experiences. What is a common practice in these rooms?\"",
     options: ["Blind tasting only", "Self-service wine dispensing", "Guided tastings with knowledgeable staff", "Only full bottle sales"],
     correctAnswer: "Guided tastings with knowledgeable staff",
     explanation: "Virginia wineries pride themselves on offering personalized, educational tasting experiences, often led by winemakers or passionate staff.",
@@ -1081,7 +1081,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a popular event often hosted by Northern Virginia wineries in the fall?",
+    question:" \"What is a popular event often hosted by Northern Virginia wineries in the fall?\"",
     options: ["Spring Blossom Festival", "Summer Jazz Concerts", "Harvest Festivals and Grape Stomps", "Winter Sledding Competitions"],
     correctAnswer: "Harvest Festivals and Grape Stomps",
     explanation: "Fall is harvest season, and many wineries celebrate with festivals, grape stomps, and other family-friendly events.",
@@ -1092,7 +1092,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?",
+    question:" \"Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?\"",
     options: ["Sandy soil", "Clay soil", "Loamy soil", "Slate or rocky soil"],
     correctAnswer: "Slate or rocky soil",
     explanation: "Some areas of Northern Virginia, particularly in the foothills, have rocky or slate-rich soils that can impart distinct minerality to the wines.",
@@ -1103,7 +1103,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a hybrid grape varietal sometimes grown in Virginia, known for its disease resistance?",
+    question:" \"Which of these is a hybrid grape varietal sometimes grown in Virginia, known for its disease resistance?\"",
     options: ["Cabernet Sauvignon", "Chardonnay", "Chambourcin", "Merlot"],
     correctAnswer: "Chambourcin",
     explanation: "Chambourcin is a French-American hybrid grape that offers good disease resistance, making it suitable for Virginia's humid climate.",
@@ -1114,7 +1114,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "True or False: Virginia is one of the oldest wine-producing states in the United States.",
+    question:" \"True or False: Virginia is one of the oldest wine-producing states in the United States.\"",
     options: ["True", "False"],
     correctAnswer: "True",
     explanation: "Virginia has a long history of winemaking, dating back to the early colonial period, making it one of the oldest wine states.",
@@ -1123,7 +1123,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the name of the largest wine festival in Virginia, often held annually?",
+    question:" \"What is the name of the largest wine festival in Virginia, often held annually?\"",
     options: ["Virginia Grape Fest", "Taste of Virginia Wine", "Virginia Wine Festival", "Commonwealth Crush"],
     correctAnswer: "Virginia Wine Festival",
     explanation: "The Virginia Wine Festival is one of the largest and longest-running wine festivals in the state, showcasing numerous Virginia wineries.",
@@ -1134,7 +1134,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which type of wine is Virginia increasingly gaining recognition for, besides its still wines?",
+    question:" \"Which type of wine is Virginia increasingly gaining recognition for, besides its still wines?\"",
     options: ["Fortified wines", "Dessert wines", "Sparkling wines", "Organic wines"],
     correctAnswer: "Sparkling wines",
     explanation: "Virginia's terroir and winemaking expertise are increasingly producing high-quality sparkling wines, often made using the traditional method.",
@@ -1145,7 +1145,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Many Northern Virginia wineries are family-owned and operated. What benefit does this often bring?",
+    question:" \"Many Northern Virginia wineries are family-owned and operated. What benefit does this often bring?\"",
     options: ["Mass production", "Lower prices", "Personalized service and unique character", "Limited wine selection"],
     correctAnswer: "Personalized service and unique character",
     explanation: "Family-owned wineries often offer a more personal touch, unique wines, and a strong connection to the land and their craft.",
@@ -1156,7 +1156,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common challenge for Virginia winemakers related to bird damage?",
+    question:" \"What is a common challenge for Virginia winemakers related to bird damage?\"",
     options: ["Birds eating grapes", "Birds nesting in barrels", "Birds spreading disease", "Birds damaging trellises"],
     correctAnswer: "Birds eating grapes",
     explanation: "Birds can cause significant damage to ripening grape crops, leading to the use of netting or other deterrents in vineyards.",
@@ -1167,7 +1167,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common food pairing for Virginia ham?",
+    question:" \"What is a common food pairing for Virginia ham?\"",
     options: ["Light white wine", "Sweet dessert wine", "Dry Rosé or light-bodied red like Cabernet Franc", "Sparkling wine"],
     correctAnswer: "Dry Rosé or light-bodied red like Cabernet Franc",
     explanation: "The saltiness and richness of Virginia ham pair well with a crisp dry rosé or a fruit-forward, slightly herbal Cabernet Franc.",
@@ -1178,7 +1178,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "True or False: All grapes grown in Northern Virginia are native American varietals.",
+    question:" \"True or False: All grapes grown in Northern Virginia are native American varietals.\"",
     options: ["True", "False"],
     correctAnswer: "False",
     explanation: "While some native and hybrid varietals are grown, European (Vitis vinifera) grapes like Viognier, Cabernet Franc, and Chardonnay are widely cultivated and form the backbone of Virginia's fine wine industry.",
@@ -1187,7 +1187,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is an 'AVA' in the context of Virginia wine?",
+    question:" \"What is an 'AVA' in the context of Virginia wine?\"",
     options: ["American Vineyard Association", "Appellation of Virginia Award", "American Viticultural Area", "Agricultural Vintner Alliance"],
     correctAnswer: "American Viticultural Area",
     explanation: "An AVA (American Viticultural Area) is a designated wine grape-growing region in the United States distinguishable by geographic features.",
@@ -1198,7 +1198,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a common characteristic of Virginia's climate that influences its wines?",
+    question:" \"Which of these is a common characteristic of Virginia's climate that influences its wines?\"",
     options: ["Very dry summers", "High humidity", "Consistently cold temperatures", "Volcanic soil"],
     correctAnswer: "High humidity",
     explanation: "Virginia's humid summers can lead to challenges like fungal diseases but also contribute to the unique character of its wines.",
@@ -1209,7 +1209,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Many Northern Virginia wineries offer scenic views. What kind of landscape is typical?",
+    question:" \"Many Northern Virginia wineries offer scenic views. What kind of landscape is typical?\"",
     options: ["Coastal beaches", "Flat plains", "Rolling hills and mountains", "Dense urban cityscape"],
     correctAnswer: "Rolling hills and mountains",
     explanation: "Northern Virginia's wine country is characterized by picturesque rolling hills and proximity to the Blue Ridge Mountains.",
@@ -1220,7 +1220,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common practice in Virginia vineyards to manage humidity and promote air circulation?",
+    question:" \"What is a common practice in Virginia vineyards to manage humidity and promote air circulation?\"",
     options: ["Dense planting", "Leaf pulling (canopy management)", "Deep irrigation", "Using plastic covers"],
     correctAnswer: "Leaf pulling (canopy management)",
     explanation: "Canopy management, including leaf pulling, helps improve air circulation around grape clusters, reducing disease risk in humid climates.",
@@ -1231,7 +1231,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which white grape varietal, known for its crispness, is gaining popularity in Virginia?",
+    question:" \"Which white grape varietal, known for its crispness, is gaining popularity in Virginia?\"",
     options: ["Pinot Grigio", "Riesling", "Albariño", "Gewürztraminer"],
     correctAnswer: "Albariño",
     explanation: "Albariño, a Spanish white grape, is showing promise in Virginia, producing vibrant, aromatic wines with good acidity.",
@@ -1242,7 +1242,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What kind of events do many Northern Virginia wineries often facilitate for groups?",
+    question:" \"What kind of events do many Northern Virginia wineries often facilitate for groups?\"",
     options: ["Cooking classes", "Corporate team building and private celebrations", "Extreme sports adventures", "Art workshops"],
     correctAnswer: "Corporate team building and private celebrations",
     explanation: "Many Northern Virginia wineries offer tailored events for various group needs, including corporate outings and special celebrations.",
@@ -1253,7 +1253,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "True or False: Virginia is the second-largest wine-producing state on the East Coast.",
+    question:" \"True or False: Virginia is the second-largest wine-producing state on the East Coast.\"",
     options: ["True", "False"],
     correctAnswer: "True",
     explanation: "Virginia is indeed the second-largest wine-producing state on the East Coast, after New York.",
@@ -1262,7 +1262,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common challenge for Virginia vineyards during hurricane season?",
+    question:" \"What is a common challenge for Virginia vineyards during hurricane season?\"",
     options: ["Too much sun", "Excessive rainfall and wind damage", "Drought", "Early frost"],
     correctAnswer: "Excessive rainfall and wind damage",
     explanation: "Hurricane season can bring heavy rains and strong winds, posing risks of rot and physical damage to vines and crops.",
@@ -1273,7 +1273,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape varietal is often blended with Cabernet Franc in Virginia to create Bordeaux-style red blends?",
+    question:" \"Which grape varietal is often blended with Cabernet Franc in Virginia to create Bordeaux-style red blends?\"",
     options: ["Pinot Noir", "Merlot", "Riesling", "Viognier"],
     correctAnswer: "Merlot",
     explanation: "Merlot is a common blending partner with Cabernet Franc (and sometimes Cabernet Sauvignon and Petit Verdot) in Virginia's Bordeaux-style red wines.",
@@ -1284,7 +1284,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a common wine tourism experience emphasized in Northern Virginia?",
+    question:" \"What is a common wine tourism experience emphasized in Northern Virginia?\"",
     options: ["Budget-friendly travel", "Luxury and personalized attention", "Self-guided tours with no interaction", "Large group parties only"],
     correctAnswer: "Luxury and personalized attention",
     explanation: "Northern Virginia's wine tourism often emphasizes a premium experience with comfortable amenities and tailored itineraries.",
@@ -1295,7 +1295,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which of these is a well-known wine region in Virginia, south of Northern Virginia?",
+    question:" \"Which of these is a well-known wine region in Virginia, south of Northern Virginia?\"",
     options: ["Finger Lakes", "Willamette Valley", "Monticello AVA", "Sonoma County"],
     correctAnswer: "Monticello AVA",
     explanation: "The Monticello AVA, centered around Charlottesville, is another significant and historic wine region in Virginia.",
@@ -1306,7 +1306,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the purpose of 'netting' in Virginia vineyards?",
+    question:" \"What is the purpose of 'netting' in Virginia vineyards?\"",
     options: ["To support the vines", "To protect grapes from birds and animals", "To provide shade", "To collect rainwater"],
     correctAnswer: "To protect grapes from birds and animals",
     explanation: "Netting is a common solution used by vineyards to prevent birds and other wildlife from consuming ripening grapes.",
@@ -1317,7 +1317,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape is the primary variety in the wines from the 'Rioja' region?",
+    question:" \"Which grape is the primary variety in the wines from the 'Rioja' region?\"",
     options: ["Tempranillo", "Grenache", "Cabernet Sauvignon", "Syrah"],
     correctAnswer: "Tempranillo",
     explanation: "The Tempranillo grape is the backbone of most red wines from the Rioja region of Spain.",
@@ -1328,7 +1328,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   ...Array(75).fill(null).map((_, i) => ({
-    question: Northern Virginia regional question #${i + 22},
+    question: "Northern Virginia regional question #${i + 22}",
     options: ["Option A", "Option B", "Option C", "Option D"],
     correctAnswer: "Option A",
     explanation: "This is a placeholder explanation for a Northern Virginia question.",
@@ -1854,7 +1854,7 @@ const App = () => {
     const schema = {
       type: "OBJECT",
       properties: {
-        question: { type: "STRING" },
+        question: "{ type: \"STRING\" }",
         options: {
           type: "ARRAY",
           items: { type: "STRING" }
