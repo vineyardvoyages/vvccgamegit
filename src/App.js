@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore'; 
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
 
 // Firebase Configuration (will read from Netlify Environment Variable)
 const firebaseConfig = {
@@ -1015,7 +1015,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: `Which of the following are Loudoun County wineries that are part of your program?`,
+    question: Which of the following are Loudoun County wineries that are part of your program?,
     options: ["868 Estate Vineyards", "Fabbioli Cellars", "Hillsborough Winery & Brewery", "All of the above"],
     correctAnswer: "All of the above",
     explanation: "868 Estate Vineyards, Fabbioli Cellars, and Hillsborough Winery & Brewery are all valued partners.",
@@ -1026,7 +1026,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: `What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?`,
+    question: What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?,
     options: ["Mass production of wine for the tours", "Lower prices on all wines", "Exclusive access and unique tasting experiences", "Only full bottle sales"],
     correctAnswer: "Exclusive access and unique tasting experiences",
     explanation: "Partnerships allow Vineyard Voyages to provide unique, behind-the-scenes experiences and direct access for guests.",
@@ -1328,7 +1328,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   ...Array(75).fill(null).map((_, i) => ({
-    question: `Northern Virginia regional question #${i + 22}`,
+    question: Northern Virginia regional question #${i + 22},
     options: ["Option A", "Option B", "Option C", "Option D"],
     correctAnswer: "Option A",
     explanation: "This is a placeholder explanation for a Northern Virginia question.",
@@ -1442,7 +1442,7 @@ const App = () => {
     // Only subscribe if an activeGameId is set
     if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
       const normalizedGameId = activeGameId.toUpperCase(); // Ensure normalized if not already
-      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedGameId);
+      const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, normalizedGameId);
       unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -1564,7 +1564,7 @@ const App = () => {
 
       while (!isUnique && attempts < maxAttempts) {
         const generatedCode = generateGameCode();
-        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedCode);
+        const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, generatedCode);
         const docSnap = await getDoc(gameDocRef);
         if (!docSnap.exists()) {
           newGameId = generatedCode;
@@ -1581,7 +1581,7 @@ const App = () => {
 
       const selectedGameQuestions = getTenRandomQuestions(); // Select 10 random questions for the game
 
-      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
+      const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, newGameId);
       await setDoc(gameDocRef, {
         hostId: userId, // The creator is the host (Proctor)
         hostName: userName, // Store Proctor's name
@@ -1615,7 +1615,7 @@ const App = () => {
     setLoading(true);
     setError('');
     const normalizedIdToJoin = gameCodeInput.trim().toUpperCase();
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedIdToJoin);
+    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, normalizedIdToJoin);
     try {
       const docSnap = await getDoc(gameDocRef);
       if (docSnap.exists()) {
@@ -1648,16 +1648,16 @@ const App = () => {
     }
 
     // Update local state immediately for visual feedback
-    setAnswerSelected(true); 
+    setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
 
     // Update player's selection in Firestore (without immediate score change)
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
     const currentQuestion = questions[currentQuestionIndex]; // Get the question to check correctness
-    
+
     // Store temporary feedback state locally for player's reference
     const newFeedback = (selectedOption === currentQuestion.correctAnswer) ? 'Correct!' : 'Incorrect.';
-    setFeedback(newFeedback); 
+    setFeedback(newFeedback);
 
     const updatedPlayers = gameData.players.map(p => {
         if (p.id === userId) {
@@ -1665,7 +1665,7 @@ const App = () => {
                 ...p,
                 // Only store the selection, score update is on reveal
                 selectedAnswerForQuestion: selectedOption,
-                feedbackForQuestion: newFeedback 
+                feedbackForQuestion: newFeedback
             };
         }
         return p;
@@ -1675,7 +1675,7 @@ const App = () => {
       await updateDoc(gameDocRef, { players: updatedPlayers });
       // Reset local score back to true score, as only Firestore reveal should modify it
       // This is a crucial reset to prevent premature score viewing by player
-      setScore(gameData.players.find(p => p.id === userId)?.score || 0); 
+      setScore(gameData.players.find(p => p.id === userId)?.score || 0);
     } catch (e) {
       console.error("Error updating answer selection:", e);
       setError("Failed to submit your answer selection.");
@@ -1700,7 +1700,7 @@ const App = () => {
     setShowVarietalModal(false);
 
     const nextIndex = gameData.currentQuestionIndex + 1;
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
 
     // Clear feedback and selected answers for all players in Firestore for the new question
     const resetPlayers = gameData.players.map(p => ({
@@ -1711,8 +1711,8 @@ const App = () => {
 
     if (nextIndex < gameData.questions.length) {
       try {
-        await updateDoc(gameDocRef, { 
-          currentQuestionIndex: nextIndex, 
+        await updateDoc(gameDocRef, {
+          currentQuestionIndex: nextIndex,
           players: resetPlayers,
           revealAnswers: false // Reset for next question
         });
@@ -1736,7 +1736,7 @@ const App = () => {
       return;
     }
 
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
     const resetPlayers = gameData.players.map(p => ({ ...p, score: 0, selectedAnswerForQuestion: null, feedbackForQuestion: null }));
     const newRandomQuestions = getTenRandomQuestions();
 
@@ -1765,7 +1765,7 @@ const App = () => {
     const updatedPlayers = gameData.players.map(p => {
         const isCorrect = p.selectedAnswerForQuestion === currentQuestion.correctAnswer;
         const scoreChange = isCorrect ? 1 : 0;
-        
+
         return {
             ...p,
             score: (p.score || 0) + scoreChange,
@@ -1773,11 +1773,11 @@ const App = () => {
         };
     });
 
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
     try {
-      await updateDoc(gameDocRef, { 
-        players: updatedPlayers, 
-        revealAnswers: true 
+      await updateDoc(gameDocRef, {
+        players: updatedPlayers,
+        revealAnswers: true
       });
     } catch (e) {
       console.error("Error revealing answers:", e);
@@ -1802,12 +1802,12 @@ const App = () => {
 
     // This will be read from Netlify Environment Variable during deployment
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY || "YOUR_ACTUAL_GEMINI_API_KEY_HERE"; // TEMPORARY FOR GITPOD PREVIEW ONLY
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const apiUrl = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey};
 
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, 
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
@@ -1843,13 +1843,13 @@ const App = () => {
     setShowGenerateQuestionModal(false); // Close the input modal
     setError('');
 
-    const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
+    const prompt = Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
     {
       "question": "...",
       "options": ["...", "...", "...", "..."],
       "correctAnswer": "...",
       "explanation": "..."
-    }`;
+    };
 
     const schema = {
       type: "OBJECT",
@@ -1872,7 +1872,7 @@ const App = () => {
       setQuestions(prevQuestions => [...prevQuestions, generatedQuestion]);
       // If in multiplayer, update the game data in Firestore
       if (mode === 'multiplayer' && activeGameId) {
-        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+        const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
         try {
           await updateDoc(gameDocRef, {
             questions: [...gameData.questions, generatedQuestion]
@@ -1891,7 +1891,7 @@ const App = () => {
     setVarietalElaboration(''); // Clear previous elaboration
     setError('');
 
-    const prompt = `Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.`;
+    const prompt = Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.;
     const elaboration = await callGeminiAPI(prompt);
     if (elaboration) {
       setVarietalElaboration(elaboration);
@@ -1903,29 +1903,23 @@ const App = () => {
   // Render based on mode
   const renderContent = () => {
     // Initialize gameData with safe defaults if it's null or undefined
-    const safeGameData = gameData || { 
-      players: [], 
-      questions: [], 
-      currentQuestionIndex: 0, 
-      quizEnded: false, 
-      hostId: '', 
-      hostName: '', 
-      revealAnswers: false 
-    }; 
+    const safeGameData = gameData || {
+      players: [],
+      questions: [],
+      currentQuestionIndex: 0,
+      quizEnded: false,
+      hostId: '',
+      hostName: '',
+      revealAnswers: false
+    };
 
-    const isHost = safeGameData.hostId === userId; 
+    const isHost = safeGameData.hostId === userId;
     const currentQuestion = Array.isArray(questions) && questions.length > currentQuestionIndex
                             ? questions[currentQuestionIndex]
-                            : { options: [], correctAnswer: '', question: '', explanation: '' }; 
+                            : { options: [], correctAnswer: '', question: '', explanation: '' };
 
     const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
                              WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
-      
-    // Dummy usage to satisfy ESLint's no-unused-vars rule
-    // eslint-disable-next-line no-unused-vars
-    const isHostESLintFix = isHost;
-    // eslint-disable-next-line no-unused-vars
-    const isVarietalAnswerESLintFix = isVarietalAnswer;
 
     // Ensure gameData.players is an array before attempting spread and sort
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
@@ -1943,7 +1937,7 @@ const App = () => {
     const currentPlayerGameData = currentPlayersArray.find(p => p.id === userId) || {};
     const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
     const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
-    
+
     // Dummy usage to satisfy ESLint's no-unused-vars rule
     // eslint-disable-next-line no-unused-vars
     const winnersESLintFix = winners;
@@ -2066,7 +2060,7 @@ const App = () => {
                     key={index}
                     onClick={() => handleSinglePlayerAnswerClick(option)}
                     disabled={answerSelected}
-                    className={`
+                    className={
                       w-full p-4 rounded-lg text-left text-lg font-medium
                       transition-all duration-200 ease-in-out
                       ${answerSelected
@@ -2078,7 +2072,7 @@ const App = () => {
                         : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
                       }
                       ${!answerSelected && 'hover:scale-[1.02]'}
-                    `}
+                    }
                   >
                     {option}
                   </button>
@@ -2087,7 +2081,7 @@ const App = () => {
 
               {feedback && (
                 <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-                  <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}}>
                     {feedback}
                   </p>
                   {feedback === 'Incorrect.' && (
@@ -2203,24 +2197,24 @@ const App = () => {
       );
     } else if (mode === 'multiplayer' && activeGameId) { // Only render if activeGameId is present
       // Initialize gameData with safe defaults if it's null or undefined
-      const safeGameData = gameData || { 
-        players: [], 
-        questions: [], 
-        currentQuestionIndex: 0, 
-        quizEnded: false, 
-        hostId: '', 
-        hostName: '', 
-        revealAnswers: false 
-      }; 
+      const safeGameData = gameData || {
+        players: [],
+        questions: [],
+        currentQuestionIndex: 0,
+        quizEnded: false,
+        hostId: '',
+        hostName: '',
+        revealAnswers: false
+      };
 
-      const isHost = safeGameData.hostId === userId; 
+      const isHost = safeGameData.hostId === userId;
       const currentQuestion = Array.isArray(questions) && questions.length > currentQuestionIndex
                               ? questions[currentQuestionIndex]
-                              : { options: [], correctAnswer: '', question: '', explanation: '' }; 
+                              : { options: [], correctAnswer: '', question: '', explanation: '' };
 
       const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
                                WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
-      
+
       // Ensure gameData.players is an array before attempting spread and sort
       const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
 
@@ -2237,7 +2231,7 @@ const App = () => {
       const currentPlayerGameData = currentPlayersArray.find(p => p.id === userId) || {};
       const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
       const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
-      
+
       // Dummy usage to satisfy ESLint's no-unused-vars rule
       // eslint-disable-next-line no-unused-vars
       const winnersESLintFix = winners;
@@ -2250,29 +2244,6 @@ const App = () => {
       // eslint-disable-next-line no-unused-vars
       const playerFeedbackESLintFix = playerFeedback;
 
-      if (loading || !isAuthReady) {
-        return <p className="text-center text-gray-700 text-xl">Loading...</p>;
-      }
-
-      if (error) {
-        return (
-          <div className="text-center space-y-4 text-red-600 text-lg">
-            <p>{error}</p>
-            <button
-              onClick={() => {
-                setError('');
-                setMode('initial');
-                setActiveGameId(null);
-                setGameData(null);
-              }}
-              className="mt-4 bg-[#6b2a58] text-white py-2 px-4 rounded-lg hover:bg-[#496E3E] transition-colors"
-            >
-              Go Back
-            </button>
-          </div>
-        );
-      }
-
       return (
         <div className="space-y-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
@@ -2283,19 +2254,19 @@ const App = () => {
           </p>
 
           {/* Display Proctor's Name */}
-          {!isHost && safeGameData.hostName && ( 
+          {!isHost && safeGameData.hostName && (
             <p className="text-gray-700 text-lg text-center">
               Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
             </p>
           )}
 
           {/* New: Display running score and rank */}
-          {!safeGameData.quizEnded && !isHost && ( 
+          {!safeGameData.quizEnded && !isHost && (
             <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
               <p className="text-lg font-semibold text-gray-800">
                 Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
               </p>
-              {currentPlayersArray.length > 1 && ( 
+              {currentPlayersArray.length > 1 && (
                 <p className="text-md text-gray-700">
                   You are in <span className="font-bold text-[#6b2a58]">{currentPlayerRank}</span> place!
                 </p>
@@ -2305,7 +2276,7 @@ const App = () => {
 
           <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
             <p className="text-lg font-semibold text-gray-700 mb-2">
-              Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length} 
+              Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length}
             </p>
             <p className="text-xl text-gray-800 font-medium">
               {currentQuestion.question}
@@ -2313,11 +2284,11 @@ const App = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {isHost ? ( 
+            {isHost ? (
               <>
                 {currentQuestion.options.map((option, index) => (
-                  <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium
-                    ${option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
+                  <div key={index} className={w-full p-4 rounded-lg text-left text-lg font-medium
+                    ${option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}}>
                     {option}
                   </div>
                 ))}
@@ -2328,27 +2299,27 @@ const App = () => {
                   <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
                 </p>
               </>
-            ) : ( 
+            ) : (
               currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleMultiplayerAnswerClick(option)}
-                  disabled={safeGameData.revealAnswers || safeGameData.quizEnded} 
-                  className={`
+                  disabled={safeGameData.revealAnswers || safeGameData.quizEnded}
+                  className={
                     w-full p-4 rounded-lg text-left text-lg font-medium
                     transition-all duration-200 ease-in-out
                     ${safeGameData.revealAnswers
                       ? option === currentQuestion.correctAnswer
-                        ? 'bg-green-100 text-green-800 ring-2 ring-green-500' 
+                        ? 'bg-green-100 text-green-800 ring-2 ring-green-500'
                         : option === playerSelectedAnswer
-                          ? 'bg-red-100 text-red-800 ring-2 ring-red-500' 
+                          ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
                           : 'bg-gray-100 text-gray-600 cursor-not-allowed'
                       : option === playerSelectedAnswer
                         ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500'
-                        : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40' 
+                        : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
                     }
-                    ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'} 
-                  `}
+                    ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'}
+                  }
                 >
                   {option}
                 </button>
@@ -2358,7 +2329,7 @@ const App = () => {
 
           {playerFeedback && !isHost && ( // Only show feedback to Players
             <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-              <p className={`text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}}>
                 {playerFeedback}
               </p>
               {playerFeedback === 'Incorrect.' && (
@@ -2434,7 +2405,7 @@ const App = () => {
             </ul>
           </div>
 
-          {safeGameData.quizEnded && ( 
+          {safeGameData.quizEnded && (
             <div className="text-center space-y-6 mt-8">
               <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
               {winners.length === 1 ? (
@@ -2477,7 +2448,7 @@ const App = () => {
           <button
             onClick={() => {
               setMode('initial');
-              setActiveGameId(null); 
+              setActiveGameId(null);
               setGameData(null);
             }}
             className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
@@ -2493,7 +2464,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
       style={{
-        backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg')`, 
+        backgroundImage: url('https://upload.wikimedia.org/wikipedia/commons/e/e0/Vineyard_at_sunset.jpg'),
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -2570,4 +2541,3 @@ const App = () => {
     };
 
     export default App;
-    ```
