@@ -1402,77 +1402,62 @@ const App = () => {
       db = getFirestore(app);
       auth = getAuth(app);
 
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          setUserId(user.uid); // This updates state
-          // Attempt to load user's saved name from their private profile
-          const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', user.uid, 'profile', 'userProfile');
-          const docSnap = await getDoc(userProfileRef);
+    // Effect for multiplayer game data subscription
+useEffect(() => {
+  let unsubscribe = null;
 
-          if (docSnap.exists() && docSnap.data().userName) {
-            setUserName(docSnap.data().userName);
-            setMode('initial'); // Go directly to mode selection if name exists
-          } else {
-            setMode('enterName'); // Prompt for name if not found
-          }
-          setIsAuthReady(true);
-          setLoading(false);
-          // Questions are now loaded when entering single player mode or creating/joining multiplayer
-        } else {
-          // Sign in anonymously if no user is authenticated
-          if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
-          } else {
-            await signInAnonymously(auth);
-          }
-        }
-      });
+  // Only subscribe if we’re in multiplayer, have an active game, and auth is ready
+  if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
+    const normalizedGameId = activeGameId.toUpperCase(); // normalize
 
-      return () => unsubscribe();
-    } catch (e) {
-      console.error("Error initializing Firebase:", e);
-      setError("Failed to initialize Firebase. Please try again later.");
-      setLoading(false);
-    }
-  }, []); // Empty dependency array means this runs once on mount
+    // ✅ FIX: the path argument must be a string (template literal or plain string)
+    const gameDocRef = doc(
+      db,
+      `artifacts/${firestoreAppId}/public/data/games`,
+      normalizedGameId
+    );
 
-  // Effect for multiplayer game data subscription
-  useEffect(() => {
-    let unsubscribe;
-    // Only subscribe if an activeGameId is set
-    if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
-      const normalizedGameId = activeGameId.toUpperCase(); // Ensure normalized if not already
-      const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, normalizedGameId);
-      unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
+    unsubscribe = onSnapshot(
+      gameDocRef,
+      (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setGameData(data);
+
           // Update local state for multiplayer quiz
-          setCurrentQuestionIndex(data.currentQuestionIndex || 0);
-          setQuizEnded(data.quizEnded || false);
-          // Ensure questions are updated for all players
-          setQuestions(data.questions || []);
-          // Find current player's score using userId
-          const currentPlayerScore = data.players?.find(p => p.id === userId)?.score || 0;
+          setCurrentQuestionIndex(data.currentQuestionIndex ?? 0);
+          setQuizEnded(Boolean(data.quizEnded));
+          setQuestions(Array.isArray(data.questions) ? data.questions : []);
+
+          // Current player’s score
+          const currentPlayerScore =
+            (Array.isArray(data.players) ? data.players : []).find(p => p.id === userId)?.score ?? 0;
           setScore(currentPlayerScore);
+
+          // Reset per-question UI
           setFeedback('');
           setAnswerSelected(false);
           setSelectedAnswer(null);
         } else {
+          // Game doc vanished (ended or deleted)
           setError('Game not found or ended.');
-          setActiveGameId(null); // Clear active game ID if not found
+          setActiveGameId(null);
           setGameData(null);
-          setMode('multiplayer'); // Go back to lobby to re-enter/create game
+          setMode('multiplayer'); // back to lobby
         }
-      }, (err) => {
-        console.error("Error listening to game updates:", err);
-        setError("Failed to get real-time game updates.");
-      });
-    }
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [mode, activeGameId, isAuthReady, userId]); // Dependency is now activeGameId
+      },
+      (err) => {
+        console.error('Error listening to game updates:', err);
+        setError('Failed to get real-time game updates.');
+      }
+    );
+  }
+
+  // Cleanup listener on dep changes/unmount
+  return () => {
+    if (typeof unsubscribe === 'function') unsubscribe();
+  };
+}, [mode, activeGameId, isAuthReady, userId, db, firestoreAppId]);
 
   // Function to handle setting the user's name
   const handleSetName = async () => {
