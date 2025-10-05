@@ -1564,6 +1564,8 @@ useEffect(() => {
         return;
       }
 
+      const selectedGameQuestions = getTenRandomQuestions(); // <-- ADD THIS
+      
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
 
         await setDoc(gameDocRef, {
@@ -1684,7 +1686,7 @@ useEffect(() => {
     setShowVarietalModal(false);
 
     const nextIndex = gameData.currentQuestionIndex + 1;
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedQuestion);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
 
     // Clear feedback and selected answers for all players in Firestore for the new question
     const resetPlayers = gameData.players.map(p => ({
@@ -1827,12 +1829,13 @@ useEffect(() => {
     setShowGenerateQuestionModal(false); // Close the input modal
     setError('');
 
-    const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:    {
-      "question": "...",
-      "options": ["...", "...", "...", "..."],
-      "correctAnswer": "...",
-      "explanation": "..."
-    };
+const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
+{
+  "question": "...",
+  "options": ["...", "...", "...", "..."],
+  "correctAnswer": "...",
+  "explanation": "..."
+}`;
 
     const schema = {
       type: "OBJECT",
