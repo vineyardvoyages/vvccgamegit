@@ -1566,8 +1566,7 @@ useEffect(() => {
 
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
 
-      const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, newGameId);
-      await setDoc(gameDocRef, {
+        await setDoc(gameDocRef, {
         hostId: userId, // The creator is the host (Proctor)
         hostName: userName, // Store Proctor's name
         currentQuestionIndex: 0,
