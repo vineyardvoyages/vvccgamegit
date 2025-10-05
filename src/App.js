@@ -1549,7 +1549,7 @@ useEffect(() => {
 
       while (!isUnique && attempts < maxAttempts) {
         const generatedCode = generateGameCode();
-        const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, generatedCode);
+        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedCode);
         const docSnap = await getDoc(gameDocRef);
         if (!docSnap.exists()) {
           newGameId = generatedCode;
@@ -1564,7 +1564,7 @@ useEffect(() => {
         return;
       }
 
-      const selectedGameQuestions = getTenRandomQuestions(); // Select 10 random questions for the game
+      const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
 
       const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, newGameId);
       await setDoc(gameDocRef, {
@@ -1600,7 +1600,7 @@ useEffect(() => {
     setLoading(true);
     setError('');
     const normalizedIdToJoin = gameCodeInput.trim().toUpperCase();
-    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, normalizedIdToJoin);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedIdToJoin);
     try {
       const docSnap = await getDoc(gameDocRef);
       if (docSnap.exists()) {
@@ -1637,7 +1637,7 @@ useEffect(() => {
     setSelectedAnswer(selectedOption);
 
     // Update player's selection in Firestore (without immediate score change)
-    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const currentQuestion = questions[currentQuestionIndex]; // Get the question to check correctness
 
     // Store temporary feedback state locally for player's reference
@@ -1685,7 +1685,7 @@ useEffect(() => {
     setShowVarietalModal(false);
 
     const nextIndex = gameData.currentQuestionIndex + 1;
-    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
 
     // Clear feedback and selected answers for all players in Firestore for the new question
     const resetPlayers = gameData.players.map(p => ({
@@ -1721,7 +1721,7 @@ useEffect(() => {
       return;
     }
 
-    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     const resetPlayers = gameData.players.map(p => ({ ...p, score: 0, selectedAnswerForQuestion: null, feedbackForQuestion: null }));
     const newRandomQuestions = getTenRandomQuestions();
 
@@ -1758,7 +1758,7 @@ useEffect(() => {
         };
     });
 
-    const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     try {
       await updateDoc(gameDocRef, {
         players: updatedPlayers,
@@ -1787,7 +1787,7 @@ useEffect(() => {
 
     // This will be read from Netlify Environment Variable during deployment
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY || "YOUR_ACTUAL_GEMINI_API_KEY_HERE"; // TEMPORARY FOR GITPOD PREVIEW ONLY
-    const apiUrl = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey};
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -1828,8 +1828,7 @@ useEffect(() => {
     setShowGenerateQuestionModal(false); // Close the input modal
     setError('');
 
-    const prompt = Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
-    {
+    const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:    {
       "question": "...",
       "options": ["...", "...", "...", "..."],
       "correctAnswer": "...",
@@ -1857,8 +1856,8 @@ useEffect(() => {
       setQuestions(prevQuestions => [...prevQuestions, generatedQuestion]);
       // If in multiplayer, update the game data in Firestore
       if (mode === 'multiplayer' && activeGameId) {
-        const gameDocRef = doc(db, artifacts/${firestoreAppId}/public/data/games, activeGameId);
-        try {
+       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+       try {
           await updateDoc(gameDocRef, {
             questions: [...gameData.questions, generatedQuestion]
           });
@@ -1876,7 +1875,7 @@ useEffect(() => {
     setVarietalElaboration(''); // Clear previous elaboration
     setError('');
 
-    const prompt = Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.;
+    const prompt = `Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.`;
     const elaboration = await callGeminiAPI(prompt);
     if (elaboration) {
       setVarietalElaboration(elaboration);
