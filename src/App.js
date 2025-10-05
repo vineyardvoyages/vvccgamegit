@@ -1684,7 +1684,7 @@ useEffect(() => {
     setShowVarietalModal(false);
 
     const nextIndex = gameData.currentQuestionIndex + 1;
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedQuestion);
 
     // Clear feedback and selected answers for all players in Firestore for the new question
     const resetPlayers = gameData.players.map(p => ({
