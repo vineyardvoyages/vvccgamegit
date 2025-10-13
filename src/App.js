@@ -2079,7 +2079,7 @@ const renderContent = () => {
 </button>
             )}
             
-              href="https://www.vineyardvoyages.com/tours"
+               <a href="https://www.vineyardvoyages.com/tours"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
@@ -2350,7 +2350,7 @@ const renderContent = () => {
 </button>
             )}
             
-              href="https://www.vineyardvoyages.com/tours"
+             <a href="https://www.vineyardvoyages.com/tours"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
@@ -2375,7 +2375,7 @@ const renderContent = () => {
     );
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
+        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]
       style={{
         backgroundImage: 'url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80")',
         backgroundSize: 'cover',
