@@ -10,7 +10,7 @@ const firebaseConfig = {
   projectId: "vineyardvoyagesquiz",
   storageBucket: "vineyardvoyagesquiz.appspot.com",
   messagingSenderId: "429604849897",
-  appId: "1:429604849897:web:481e9ade4e745ae86f8878", // Corrected App ID
+  appId: "1:429604849897:web:481e9ade4e745ae86f8878", 
   measurementId: "G-KBLZD8FSEM"
 };
 
@@ -363,6 +363,17 @@ const WINE_QUIZ_QUESTIONS = [
       "Chardonnay": "While Chardonnay grows in Loire Valley, it's not the primary grape for dry, aromatic wines there.",
       "Pinot Gris": "Pinot Gris is more associated with Alsace than the Loire Valley's aromatic wines.",
       "Riesling": "Riesling is primarily grown in Germany and Alsace, not the Loire Valley."
+    }
+  },
+  {
+    question: "What is a 'Proctor'?",
+    options: ["A winemaker", "A wine critic", "A trained and knowledgeable wine professional", "A wine seller"],
+    correctAnswer: "A trained and knowledgeable wine professional",
+    explanation: "A Proctor is a highly trained and knowledgeable wine professional, typically working in fine dining restaurants, now serving as the moderator.",
+    wrongAnswerExplanations: {
+      "A winemaker": "A winemaker produces wine, while a Proctor is more focused on service and education.",
+      "A wine critic": "A wine critic evaluates and reviews wines professionally, which is different from a Proctor's role.",
+      "A wine seller": "A wine seller focuses on sales, while a Proctor provides expertise and guidance in service."
     }
   },
   {
@@ -1004,6 +1015,17 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
+    question: `Which of the following are Loudoun County wineries that are part of your program?`,
+    options: ["868 Estate Vineyards", "Fabbioli Cellars", "Hillsborough Winery & Brewery", "All of the above"],
+    correctAnswer: "All of the above",
+    explanation: "868 Estate Vineyards, Fabbioli Cellars, and Hillsborough Winery & Brewery are all valued partners.",
+    wrongAnswerExplanations: {
+      "868 Estate Vineyards": "While a partner, there are other Loudoun wineries in the program.",
+      "Fabbioli Cellars": "While a partner, there are other Loudoun wineries in the program.",
+      "Hillsborough Winery & Brewery": "While a partner, there are other Loudoun wineries in the program.",
+    }
+  },
+  {
     question: `What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?`,
     options: ["Mass production of wine for the tours", "Lower prices on all wines", "Exclusive access and unique tasting experiences", "Only full bottle sales"],
     correctAnswer: "Exclusive access and unique tasting experiences",
@@ -1048,17 +1070,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a popular event often hosted by Northern Virginia wineries in the fall?",
-    options: ["Spring Blossom Festival", "Summer Jazz Concerts", "Harvest Festivals and Grape Stomps", "Winter Sledding Competitions"],
-    correctAnswer: "Harvest Festivals and Grape Stomps",
-    explanation: "Fall is harvest season, and many wineries celebrate with festivals, grape stomps, and other family-friendly events.",
-    wrongAnswerExplanations: {
-      "Spring Blossom Festival": "While some spring events occur, harvest festivals are more prominent and seasonal.",
-      "Summer Jazz Concerts": "Summer events happen but aren't as universally celebrated as harvest festivals.",
-      "Winter Sledding Competitions": "Wineries don't typically host sledging events."
-    }
-  },
-  {
     question: "Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?",
     options: ["Sandy soil", "Clay soil", "Loamy soil", "Slate or rocky soil"],
     correctAnswer: "Slate or rocky soil",
@@ -1087,17 +1098,6 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "Virginia has a long history of winemaking, dating back to the early colonial period, making it one of the oldest wine states.",
     wrongAnswerExplanations: {
       "False": "Virginia indeed has one of the longest histories of winemaking in the United States."
-    }
-  },
-  {
-    question: "What is the name of the largest wine festival in Virginia, often held annually?",
-    options: ["Virginia Grape Fest", "Taste of Virginia Wine", "Virginia Wine Festival", "Commonwealth Crush"],
-    correctAnswer: "Virginia Wine Festival",
-    explanation: "The Virginia Wine Festival is one of the largest and longest-running wine festivals in the state, showcasing numerous Virginia wineries.",
-    wrongAnswerExplanations: {
-      "Virginia Grape Fest": "While there may be grape festivals, the Virginia Wine Festival is the largest and most well-known.",
-      "Taste of Virginia Wine": "This may be an event but is not the largest wine festival.",
-      "Commonwealth Crush": "This may be an event but is not the largest wine festival."
     }
   },
   {
