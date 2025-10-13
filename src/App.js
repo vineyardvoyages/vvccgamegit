@@ -2076,14 +2076,14 @@ const renderContent = () => {
                                    focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
             >
               Play Again
-            </button>
+</button>
+            )}
             
               href="https://www.vineyardvoyages.com/tours"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                   hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                   focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
             >
               Book a Tour Now!
             </a>
@@ -2347,7 +2347,7 @@ const renderContent = () => {
                                    hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
               >
                 Restart Game
-              </button>
+</button>
             )}
             
               href="https://www.vineyardvoyages.com/tours"
@@ -2374,222 +2374,6 @@ const renderContent = () => {
       </div>
     );
   }
-
-  // Fallback
-  return <p className="text-center text-gray-700">Invalid mode</p>;
-};
-
-
-      // CRITICAL CHECK: Wait for gameData to be populated with questions/players before rendering the full game
-      if (!Array.isArray(safeGameData.questions) || safeGameData.questions.length === 0) {
-        return (
-          <div className="text-center space-y-4">
-            <p className="text-gray-700">Waiting for game data from Firestore...</p>
-            <p className="text-sm text-gray-500">Game ID: {activeGameId}</p>
-          </div>
-        );
-      }
-
-
-      return (
-        <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
-          <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
-          <p className="text-gray-700 text-lg text-center">
-            Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
-            {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
-          </p>
-
-          {/* Display Proctor's Name */}
-          {!isHost && safeGameData.hostName && ( 
-            <p className="text-gray-700 text-lg text-center">
-              Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
-            </p>
-          )}
-
-          {/* New: Display running score and rank */}
-          {!safeGameData.quizEnded && !isHost && ( 
-            <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
-              <p className="text-lg font-semibold text-gray-800">
-                Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-              </p>
-              {currentPlayersArray.length > 1 && ( 
-                <p className="text-md text-gray-700">
-                  You are in <span className="font-bold text-[#6b2a58]">{currentPlayerRank}</span> place!
-                </p>
-              )}
-            </div>
-          )}
-
-
-          <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
-            <p className="text-lg font-semibold text-gray-700 mb-2">
-              Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length} 
-            </p>
-            <p className="text-xl text-gray-800 font-medium">
-              {currentQuestion.question}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {isHost ? ( // Proctor view: always shows correct answer if revealed
-              <>
-                {currentQuestion.options.map((option, index) => (
-                  <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium
-                    ${safeGameData.revealAnswers && option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
-                    {option}
-                  </div>
-                ))}
-                
-              </>
-            ) : ( // Player view: clickable buttons with feedback
-              currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleMultiplayerAnswerClick(option)}
-                  disabled={safeGameData.revealAnswers || safeGameData.quizEnded} // Disabled when revealed or ended
-                  className={`
-                    w-full p-4 rounded-lg text-left text-lg font-medium
-                    transition-all duration-200 ease-in-out
-                    ${playerSelectedAnswer === option ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500' : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'}
-                    ${safeGameData.revealAnswers 
-                      ? option === currentQuestion.correctAnswer
-                        ? '!bg-green-500 text-white ring-2 ring-green-700' 
-                        : option === playerSelectedAnswer
-                          ? '!bg-red-500 text-white ring-2 ring-red-700'
-                          : 'cursor-not-allowed opacity-50'
-                      : ''
-                    }
-                    ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'}
-                  `}
-                >
-                  {option}
-                </button>
-              ))
-            )}
-          </div>
-
-          {/* Answer Display and Controls */}
-          <div className="mt-4 space-y-4">
-              
-              {isHost && (
-                <>
-                  <p className="text-gray-700 text-center">
-                    <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
-                  </p>
-                  <p className="text-gray-700 text-center">
-                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                  </p>
-                </>
-              )}
-
-
-              {/* Host/Proctor Control Buttons */}
-              {isHost && !safeGameData.quizEnded && (
-                <div className="flex gap-4">
-                  {!safeGameData.revealAnswers ? (
-                    <button
-                      onClick={revealAnswersToAll}
-                      className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold
-                                         hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      Reveal Answers (Score)
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleMultiplayerNextQuestion}
-                      disabled={!safeGameData.revealAnswers}
-                      className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
-                    >
-                      {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setShowGenerateQuestionModal(true)}
-                    className="flex-none bg-indigo-600 text-white py-3 px-4 rounded-lg text-xl font-bold
-                                         hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    ✨ New
-                  </button>
-                </div>
-              )}
-          </div>
-
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
-            <ul className="space-y-2">
-              {/* Ensure safeGameData.players exists and is array before mapping */}
-              {safeGameData.players && Array.isArray(safeGameData.players) && sortedPlayers.map(player => (
-                <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
-                  <span className="font-semibold">
-                    {player.userName}
-                    {player.id === safeGameData.hostId ? (
-                      <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
-                    ) : (
-                      <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
-                    )}
-                  </span>
-                  <span className="font-bold text-[#6b2a58]">{player.score}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {safeGameData.quizEnded && ( 
-            <div className="text-center space-y-6 mt-8">
-              <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
-              {winners.length === 1 ? (
-                <p className="text-3xl font-extrabold text-green-700">
-                  Winner: {winners[0].userName}!
-                </p>
-              ) : (
-                <p className="text-3xl font-extrabold text-green-700">
-                  It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
-                </p>
-              )}
-              {/* Only show player's score if they are a Player */}
-              {!isHost && (
-                <p className="text-2xl text-gray-700">
-                  Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                </p>
-              )}
-              {isHost && (
-                <button
-                  onClick={restartMultiplayerQuiz}
-                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-                >
-                  Restart Game
-                </button>
-              )}
-              <a
-                href="https://www.vineyardvoyages.com/tours"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-              >
-                Book a Tour Now!
-              </a>
-            </div>
-          )}
-          <button
-            onClick={() => {
-              setMode('initial');
-              setActiveGameId(null); // Clear active game ID when leaving
-              setGameData(null);
-            }}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                         hover:bg-gray-600 transition-colors duration-200 shadow-md"
-          >
-            Leave Game
-          </button>
-        </div>
-      );
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E] flex items-center justify-center p-4 font-inter"
       style={{
