@@ -1015,17 +1015,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: `Which of the following are Loudoun County wineries that are part of your program?`,
-    options: ["868 Estate Vineyards", "Fabbioli Cellars", "Hillsborough Winery & Brewery", "All of the above"],
-    correctAnswer: "All of the above",
-    explanation: "868 Estate Vineyards, Fabbioli Cellars, and Hillsborough Winery & Brewery are all valued partners.",
-    wrongAnswerExplanations: {
-      "868 Estate Vineyards": "While a partner, there are other Loudoun wineries in the program.",
-      "Fabbioli Cellars": "While a partner, there are other Loudoun wineries in the program.",
-      "Hillsborough Winery & Brewery": "While a partner, there are other Loudoun wineries in the program.",
-    }
-  },
-  {
     question: `What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?`,
     options: ["Mass production of wine for the tours", "Lower prices on all wines", "Exclusive access and unique tasting experiences", "Only full bottle sales"],
     correctAnswer: "Exclusive access and unique tasting experiences",
