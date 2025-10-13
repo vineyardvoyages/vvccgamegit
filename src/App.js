@@ -10,7 +10,7 @@ const firebaseConfig = {
   projectId: "vineyardvoyagesquiz",
   storageBucket: "vineyardvoyagesquiz.appspot.com",
   messagingSenderId: "429604849897",
-  appId: "1:429604849897:web:481e9ade4e745ae86f8878", 
+  appId: "1:429604849897:web:481e9ade4e745ae86f8878",
   measurementId: "G-KBLZD8FSEM"
 };
 
@@ -1070,6 +1070,28 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
+    question: "Many Virginia wineries offer tasting room experiences. What is a common practice in these rooms?",
+    options: ["Blind tasting only", "Self-service wine dispensing", "Guided tastings with knowledgeable staff", "Only full bottle sales"],
+    correctAnswer: "Guided tastings with knowledgeable staff",
+    explanation: "Virginia wineries pride themselves on offering personalized, educational tasting experiences, often led by winemakers or passionate staff.",
+    wrongAnswerExplanations: {
+      "Blind tasting only": "Most Virginia wineries offer educational tastings where wines are identified, not blind tastings.",
+      "Self-service wine dispensing": "Virginia wineries typically provide personal service rather than self-service systems.",
+      "Only full bottle sales": "Most wineries offer tastings by the glass or flight, not just bottle sales."
+    }
+  },
+  {
+    question: "What is a popular event often hosted by Northern Virginia wineries in the fall?",
+    options: ["Spring Blossom Festival", "Summer Jazz Concerts", "Harvest Festivals and Grape Stomps", "Winter Sledding Competitions"],
+    correctAnswer: "Harvest Festivals and Grape Stomps",
+    explanation: "Fall is harvest season, and many wineries celebrate with festivals, grape stomps, and other family-friendly events.",
+    wrongAnswerExplanations: {
+      "Spring Blossom Festival": "While some spring events occur, harvest festivals are more prominent and seasonal.",
+      "Summer Jazz Concerts": "Summer events happen but aren't as universally celebrated as harvest festivals.",
+      "Winter Sledding Competitions": "Wineries don't typically host sledging events."
+    }
+  },
+  {
     question: "Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?",
     options: ["Sandy soil", "Clay soil", "Loamy soil", "Slate or rocky soil"],
     correctAnswer: "Slate or rocky soil",
@@ -1098,6 +1120,17 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "Virginia has a long history of winemaking, dating back to the early colonial period, making it one of the oldest wine states.",
     wrongAnswerExplanations: {
       "False": "Virginia indeed has one of the longest histories of winemaking in the United States."
+    }
+  },
+  {
+    question: "What is the name of the largest wine festival in Virginia, often held annually?",
+    options: ["Virginia Grape Fest", "Taste of Virginia Wine", "Virginia Wine Festival", "Commonwealth Crush"],
+    correctAnswer: "Virginia Wine Festival",
+    explanation: "The Virginia Wine Festival is one of the largest and longest-running wine festivals in the state, showcasing numerous Virginia wineries.",
+    wrongAnswerExplanations: {
+      "Virginia Grape Fest": "While there may be grape festivals, the Virginia Wine Festival is the largest and most well-known.",
+      "Taste of Virginia Wine": "This may be an event but is not the largest wine festival.",
+      "Commonwealth Crush": "This may be an event but is not the largest wine festival."
     }
   },
   {
@@ -1229,6 +1262,17 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
+    question: "What is a common challenge for Virginia vineyards during hurricane season?",
+    options: ["Too much sun", "Excessive rainfall and wind damage", "Drought", "Early frost"],
+    correctAnswer: "Excessive rainfall and wind damage",
+    explanation: "Hurricane season can bring heavy rains and strong winds, posing risks of rot and physical damage to vines and crops.",
+    wrongAnswerExplanations: {
+      "Too much sun": "This is not a concern during hurricane season.",
+      "Drought": "Hurricane season brings excessive rainfall, not drought.",
+      "Early frost": "Early frost is a risk in spring, not during hurricane season."
+    }
+  },
+  {
     question: "Which grape varietal is often blended with Cabernet Franc in Virginia to create Bordeaux-style red blends?",
     options: ["Pinot Noir", "Merlot", "Riesling", "Viognier"],
     correctAnswer: "Merlot",
@@ -1237,6 +1281,17 @@ const WINE_QUIZ_QUESTIONS = [
       "Pinot Noir": "Pinot Noir is not typically used in Bordeaux-style blends.",
       "Riesling": "Riesling is a white grape, not used in red blends.",
       "Viognier": "Viognier is a white grape, not used in red blends."
+    }
+  },
+  {
+    question: "What is a common wine tourism experience emphasized in Northern Virginia?",
+    options: ["Budget-friendly travel", "Luxury and personalized attention", "Self-guided tours with no interaction", "Large group parties only"],
+    correctAnswer: "Luxury and personalized attention",
+    explanation: "Northern Virginia's wine tourism often emphasizes a premium experience with comfortable amenities and tailored itineraries.",
+    wrongAnswerExplanations: {
+      "Budget-friendly travel": "While some options are affordable, the region is known for a premium, not budget-focused, experience.",
+      "Self-guided tours with no interaction": "Wineries pride themselves on personal, guided experiences.",
+      "Large group parties only": "Many wineries cater to small, intimate groups as well as larger parties."
     }
   },
   {
@@ -2189,6 +2244,18 @@ const App = () => {
       // eslint-disable-next-line no-unused-vars
       const playerFeedbackESLintFix = playerFeedback;
 
+
+      // CRITICAL CHECK: Wait for gameData to be populated with questions/players before rendering the full game
+      if (!Array.isArray(safeGameData.questions) || safeGameData.questions.length === 0) {
+        return (
+          <div className="text-center space-y-4">
+            <p className="text-gray-700">Waiting for game data from Firestore...</p>
+            <p className="text-sm text-gray-500">Game ID: {activeGameId}</p>
+          </div>
+        );
+      }
+
+
       return (
         <div className="space-y-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
@@ -2219,6 +2286,7 @@ const App = () => {
             </div>
           )}
 
+
           <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
             <p className="text-lg font-semibold text-gray-700 mb-2">
               Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length} 
@@ -2229,41 +2297,35 @@ const App = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {isHost ? ( 
+            {isHost ? ( // Proctor view: always shows correct answer if revealed
               <>
                 {currentQuestion.options.map((option, index) => (
                   <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium
-                    ${option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
+                    ${safeGameData.revealAnswers && option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
                     {option}
                   </div>
                 ))}
-                <p className="text-gray-700 text-center col-span-2">
-                  <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
-                </p>
-                <p className="text-gray-700 text-center col-span-2">
-                  <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                </p>
+                
               </>
-            ) : ( 
+            ) : ( // Player view: clickable buttons with feedback
               currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleMultiplayerAnswerClick(option)}
-                  disabled={safeGameData.revealAnswers || safeGameData.quizEnded} 
+                  disabled={safeGameData.revealAnswers || safeGameData.quizEnded} // Disabled when revealed or ended
                   className={`
                     w-full p-4 rounded-lg text-left text-lg font-medium
                     transition-all duration-200 ease-in-out
-                    ${safeGameData.revealAnswers
+                    ${playerSelectedAnswer === option ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500' : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'}
+                    ${safeGameData.revealAnswers 
                       ? option === currentQuestion.correctAnswer
-                        ? 'bg-green-100 text-green-800 ring-2 ring-green-500' 
+                        ? '!bg-green-500 text-white ring-2 ring-green-700' 
                         : option === playerSelectedAnswer
-                          ? 'bg-red-100 text-red-800 ring-2 ring-red-500' 
-                          : 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                      : option === playerSelectedAnswer
-                        ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500'
-                        : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40' 
+                          ? '!bg-red-500 text-white ring-2 ring-red-700'
+                          : 'cursor-not-allowed opacity-50'
+                      : ''
                     }
-                    ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'} 
+                    ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'}
                   `}
                 >
                   {option}
@@ -2272,63 +2334,52 @@ const App = () => {
             )}
           </div>
 
-          {playerFeedback && !isHost && ( // Only show feedback to Players
-            <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-              <p className={`text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                {playerFeedback}
-              </p>
-              {playerFeedback === 'Incorrect.' && (
-                <p className="text-gray-700 mt-2">
-                  <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                </p>
+          {/* Answer Display and Controls */}
+          <div className="mt-4 space-y-4">
+              
+              {isHost && (
+                <>
+                  <p className="text-gray-700 text-center">
+                    <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
+                  </p>
+                  <p className="text-gray-700 text-center">
+                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+                  </p>
+                </>
               )}
-              <p className="text-gray-700 mt-2">
-                <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-              </p>
-              {isVarietalAnswer && ( // Only show if it's a varietal
-                <button
-                  onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                  className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                             hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
-                  disabled={llmLoading}
-                >
-                  {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
-                </button>
-              )}
-            </div>
-          )}
 
-          {isHost && !safeGameData.quizEnded && ( // Proctor controls
-            <div className="flex flex-col gap-4 mt-6">
-              {!safeGameData.revealAnswers ? (
-                <button
-                  onClick={revealAnswersToAll}
-                  className="w-full bg-orange-600 text-white py-3 rounded-lg text-xl font-bold
-                             hover:bg-orange-700 transition-colors duration-200 shadow-lg"
-                >
-                  Reveal Answers
-                </button>
-              ) : (
-                <button
-                  onClick={handleMultiplayerNextQuestion}
-                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg"
-                >
-                  {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
-                </button>
+
+              {/* Host/Proctor Control Buttons */}
+              {isHost && !safeGameData.quizEnded && (
+                <div className="flex gap-4">
+                  {!safeGameData.revealAnswers ? (
+                    <button
+                      onClick={revealAnswersToAll}
+                      className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold
+                                         hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                    >
+                      Reveal Answers (Score)
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleMultiplayerNextQuestion}
+                      disabled={!safeGameData.revealAnswers}
+                      className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
+                                         hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                    >
+                      {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowGenerateQuestionModal(true)}
+                    className="flex-none bg-indigo-600 text-white py-3 px-4 rounded-lg text-xl font-bold
+                                         hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    ✨ New
+                  </button>
+                </div>
               )}
-              {isHost && ( // Proctor-only button for generating new questions
-                <button
-                  onClick={() => setShowGenerateQuestionModal(true)}
-                  className="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold
-                                         hover:bg-indigo-700 transition-colors duration-200 shadow-lg"
-                  disabled={llmLoading}
-                >
-                  {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-                </button>
-              )}
-            </div>
-          )}
+          </div>
 
           <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
@@ -2372,8 +2423,7 @@ const App = () => {
                 <button
                   onClick={restartMultiplayerQuiz}
                   className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
                 >
                   Restart Game
                 </button>
@@ -2383,8 +2433,7 @@ const App = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                     focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+                                 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
               >
                 Book a Tour Now!
               </a>
@@ -2393,7 +2442,7 @@ const App = () => {
           <button
             onClick={() => {
               setMode('initial');
-              setActiveGameId(null); 
+              setActiveGameId(null); // Clear active game ID when leaving
               setGameData(null);
             }}
             className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
@@ -2485,4 +2534,4 @@ const App = () => {
       );
     };
 
-    export default App;
+export default App;
