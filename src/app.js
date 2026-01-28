@@ -838,7 +838,7 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is the purpose of sulfur dioxide (SO2) in winemaking?",
+    question: "What is the purpose of sulfur dioxide (SO²) in winemaking?",
     options: ["To add sweetness", "To remove color", "As an antioxidant and antimicrobial agent", "To increase alcohol content"],
     correctAnswer: "As an antioxidant and antimicrobial agent",
     explanation: "SO2 is commonly used in winemaking to protect the wine from oxidation and inhibit unwanted microbial growth.",
@@ -992,18 +992,7 @@ const WINE_QUIZ_QUESTIONS = [
       "Shenandoah Valley AVA": "Shenandoah Valley AVA is in northwestern Virginia, not near Middleburg."
     }
   },
-  {
-    question: "Which red grape varietal is often referred to as Virginia's answer to Cabernet Franc due to its success in the state?",
-    options: ["Merlot", "Cabernet Franc", "Petit Verdot", "Norton"],
-    correctAnswer: "Cabernet Franc",
-    explanation: "Cabernet Franc thrives in Virginia's climate, producing wines with red fruit, herbal notes, and often a distinctive peppery character.",
-    wrongAnswerExplanations: {
-      "Merlot": "While Merlot grows in Virginia, it doesn't have the same standout reputation as Cabernet Franc.",
-      "Petit Verdot": "Petit Verdot does well in Virginia but isn't referred to as 'Virginia's answer' to anything.",
-      "Norton": "Norton is a native American grape, not comparable to Cabernet Franc's European style."
-    }
-  },
-  {
+   {
     question: "What is a common challenge for grape growing in Northern Virginia's climate?",
     options: ["Too much sun", "Lack of rainfall", "Humidity and late spring frosts", "Too cold in winter"],
     correctAnswer: "Humidity and late spring frosts",
@@ -1012,17 +1001,6 @@ const WINE_QUIZ_QUESTIONS = [
       "Too much sun": "Virginia actually has good sun exposure; excessive sun isn't typically a problem.",
       "Lack of rainfall": "Virginia receives adequate rainfall; drought is not a common issue.",
       "Too cold in winter": "While winters can be cold, extreme cold isn't the primary challenge."
-    }
-  },
-  {
-    question: `What is a core benefit of a partnership between Vineyard Voyages and Loudoun County wineries?`,
-    options: ["Mass production of wine for the tours", "Lower prices on all wines", "Exclusive access and unique tasting experiences", "Only full bottle sales"],
-    correctAnswer: "Exclusive access and unique tasting experiences",
-    explanation: "Partnerships allow Vineyard Voyages to provide unique, behind-the-scenes experiences and direct access for guests.",
-    wrongAnswerExplanations: {
-      "Mass production of wine for the tours": "Partnerships are for experience, not mass production.",
-      "Lower prices on all wines": "While there may be some benefits, the focus is on experience, not discounts.",
-      "Only full bottle sales": "Wineries still offer tastings and by-the-glass options, not just full bottles."
     }
   },
   {
@@ -1059,28 +1037,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Many Virginia wineries offer tasting room experiences. What is a common practice in these rooms?",
-    options: ["Blind tasting only", "Self-service wine dispensing", "Guided tastings with knowledgeable staff", "Only full bottle sales"],
-    correctAnswer: "Guided tastings with knowledgeable staff",
-    explanation: "Virginia wineries pride themselves on offering personalized, educational tasting experiences, often led by winemakers or passionate staff.",
-    wrongAnswerExplanations: {
-      "Blind tasting only": "Most Virginia wineries offer educational tastings where wines are identified, not blind tastings.",
-      "Self-service wine dispensing": "Virginia wineries typically provide personal service rather than self-service systems.",
-      "Only full bottle sales": "Most wineries offer tastings by the glass or flight, not just bottle sales."
-    }
-  },
-  {
-    question: "What is a popular event often hosted by Northern Virginia wineries in the fall?",
-    options: ["Spring Blossom Festival", "Summer Jazz Concerts", "Harvest Festivals and Grape Stomps", "Winter Sledding Competitions"],
-    correctAnswer: "Harvest Festivals and Grape Stomps",
-    explanation: "Fall is harvest season, and many wineries celebrate with festivals, grape stomps, and other family-friendly events.",
-    wrongAnswerExplanations: {
-      "Spring Blossom Festival": "While some spring events occur, harvest festivals are more prominent and seasonal.",
-      "Summer Jazz Concerts": "Summer events happen but aren't as universally celebrated as harvest festivals.",
-      "Winter Sledding Competitions": "Wineries don't typically host sledging events."
-    }
-  },
-  {
     question: "Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?",
     options: ["Sandy soil", "Clay soil", "Loamy soil", "Slate or rocky soil"],
     correctAnswer: "Slate or rocky soil",
@@ -1109,17 +1065,6 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "Virginia has a long history of winemaking, dating back to the early colonial period, making it one of the oldest wine states.",
     wrongAnswerExplanations: {
       "False": "Virginia indeed has one of the longest histories of winemaking in the United States."
-    }
-  },
-  {
-    question: "What is the name of the largest wine festival in Virginia, often held annually?",
-    options: ["Virginia Grape Fest", "Taste of Virginia Wine", "Virginia Wine Festival", "Commonwealth Crush"],
-    correctAnswer: "Virginia Wine Festival",
-    explanation: "The Virginia Wine Festival is one of the largest and longest-running wine festivals in the state, showcasing numerous Virginia wineries.",
-    wrongAnswerExplanations: {
-      "Virginia Grape Fest": "While there may be grape festivals, the Virginia Wine Festival is the largest and most well-known.",
-      "Taste of Virginia Wine": "This may be an event but is not the largest wine festival.",
-      "Commonwealth Crush": "This may be an event but is not the largest wine festival."
     }
   },
   {
@@ -1198,17 +1143,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Many Northern Virginia wineries offer scenic views. What kind of landscape is typical?",
-    options: ["Coastal beaches", "Flat plains", "Rolling hills and mountains", "Dense urban cityscape"],
-    correctAnswer: "Rolling hills and mountains",
-    explanation: "Northern Virginia's wine country is characterized by picturesque rolling hills and proximity to the Blue Ridge Mountains.",
-    wrongAnswerExplanations: {
-      "Coastal beaches": "Northern Virginia is inland, not coastal.",
-      "Flat plains": "Northern Virginia has rolling topography, not flat plains.",
-      "Dense urban cityscape": "Wine country is in rural areas, not urban settings."
-    }
-  },
-  {
     question: "What is a common practice in Virginia vineyards to manage humidity and promote air circulation?",
     options: ["Dense planting", "Leaf pulling (canopy management)", "Deep irrigation", "Using plastic covers"],
     correctAnswer: "Leaf pulling (canopy management)",
@@ -1228,17 +1162,6 @@ const WINE_QUIZ_QUESTIONS = [
       "Pinot Grigio": "While grown, Pinot Grigio is not specifically noted as gaining popularity for its crispness.",
       "Riesling": "Riesling is grown but Albariño is the specific variety gaining recognition for its vibrant, crisp style.",
       "Gewürztraminer": "Gewürztraminer is not commonly associated with Virginia's emerging crisp white wines."
-    }
-  },
-  {
-    question: "What kind of events do many Northern Virginia wineries often facilitate for groups?",
-    options: ["Cooking classes", "Corporate team building and private celebrations", "Extreme sports adventures", "Art workshops"],
-    correctAnswer: "Corporate team building and private celebrations",
-    explanation: "Many Northern Virginia wineries offer tailored events for various group needs, including corporate outings and special celebrations.",
-    wrongAnswerExplanations: {
-      "Cooking classes": "While some wineries might offer this, it's not the primary type of event they facilitate for groups.",
-      "Extreme sports adventures": "This is not a typical activity for a winery.",
-      "Art workshops": "While some wineries might host these, corporate and private celebrations are more common."
     }
   },
   {
@@ -1316,6 +1239,343 @@ const WINE_QUIZ_QUESTIONS = [
       "Syrah": "Syrah is not traditionally used in Rioja wines."
     }
   },
+  {
+    question: "The Douro Valley in Portugal is most famous for being the birthplace of which fortified wine?",
+    options: ["Sherry", "Port", "Madeira", "Marsala"],
+    correctAnswer: "Port",
+    explanation: "Port is produced exclusively in the Douro Valley, where steep terraced vineyards have been designated a UNESCO World Heritage site.",
+    wrongAnswerExplanations: {
+      "Sherry": "Sherry is produced in the 'Sherry Triangle' of Spain.",
+      "Madeira": "Madeira comes from the Portuguese island of the same name, not the Douro Valley.",
+      "Marsala": "Marsala is a fortified wine from Sicily, Italy."
+    }
+  },
+  {
+    question: "Which grape is widely considered the 'flagship' red varietal of Portugal, used in both Port and dry reds?",
+    options: ["Tempranillo", "Touriga Nacional", "Sangiovese", "Malbec"],
+    correctAnswer: "Touriga Nacional",
+    explanation: "Touriga Nacional is prized for its small berries, deep color, and intense tannins, providing the backbone for Portugal's finest wines.",
+    wrongAnswerExplanations: {
+      "Tempranillo": "Known as Tinta Roriz in Portugal, it is important but Touriga Nacional is the true flagship.",
+      "Sangiovese": "This is the signature grape of Italy's Tuscany region.",
+      "Malbec": "Malbec is the signature grape of Argentina."
+    }
+  },
+  {
+    question: "The Alentejo region of Portugal is responsible for producing over 50% of the world's supply of what winemaking material?",
+    options: ["Glass bottles", "Oak barrels", "Cork", "Synthetic closures"],
+    correctAnswer: "Cork",
+    explanation: "The Alentejo is home to massive forests of Quercus suber (Cork Oak), making Portugal the global leader in natural cork production.",
+    wrongAnswerExplanations: {
+      "Glass bottles": "Bottle manufacturing is spread globally; Alentejo is specific to agriculture.",
+      "Oak barrels": "Most premium barrels come from French or American oak forests.",
+      "Synthetic closures": "These are manufactured in factories, not harvested from Alentejo forests."
+    }
+  },
+  {
+    question: "What is the unique soil type of the Douro Valley that allows vines to thrive in high heat by retaining moisture?",
+    options: ["Schist", "Chalk", "Volcanic Ash", "Clay"],
+    correctAnswer: "Schist",
+    explanation: "Schist is a laminated rock that breaks vertically, allowing vine roots to grow deep into the earth to find water during dry summers.",
+    wrongAnswerExplanations: {
+      "Chalk": "Famous in Champagne, France, for its drainage and acidity retention.",
+      "Volcanic Ash": "Common in Canary Islands or Mt. Etna, but not the Douro.",
+      "Clay": "While present in some regions, it is the rock-hard Schist that defines Douro terroir."
+    }
+  },
+  {
+    question: "In the Alentejo region, what traditional vessels are often used for fermenting and aging 'Vinho de Talha'?",
+    options: ["Stainless steel tanks", "Small oak barriques", "Large clay amphorae", "Concrete eggs"],
+    correctAnswer: "Large clay amphorae",
+    explanation: "Vinho de Talha refers to the 2,000-year-old tradition of making wine in large clay pots, a practice preserved superlatively in Alentejo.",
+    wrongAnswerExplanations: {
+      "Stainless steel tanks": "These are used for modern, temperature-controlled winemaking.",
+      "Small oak barriques": "A French tradition used for imparting vanilla and spice flavors.",
+      "Concrete eggs": "A modern biodynamic trend, not the ancient 'Talha' tradition."
+    }
+  },
+
+  // --- URUGUAY ---
+  {
+    question: "Which bold red grape variety has become the undisputed signature grape of Uruguay?",
+    options: ["Merlot", "Tannat", "Syrah", "Carmenere"],
+    correctAnswer: "Tannat",
+    explanation: "Uruguayan Tannat is known for being more approachable and softer than its French ancestors, while maintaining its superlative structure.",
+    wrongAnswerExplanations: {
+      "Merlot": "Grows well in Uruguay but is not the national signature.",
+      "Syrah": "Common in the 'New World' but Tannat is Uruguay's claim to fame.",
+      "Carmenere": "This is the signature grape of Uruguay's neighbor, Chile."
+    }
+  },
+  {
+    question: "Uruguay’s wine regions are heavily influenced by their proximity to which body of water?",
+    options: ["Pacific Ocean", "Mediterranean Sea", "Atlantic Ocean", "Gulf of Mexico"],
+    correctAnswer: "Atlantic Ocean",
+    explanation: "The Atlantic and the Rio de la Plata provide cooling breezes that create a maritime climate similar to Bordeaux.",
+    wrongAnswerExplanations: {
+      "Pacific Ocean": "This influences Chile and California, but not Uruguay on the east coast.",
+      "Mediterranean Sea": "This is located between Europe and Africa.",
+      "Gulf of Mexico": "This is located in North America."
+    }
+  },
+  {
+    question: "Who is credited with bringing the first Tannat vines to Uruguay in the 1870s?",
+    options: ["Thomas Jefferson", "Pascual Harriague", "James Busby", "Agoston Haraszthy"],
+    correctAnswer: "Pascual Harriague",
+    explanation: "Harriague, a Basque settler, successfully cultivated the grape in the Salto region, which is why Tannat is sometimes called 'Harriague' locally.",
+    wrongAnswerExplanations: {
+      "Thomas Jefferson": "Jefferson tried to bring European vines to Virginia, not Uruguay.",
+      "James Busby": "Known as the father of the Australian wine industry.",
+      "Agoston Haraszthy": "Founder of Buena Vista Winery and father of California viticulture."
+    }
+  },
+  {
+    question: "Which region in Uruguay is considered a 'superlative' emerging area, known for coastal influence and Bodega Garzón?",
+    options: ["Mendoza", "Maldonado", "Canelones", "Colchagua"],
+    correctAnswer: "Maldonado",
+    explanation: "Maldonado, specifically the Garzón area, features thin soils and ocean breezes that produce high-quality, mineral-driven wines.",
+    wrongAnswerExplanations: {
+      "Mendoza": "This is the primary wine region of Argentina.",
+      "Canelones": "This is Uruguay's largest wine region, but more inland and traditional than Maldonado.",
+      "Colchagua": "A famous valley located in Chile."
+    }
+  },
+  {
+    question: "Compared to French Tannat, Uruguayan Tannat is generally described as being...",
+    options: ["More acidic and harsher", "Lower in alcohol", "Fruitier with softer tannins", "Exclusively sweet"],
+    correctAnswer: "Fruitier with softer tannins",
+    explanation: "Uruguay's climate allows the grape to ripen fully, resulting in a more velvet-like texture compared to the rustic versions from Madiran, France.",
+    wrongAnswerExplanations: {
+      "More acidic and harsher": "This describes Tannat grown in cooler, more traditional French climates.",
+      "Lower in alcohol": "Warmer New World climates often lead to slightly higher alcohol.",
+      "Exclusively sweet": "While some late-harvest versions exist, the vast majority is dry red wine."
+    }
+  },
+
+  // --- CHILE ---
+  {
+    question: "For decades, many Chilean vineyards thought they were growing Merlot, only to discover it was actually which 'lost' Bordeaux variety?",
+    options: ["Malbec", "Petit Verdot", "Carmenere", "Cabernet Franc"],
+    correctAnswer: "Carmenere",
+    explanation: "DNA testing in 1994 revealed that much of Chile's Merlot was actually Carmenere, which had been nearly extinct in Europe.",
+    wrongAnswerExplanations: {
+      "Malbec": "Malbec was never confused with Merlot in Chile on a large scale.",
+      "Petit Verdot": "Used primarily as a blending grape, its leaf and berry shape are distinct.",
+      "Cabernet Franc": "Though a parent of Merlot, it was not the subject of the famous Chilean mix-up."
+    }
+  },
+  {
+    question: "Chile is one of the few wine-producing countries in the world that has never been affected by which vineyard-destroying pest?",
+    options: ["Glassy-winged Sharpshooter", "Phylloxera", "Spider Mites", "Mealybugs"],
+    correctAnswer: "Phylloxera",
+    explanation: "Thanks to the Andes mountains and the Pacific Ocean acting as natural barriers, Chile remains phylloxera-free, allowing many vines to grow on their own roots.",
+    wrongAnswerExplanations: {
+      "Glassy-winged Sharpshooter": "Spreads Pierce's disease, primarily a concern in California.",
+      "Spider Mites": "A common vineyard pest found in Chile and elsewhere.",
+      "Mealybugs": "Commonly found in many global vineyards, including Chile."
+    }
+  },
+  {
+    question: "The Casablanca Valley in Chile is superlatively known for producing high-quality wines from which two cool-climate grapes?",
+    options: ["Cabernet and Merlot", "Sauvignon Blanc and Chardonnay", "Syrah and Malbec", "Zinfandel and Petite Sirah"],
+    correctAnswer: "Sauvignon Blanc and Chardonnay",
+    explanation: "The Casablanca Valley's proximity to the Pacific Ocean provides the morning fog and cool breezes necessary for vibrant white wines.",
+    wrongAnswerExplanations: {
+      "Cabernet and Merlot": "These prefer the warmer Maipo or Colchagua Valleys.",
+      "Syrah and Malbec": "These generally require more heat than the Casablanca Valley offers.",
+      "Zinfandel and Petite Sirah": "These are California specialties, rarely found in Casablanca."
+    }
+  },
+  {
+    question: "Which Chilean wine region is often called the 'Bordeaux of South America' due to its superlative Cabernet Sauvignon?",
+    options: ["Maipo Valley", "Limarí Valley", "Bio-Bio Valley", "Atacama Desert"],
+    correctAnswer: "Maipo Valley",
+    explanation: "Maipo is the historic heart of Chilean wine, where the country's most iconic and expensive Cabernet Sauvignons are produced.",
+    wrongAnswerExplanations: {
+      "Limarí Valley": "Known for mineral-driven Chardonnays from limestone-rich soils.",
+      "Bio-Bio Valley": "A very cool, southern region known for Pinot Noir and Riesling.",
+      "Atacama Desert": "One of the driest places on earth; only very experimental viticulture happens here."
+    }
+  },
+  {
+    question: "What is the primary cooling influence that allows Chilean grapes to maintain acidity despite the sunny climate?",
+    options: ["The Gulf Stream", "The Humboldt Current", "The Jet Stream", "The Monsoon"],
+    correctAnswer: "The Humboldt Current",
+    explanation: "This cold ocean current brings icy water from Antarctica up the coast of Chile, creating cooling breezes that reach the inland valleys.",
+    wrongAnswerExplanations: {
+      "The Gulf Stream": "This warm current influences the climate of Europe and the US East Coast.",
+      "The Jet Stream": "A high-altitude air current that affects global weather patterns, not specific coastal cooling.",
+      "The Monsoon": "A seasonal wind pattern associated with heavy rain in Asia."
+    }
+  },
+
+  // --- ARGENTINA ---
+  {
+    question: "While Malbec is the king of red grapes in Argentina, which unique white grape is considered its aromatic white 'queen'?",
+    options: ["Torrontés", "Viognier", "Riesling", "Gewürztraminer"],
+    correctAnswer: "Torrontés",
+    explanation: "Torrontés is an indigenous Argentine grape known for its intense floral aromas of jasmine and geranium.",
+    wrongAnswerExplanations: {
+      "Viognier": "Grows well in Argentina, but Torrontés is the unique national specialty.",
+      "Riesling": "Mostly associated with Germany and cooler climates like Virginia or the Finger Lakes.",
+      "Gewürztraminer": "Known for lychee notes, it is much less common in Argentina than Torrontés."
+    }
+  },
+  {
+    question: "In Argentina, 'High Altitude' viticulture is essential. In which province would you find the superlative Uco Valley?",
+    options: ["Salta", "San Juan", "Mendoza", "Patagonia"],
+    correctAnswer: "Mendoza",
+    explanation: "The Uco Valley in Mendoza features some of the highest vineyards in the world, producing Malbecs with incredible color and acidity.",
+    wrongAnswerExplanations: {
+      "Salta": "Located further north, Salta is famous for even higher altitude vineyards (like Cafayate).",
+      "San Juan": "Argentina's second-largest wine region, known for Syrah and everyday wines.",
+      "Patagonia": "The southernmost region, much cooler and lower in elevation than the Uco Valley."
+    }
+  },
+  {
+    question: "What is the primary source of water for irrigation in the desert-like wine regions of Mendoza?",
+    options: ["Desalinated ocean water", "Snowmelt from the Andes Mountains", "Local rainfall", "Deep underground salt aquifers"],
+    correctAnswer: "Snowmelt from the Andes Mountains",
+    explanation: "Argentina's wine regions are rain shadows; they rely on a network of canals carrying pure snowmelt from the Andes peaks.",
+    wrongAnswerExplanations: {
+      "Desalinated ocean water": "Mendoza is far inland and high elevation; ocean water is not accessible.",
+      "Local rainfall": "Mendoza is extremely dry, receiving only about 8-10 inches of rain per year.",
+      "Deep underground salt aquifers": "Salty water would damage the vines; fresh snowmelt is the preferred source."
+    }
+  },
+  {
+    question: "Which of these Argentine wineries is internationally recognized for its research into soil micro-terroirs and high-altitude Malbec?",
+    options: ["Catena Zapata", "Yellow Tail", "Gallo Family", "Penfolds"],
+    correctAnswer: "Catena Zapata",
+    explanation: "Nicolás Catena Zapata is credited with revolutionizing Argentine wine by exploring the superlative potential of high-altitude mountain fruit.",
+    wrongAnswerExplanations: {
+      "Yellow Tail": "A mass-market brand from Australia.",
+      "Gallo Family": "A major corporate wine producer based in California.",
+      "Penfolds": "An iconic superlative winery from Australia, famous for Grange."
+    }
+  },
+  {
+    question: "The Zonda is a significant climatic factor in Argentina. What exactly is it?",
+    options: ["A type of irrigation canal", "A fierce, hot, dry wind from the Andes", "A specific type of granite soil", "A traditional harvest festival"],
+    correctAnswer: "A fierce, hot, dry wind from the Andes",
+    explanation: "The Zonda can reach high speeds and high temperatures, sometimes damaging flowering vines but also helping prevent grape diseases.",
+    wrongAnswerExplanations: {
+      "A type of irrigation canal": "These are called 'Acequias' in Mendoza.",
+      "A specific type of granite soil": "Terras are varied, but Zonda refers to the air.",
+      "A traditional harvest festival": "The famous harvest festival in Mendoza is called 'Fiesta Nacional de la Vendimia'."
+    }
+  }
+  {
+    question: "Which white grape, a specialty of Southwest France, has become a 'superlative' success in Loudoun due to its thick skins and high acidity?",
+    options: ["Chardonnay", "Petit Manseng", "Chenin Blanc", "Viura"],
+    correctAnswer: "Petit Manseng",
+    explanation: "Native to Jurançon in SW France, Petit Manseng is perfectly adapted to Loudoun’s humidity because its loose clusters and thick skins resist rot.",
+    wrongAnswerExplanations: {
+      "Chardonnay": "A Burgundy native that is popular but more prone to rot in Virginia's humidity.",
+      "Chenin Blanc": "The star of the Loire Valley, not typically associated with SW France or Loudoun's primary white specialties.",
+      "Viura": "A Spanish white grape, common in Rioja but rare in Loudoun."
+    }
+  },
+  {
+    question: "The Cahors region in Southwest France is the original home of which famous red grape, now a staple at partner wineries like Casanel?",
+    options: ["Merlot", "Malbec", "Sangiovese", "Zinfandel"],
+    correctAnswer: "Malbec",
+    explanation: "While Argentina made it famous, Malbec (locally called 'Auxerrois') originated in Cahors, where it produces superlative 'black wines'.",
+    wrongAnswerExplanations: {
+      "Merlot": "Originates from Bordeaux, specifically the Libournais area.",
+      "Sangiovese": "The signature red grape of Tuscany, Italy.",
+      "Zinfandel": "Originally from Croatia, it is considered a California heritage grape."
+    }
+  },
+  {
+    question: "Which Bordeaux red variety is widely considered Loudoun's 'superlative' red grape, often outperforming Cabernet Sauvignon in Virginia’s climate?",
+    options: ["Cabernet Franc", "Malbec", "Carmenere", "Syrah"],
+    correctAnswer: "Cabernet Franc",
+    explanation: "Like in Bordeaux's 'Right Bank' (Saint-Émilion), Cabernet Franc thrives in Loudoun, offering aromatic complexity and reliable ripening.",
+    wrongAnswerExplanations: {
+      "Malbec": "Successful in Loudoun but generally secondary to Cabernet Franc in total acreage.",
+      "Carmenere": "The 'lost' grape of Bordeaux that is now the signature of Chile.",
+      "Syrah": "Common in the Rhône Valley, it can struggle with Loudoun's winter freezes."
+    }
+  },
+  {
+    question: "Toulouse is the capital of the Occitanie region. Which nearby wine area is famous for the Negrette grape, which produces unique violet-scented reds?",
+    options: ["Fronton", "Madiran", "Gaillac", "Bordeaux"],
+    correctAnswer: "Fronton",
+    explanation: "Fronton is a superlative AOC located just north of Toulouse, where Negrette must make up at least 40% of the blend.",
+    wrongAnswerExplanations: {
+      "Madiran": "Famous for the Tannat grape, further west toward the Pyrenees.",
+      "Gaillac": "Known for indigenous varietals like Braucol and Loin de l'Oeil.",
+      "Bordeaux": "While nearby, it relies on Cabernet, Merlot, and Petit Verdot, not Negrette."
+    }
+  },
+  {
+    question: "In 1787, which future US President visited Bordeaux and Southwest France, meticulously cataloging 'superlative' vineyards that influenced Virginia wine history?",
+    // Context: He's the patron of Virginia wine.
+    options: ["George Washington", "Thomas Jefferson", "Alexander Hamilton", "John Adams"],
+    correctAnswer: "Thomas Jefferson",
+    explanation: "As Minister to France, Jefferson’s tours of Bordeaux and Occitanie convinced him that Virginia could produce world-class wine from the same varietals.",
+    wrongAnswerExplanations: {
+      "George Washington": "While he grew grapes, he was more focused on whiskey and general farming.",
+      "Alexander Hamilton": "More focused on urban finance than rural viticulture.",
+      "John Adams": "Preferred cider over wine, according to most historical accounts."
+    }
+  },
+  {
+    question: "Which red grape from Madiran (SW France) is known for being 'superlatively' tannic and is now finding a home in Loudoun at wineries like 868 Estate?",
+    options: ["Tannat", "Grenache", "Pinot Noir", "Barbera"],
+    correctAnswer: "Tannat",
+    explanation: "Tannat is the star of Madiran; its high tannin levels and bold structure make it an exciting emerging red for Loudoun County's terroir.",
+    wrongAnswerExplanations: {
+      "Grenache": "A thin-skinned grape that loves the heat of the Southern Rhône and Spain.",
+      "Pinot Noir": "A delicate, low-tannin grape that struggles with the heat and humidity of Northern Virginia.",
+      "Barbera": "An Italian grape from Piedmont known for high acidity rather than heavy tannins."
+    }
+  },
+  {
+    question: "The 'Right Bank' of Bordeaux is superlative for which grape, which is also a key component in blends at partner wineries like Williams Gap?",
+    options: ["Cabernet Sauvignon", "Merlot", "Riesling", "Albariño"],
+    correctAnswer: "Merlot",
+    explanation: "The clay-rich soils of the Right Bank (Pomerol and Saint-Émilion) are ideal for Merlot, much like the heavy soils found in parts of Loudoun.",
+    wrongAnswerExplanations: {
+      "Cabernet Sauvignon": "Dominates the 'Left Bank' gravel soils of Bordeaux.",
+      "Riesling": "A cool-climate white grape from Germany or Alsace.",
+      "Albariño": "A Spanish/Portuguese white grape, though very popular in Loudoun now."
+    }
+  },
+  {
+    question: "Which Bordeaux varietal is often used in very small percentages to add superlative color and spice, a practice mirrored in Loudoun 'Meritage' blends?",
+    options: ["Chardonnay", "Petit Verdot", "Pinot Grigio", "Tempranillo"],
+    correctAnswer: "Petit Verdot",
+    explanation: "Petit Verdot ripens late and provides deep color and firm structure. It is becoming a standalone superlative varietal in Virginia.",
+    wrongAnswerExplanations: {
+      "Chardonnay": "A white grape, never used for color in red Bordeaux blends.",
+      "Pinot Grigio": "A white grape used for light, crisp wines.",
+      "Tempranillo": "The main grape of Rioja, Spain, not used in traditional Bordeaux blends."
+    }
+  },
+  {
+    question: "Occitanie is home to the superlative sparkling wine 'Blanquette de Limoux'. How does its history compare to Champagne?",
+    options: ["It was invented 100 years after Champagne", "It is the world's first recorded sparkling wine (1531)", "It is made without grapes", "It can only be served at weddings"],
+    correctAnswer: "It is the world's first recorded sparkling wine (1531)",
+    explanation: "Monks in Limoux were making sparkling wine over a century before Dom Pérignon, using the 'méthode ancestrale'.",
+    wrongAnswerExplanations: {
+      "It was invented 100 years after Champagne": "Limoux actually predates Champagne's sparkling tradition.",
+      "It is made without grapes": "All Limoux sparkling wine is made from Mauzac, Chardonnay, or Chenin Blanc grapes.",
+      "It can only be served at weddings": "While festive, it is enjoyed year-round as a refreshing aperitif."
+    }
+  },
+  {
+    question: "What major geographic feature do both Bordeaux and Loudoun County share that helps moderate vineyard temperatures?",
+    options: ["Being in the middle of a desert", "Proximity to a major body of water and mountain influences", "Having no rainfall whatsoever", "Being located on a tropical island"],
+    correctAnswer: "Proximity to a major body of water and mountain influences",
+    explanation: "Bordeaux is influenced by the Atlantic and its rivers; Loudoun is moderated by the Potomac River and the Blue Ridge Mountains.",
+    wrongAnswerExplanations: {
+      "Being in the middle of a desert": "Both regions are humid and receive significant rainfall.",
+      "Having no rainfall whatsoever": "Both regions are known for their humidity and the challenges of managing rain.",
+      "Being located on a tropical island": "Both are inland continental or maritime temperate regions."
+    }
+  }
   ...Array(75).fill(null).map((_, i) => ({
     question: `Northern Virginia regional question #${i + 22}`,
     options: ["Option A", "Option B", "Option C", "Option D"],
@@ -1328,7 +1588,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   })),
 ];
-
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
