@@ -1464,7 +1464,7 @@ const WINE_QUIZ_QUESTIONS = [
       "A specific type of granite soil": "Terras are varied, but Zonda refers to the air.",
       "A traditional harvest festival": "The famous harvest festival in Mendoza is called 'Fiesta Nacional de la Vendimia'."
     }
-  }
+  },
   {
     question: "Which white grape, a specialty of Southwest France, has become a 'superlative' success in Loudoun due to its thick skins and high acidity?",
     options: ["Chardonnay", "Petit Manseng", "Chenin Blanc", "Viura"],
@@ -1575,7 +1575,7 @@ const WINE_QUIZ_QUESTIONS = [
       "Having no rainfall whatsoever": "Both regions are known for their humidity and the challenges of managing rain.",
       "Being located on a tropical island": "Both are inland continental or maritime temperate regions."
     }
-  }
+  },
   ...Array(75).fill(null).map((_, i) => ({
     question: `Northern Virginia regional question #${i + 22}`,
     options: ["Option A", "Option B", "Option C", "Option D"],
@@ -2634,7 +2634,7 @@ const renderContent = () => {
     );
   }
   return (
-        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]
+        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]"
       style={{
         backgroundImage: 'url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80")',
         backgroundSize: 'cover',
@@ -2711,5 +2711,6 @@ const renderContent = () => {
         </div>
       );
     };
+};
 
 export default App;
