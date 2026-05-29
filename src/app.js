@@ -2088,10 +2088,21 @@ const App = () => {
       setError("Please enter a topic for the new question.");
       return;
     }
+
+    // Sanitize input to prevent prompt injection
+    const sanitizedTopic = newQuestionTopic
+      .substring(0, 100) // Restrict length
+      .replace(/[^a-zA-Z0-9\s\-_.,']/g, ''); // Allow only alphanumeric and basic punctuation (excluding double quotes)
+
+    if (!sanitizedTopic.trim()) {
+      setError("Please enter a valid topic using letters and numbers.");
+      return;
+    }
+
     setShowGenerateQuestionModal(false); // Close the input modal
     setError('');
 
-    const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
+    const prompt = `Generate a multiple-choice quiz question about "${sanitizedTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
     {
       "question": "...",
       "options": ["...", "...", "...", "..."],
