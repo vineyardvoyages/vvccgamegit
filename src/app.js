@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore'; 
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, collection, query, where, getDocs, documentId } from 'firebase/firestore';
 
 // Firebase Configuration (will read from Netlify Environment Variable)
 const firebaseConfig = {
@@ -1809,16 +1809,25 @@ const App = () => {
       let isUnique = false;
       let attempts = 0;
       const maxAttempts = 100; // Limit attempts to find a unique code
+      const batchSize = 10;
 
       while (!isUnique && attempts < maxAttempts) {
-        const generatedCode = generateGameCode();
-        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedCode);
-        const docSnap = await getDoc(gameDocRef);
-        if (!docSnap.exists()) {
-          newGameId = generatedCode;
-          isUnique = true;
+        const generatedCodes = Array.from({ length: batchSize }, generateGameCode);
+        const gamesRef = collection(db, `artifacts/${firestoreAppId}/public/data/games`);
+        const q = query(gamesRef, where(documentId(), 'in', generatedCodes));
+        const querySnapshot = await getDocs(q);
+
+        const existingCodes = new Set();
+        querySnapshot.forEach(docSnap => existingCodes.add(docSnap.id));
+
+        for (const code of generatedCodes) {
+          if (!existingCodes.has(code)) {
+            newGameId = code;
+            isUnique = true;
+            break;
+          }
         }
-        attempts++;
+        attempts += batchSize;
       }
 
       if (!isUnique) {
