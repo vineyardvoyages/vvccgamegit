@@ -1709,6 +1709,328 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
 
+  // --- Additional Wine Education and Northern Virginia Geography (20 questions) ---
+  {
+    "question": "Which acid is generally the most important naturally occurring acid in wine grapes?",
+    "options": [
+      "Lactic acid",
+      "Tartaric acid",
+      "Acetic acid",
+      "Carbonic acid"
+    ],
+    "correctAnswer": "Tartaric acid",
+    "explanation": "Tartaric acid is the principal acid in wine grapes. It contributes freshness, helps stabilize a wine's pH, and remains important throughout winemaking.",
+    "wrongAnswerExplanations": {
+      "Lactic acid": "Lactic acid is produced mainly when malic acid is converted during malolactic fermentation.",
+      "Acetic acid": "Acetic acid is a volatile acid; excessive amounts can make wine smell or taste vinegary.",
+      "Carbonic acid": "Carbonic acid forms when carbon dioxide dissolves in liquid, but it is not the principal natural acid in grapes."
+    }
+  },
+  {
+    "question": "What happens during malolactic fermentation?",
+    "options": [
+      "Grape sugar is converted directly into alcohol",
+      "Tannins are converted into sugar",
+      "Carbon dioxide is injected into still wine",
+      "Sharper malic acid is converted into softer lactic acid"
+    ],
+    "correctAnswer": "Sharper malic acid is converted into softer lactic acid",
+    "explanation": "During malolactic fermentation, bacteria convert sharper malic acid into softer lactic acid, often giving the wine a rounder, creamier texture.",
+    "wrongAnswerExplanations": {
+      "Grape sugar is converted directly into alcohol": "Yeast performs alcoholic fermentation, which converts grape sugar into alcohol.",
+      "Tannins are converted into sugar": "Tannins are structural compounds and are not converted into sugar during malolactic fermentation.",
+      "Carbon dioxide is injected into still wine": "Malolactic fermentation is an acid conversion, not a carbonation technique."
+    }
+  },
+  {
+    "question": "What are lees in winemaking?",
+    "options": [
+      "Spent yeast cells and other sediment that settle after fermentation",
+      "The grape skins floating during red-wine fermentation",
+      "Sugar added before bottling",
+      "The empty space at the top of a barrel"
+    ],
+    "correctAnswer": "Spent yeast cells and other sediment that settle after fermentation",
+    "explanation": "Lees are deposits of spent yeast and other fine particles that settle after fermentation. Carefully aging wine on fine lees can add texture and complexity.",
+    "wrongAnswerExplanations": {
+      "The grape skins floating during red-wine fermentation": "Floating grape skins and solids form the cap, not the lees.",
+      "Sugar added before bottling": "Sugar may be used for specific winemaking purposes, but it is not called lees.",
+      "The empty space at the top of a barrel": "The empty space above wine in a barrel or bottle is called ullage."
+    }
+  },
+  {
+    "question": "What does the winemaking term 'sur lie' mean?",
+    "options": [
+      "Aged outdoors in direct sunlight",
+      "Heated before fermentation",
+      "Aged in contact with the lees",
+      "Fortified with a distilled spirit"
+    ],
+    "correctAnswer": "Aged in contact with the lees",
+    "explanation": "Sur lie means 'on the lees.' The wine remains in contact with fine yeast sediment during aging, which can add body, texture, and bread-like complexity.",
+    "wrongAnswerExplanations": {
+      "Aged outdoors in direct sunlight": "Sur lie describes contact with yeast sediment, not outdoor aging.",
+      "Heated before fermentation": "Heating before fermentation is unrelated to sur-lie aging.",
+      "Fortified with a distilled spirit": "Adding a distilled spirit creates a fortified wine; it is not sur-lie aging."
+    }
+  },
+  {
+    "question": "What is a cooper?",
+    "options": [
+      "A professional wine buyer",
+      "A vineyard irrigation specialist",
+      "A craftsperson who makes and repairs wooden barrels",
+      "A laboratory that tests grape sugar"
+    ],
+    "correctAnswer": "A craftsperson who makes and repairs wooden barrels",
+    "explanation": "A cooper is a skilled craftsperson who constructs and repairs wooden barrels, including the oak barrels commonly used to ferment or age wine.",
+    "wrongAnswerExplanations": {
+      "A professional wine buyer": "A professional wine buyer selects and purchases wine but does not make barrels.",
+      "A vineyard irrigation specialist": "Irrigation specialists manage water systems rather than barrel construction.",
+      "A laboratory that tests grape sugar": "A cooper is a person and craft, not a wine laboratory."
+    }
+  },
+  {
+    "question": "What is maceration in winemaking?",
+    "options": [
+      "Keeping grape juice or must in contact with skins and other solids to extract color, flavor, and tannin",
+      "Passing finished wine through a filter",
+      "Removing a cork from a bottle",
+      "Freezing grapes to concentrate their sugar"
+    ],
+    "correctAnswer": "Keeping grape juice or must in contact with skins and other solids to extract color, flavor, and tannin",
+    "explanation": "Maceration is the period when juice or fermenting must remains in contact with grape skins and other solids, allowing color, flavor, and tannin to be extracted.",
+    "wrongAnswerExplanations": {
+      "Passing finished wine through a filter": "Passing wine through a filter is filtration, not maceration.",
+      "Removing a cork from a bottle": "Opening a bottle has no connection to maceration.",
+      "Freezing grapes to concentrate their sugar": "Frozen-grape concentration is associated with ice-wine production, not maceration."
+    }
+  },
+  {
+    "question": "What is the 'cap' during red-wine fermentation?",
+    "options": [
+      "The protective foil over a finished bottle",
+      "A layer of tartrate crystals at the bottom of a tank",
+      "The foam created when sparkling wine is poured",
+      "The floating mass of grape skins and other solids pushed upward by carbon dioxide"
+    ],
+    "correctAnswer": "The floating mass of grape skins and other solids pushed upward by carbon dioxide",
+    "explanation": "Carbon dioxide produced during fermentation pushes grape skins and other solids to the surface, where they form a cap that winemakers manage to support extraction.",
+    "wrongAnswerExplanations": {
+      "The protective foil over a finished bottle": "Bottle foil or capsule is packaging, not the fermentation cap.",
+      "A layer of tartrate crystals at the bottom of a tank": "Tartrate crystals are harmless mineral deposits and do not form the cap.",
+      "The foam created when sparkling wine is poured": "Sparkling-wine foam is called mousse; it is unrelated to the red-wine fermentation cap."
+    }
+  },
+  {
+    "question": "What does a pump-over do during red-wine fermentation?",
+    "options": [
+      "Presses the grapes for a second time",
+      "Pumps fermenting wine from below the tank over the floating cap",
+      "Forces cleaning water through an empty barrel",
+      "Raises the pressure inside a sparkling-wine bottle"
+    ],
+    "correctAnswer": "Pumps fermenting wine from below the tank over the floating cap",
+    "explanation": "During a pump-over, fermenting wine is drawn from the bottom of the vessel and distributed over the cap to keep it wet and promote color, flavor, and tannin extraction.",
+    "wrongAnswerExplanations": {
+      "Presses the grapes for a second time": "Pressing separates liquid from grape solids; it is different from circulating fermenting wine over the cap.",
+      "Forces cleaning water through an empty barrel": "Barrel cleaning is a sanitation process, not a pump-over.",
+      "Raises the pressure inside a sparkling-wine bottle": "Pump-overs manage a red-wine ferment and do not create sparkling-wine pressure."
+    }
+  },
+  {
+    "question": "What is the purpose of fining a wine?",
+    "options": [
+      "To increase the alcohol level",
+      "To add bubbles",
+      "To make the wine sweeter",
+      "To add a substance that binds unwanted particles so they can be removed"
+    ],
+    "correctAnswer": "To add a substance that binds unwanted particles so they can be removed",
+    "explanation": "Fining agents bind with selected particles or compounds so they settle or can be removed, helping clarify the wine or adjust traits such as excessive tannin.",
+    "wrongAnswerExplanations": {
+      "To increase the alcohol level": "Alcohol is increased through fermentation or fortification, not fining.",
+      "To add bubbles": "Sparkling-wine bubbles come from fermentation or carbonation rather than fining.",
+      "To make the wine sweeter": "Sweetness is adjusted through residual sugar or other approved methods, not fining."
+    }
+  },
+  {
+    "question": "What is filtration in winemaking?",
+    "options": [
+      "Adding sugar before fermentation",
+      "Exposing the wine to air in an open tank",
+      "Passing wine through a filtering medium to remove particles or microorganisms",
+      "Blending wines from several vintages"
+    ],
+    "correctAnswer": "Passing wine through a filtering medium to remove particles or microorganisms",
+    "explanation": "Filtration passes wine through a medium that can remove suspended particles and, with sufficiently fine filtration, microorganisms before bottling.",
+    "wrongAnswerExplanations": {
+      "Adding sugar before fermentation": "Adding sugar is a separate production decision and is not filtration.",
+      "Exposing the wine to air in an open tank": "Air exposure is an oxygen-management issue, not filtration.",
+      "Blending wines from several vintages": "Combining wines is blending, whereas filtration physically removes material."
+    }
+  },
+  {
+    "question": "What makes carbonic maceration different from conventional fermentation?",
+    "options": [
+      "The wine is aged only in new oak",
+      "Whole, uncrushed grapes begin fermenting in a carbon-dioxide-rich vessel",
+      "The grapes are dried before crushing",
+      "The juice is frozen after fermentation"
+    ],
+    "correctAnswer": "Whole, uncrushed grapes begin fermenting in a carbon-dioxide-rich vessel",
+    "explanation": "Carbonic maceration begins with intact grape berries in a carbon-dioxide-rich environment, encouraging fermentation inside the berries and often producing fresh, fruity wines.",
+    "wrongAnswerExplanations": {
+      "The wine is aged only in new oak": "Oak aging is independent of carbonic maceration.",
+      "The grapes are dried before crushing": "Drying grapes concentrates them but is not carbonic maceration.",
+      "The juice is frozen after fermentation": "Freezing finished juice or wine does not define carbonic maceration."
+    }
+  },
+  {
+    "question": "What does 'ullage' mean in a wine bottle or barrel?",
+    "options": [
+      "The empty space between the wine and the top of its container",
+      "The sediment left after fermentation",
+      "The sweetness level of the wine",
+      "The legal name of a vineyard"
+    ],
+    "correctAnswer": "The empty space between the wine and the top of its container",
+    "explanation": "Ullage is the unfilled space between the wine and the closure or top of a bottle, barrel, or tank. Excessive ullage can increase exposure to oxygen.",
+    "wrongAnswerExplanations": {
+      "The sediment left after fermentation": "Fermentation sediment is generally called lees.",
+      "The sweetness level of the wine": "Wine sweetness is determined mainly by residual sugar, not ullage.",
+      "The legal name of a vineyard": "Ullage describes headspace in a container and is not a vineyard designation."
+    }
+  },
+  {
+    "question": "What is the 'angel's share' during barrel aging?",
+    "options": [
+      "The first wine poured at a tasting",
+      "Wine reserved for the winemaker",
+      "The portion of wine lost through evaporation",
+      "The sediment removed before bottling"
+    ],
+    "correctAnswer": "The portion of wine lost through evaporation",
+    "explanation": "The angel's share is the small amount of wine that evaporates through a barrel during aging, gradually lowering the liquid level.",
+    "wrongAnswerExplanations": {
+      "The first wine poured at a tasting": "The phrase refers to evaporation during barrel aging, not tasting service.",
+      "Wine reserved for the winemaker": "It is not a reserved allocation of wine.",
+      "The sediment removed before bottling": "Sediment removal is clarification, racking, filtration, or disgorgement depending on the context."
+    }
+  },
+  {
+    "question": "What is dosage in traditional-method sparkling-wine production?",
+    "options": [
+      "The yeast sediment collected in the bottle neck",
+      "A mixture added after disgorgement that helps set the final sweetness",
+      "The pressure measurement inside the bottle",
+      "The first pressing of the grapes"
+    ],
+    "correctAnswer": "A mixture added after disgorgement that helps set the final sweetness",
+    "explanation": "After disgorgement, a small dosage—typically wine with a measured amount of sugar—is added before final corking and helps determine the sparkling wine's sweetness level.",
+    "wrongAnswerExplanations": {
+      "The yeast sediment collected in the bottle neck": "The sediment collected by riddling is removed during disgorgement; it is not dosage.",
+      "The pressure measurement inside the bottle": "Bottle pressure is measured separately and is not called dosage.",
+      "The first pressing of the grapes": "The first pressing concerns juice extraction and occurs much earlier in production."
+    }
+  },
+  {
+    "question": "What defines a fortified wine?",
+    "options": [
+      "It is aged for at least ten years",
+      "It contains no residual sugar",
+      "It is fermented only in stainless steel",
+      "A distilled spirit is added during production"
+    ],
+    "correctAnswer": "A distilled spirit is added during production",
+    "explanation": "Fortified wine is made by adding a distilled spirit, usually grape spirit. The timing of the addition influences the wine's alcohol level and whether natural grape sugar remains.",
+    "wrongAnswerExplanations": {
+      "It is aged for at least ten years": "Some fortified wines are aged for long periods, but age does not define fortification.",
+      "It contains no residual sugar": "Fortified wines range from dry to very sweet.",
+      "It is fermented only in stainless steel": "The fermentation vessel does not determine whether a wine is fortified."
+    }
+  },
+  {
+    "question": "Which flavor profile is most typical of Albariño?",
+    "options": [
+      "Bright acidity with citrus, stone-fruit, and sometimes saline notes",
+      "Low acidity with chocolate and tobacco flavors",
+      "Heavy tannins with black-pepper aromas",
+      "Very sweet flavors dominated by caramel"
+    ],
+    "correctAnswer": "Bright acidity with citrus, stone-fruit, and sometimes saline notes",
+    "explanation": "Albariño is an aromatic white grape best known for lively acidity and flavors such as lemon, grapefruit, peach, and apricot, sometimes accompanied by a saline impression.",
+    "wrongAnswerExplanations": {
+      "Low acidity with chocolate and tobacco flavors": "Albariño is typically high in acidity and fruit-driven rather than low-acid and chocolate-like.",
+      "Heavy tannins with black-pepper aromas": "Those traits are more typical of structured red wines; Albariño is a white grape with minimal tannin.",
+      "Very sweet flavors dominated by caramel": "Albariño is commonly made as a dry, fresh white wine rather than a caramel-rich sweet wine."
+    }
+  },
+  {
+    "question": "Why can Northern Virginia's rolling hills be beneficial vineyard sites?",
+    "options": [
+      "They prevent vines from receiving direct sunlight",
+      "They promote good air movement and water drainage",
+      "They eliminate the need for disease management",
+      "They keep vineyard soils permanently saturated"
+    ],
+    "correctAnswer": "They promote good air movement and water drainage",
+    "explanation": "Northern Virginia's rolling terrain can provide good air and water drainage, helping move excess moisture and cool air away from vineyard sites.",
+    "wrongAnswerExplanations": {
+      "They prevent vines from receiving direct sunlight": "Slope direction changes sun exposure, but rolling hills do not inherently block all direct sunlight.",
+      "They eliminate the need for disease management": "Virginia's humid conditions still require careful vineyard disease management.",
+      "They keep vineyard soils permanently saturated": "Good sloping sites encourage drainage rather than permanent saturation."
+    }
+  },
+  {
+    "question": "Which aromatic grape is one of Traminette's parents?",
+    "options": [
+      "Cabernet Sauvignon",
+      "Chardonnay",
+      "Norton",
+      "Gewürztraminer"
+    ],
+    "correctAnswer": "Gewürztraminer",
+    "explanation": "Traminette was bred from Gewürztraminer and the hybrid Joannes Seyve 23.416, giving it pronounced floral and spicy aromas.",
+    "wrongAnswerExplanations": {
+      "Cabernet Sauvignon": "Cabernet Sauvignon is not a parent of Traminette.",
+      "Chardonnay": "Chardonnay is not part of Traminette's documented parentage.",
+      "Norton": "Norton is a historic American grape but is not a parent of Traminette."
+    }
+  },
+  {
+    "question": "Which wine styles can Seyval Blanc produce?",
+    "options": [
+      "Crisp still white wines and sparkling wines",
+      "Only heavy, tannic red wines",
+      "Only fortified dessert wines",
+      "Only skin-fermented orange wines"
+    ],
+    "correctAnswer": "Crisp still white wines and sparkling wines",
+    "explanation": "Seyval Blanc is a white hybrid grape valued for its acidity. It can make fresh still wines and can also provide a useful base for sparkling wine.",
+    "wrongAnswerExplanations": {
+      "Only heavy, tannic red wines": "Seyval Blanc is a white grape and does not produce heavy red wines.",
+      "Only fortified dessert wines": "It may be used in different styles, but it is not limited to fortified dessert wine.",
+      "Only skin-fermented orange wines": "Seyval Blanc can be made in conventional white and sparkling styles and is not limited to orange wine."
+    }
+  },
+  {
+    "question": "Which combination does Loudoun County's crop-suitability tool use when assessing land for grapes?",
+    "options": [
+      "Distance from Washington, road width, and zoning district",
+      "Vineyard size, bottle price, and visitor traffic",
+      "Soil type, slope orientation, and slope percentage",
+      "Annual rainfall and elevation only"
+    ],
+    "correctAnswer": "Soil type, slope orientation, and slope percentage",
+    "explanation": "Loudoun County's mapping tool combines soil type, aspect—the direction a slope faces—and the percentage of slope when evaluating land for grape-growing suitability.",
+    "wrongAnswerExplanations": {
+      "Distance from Washington, road width, and zoning district": "Those may affect business or land-use decisions, but they are not the three physical factors used by the crop-suitability model.",
+      "Vineyard size, bottle price, and visitor traffic": "These are business considerations, not geographic inputs in the suitability model.",
+      "Annual rainfall and elevation only": "Weather and elevation can matter in viticulture, but the Loudoun tool specifically combines soil type, aspect, and slope percentage."
+    }
+  },
+
 ];
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
