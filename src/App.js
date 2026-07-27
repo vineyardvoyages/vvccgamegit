@@ -1,7 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore'; 
+import {
+  getAuth,
+  signInAnonymously,
+  signInWithCustomToken,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
+} from 'firebase/auth';
+import {
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  runTransaction
+} from 'firebase/firestore';
 
 // Firebase web configuration. The API key is supplied by the build environment.
 const firebaseConfig = {
@@ -25,31 +43,82 @@ let app;
 let db;
 let auth;
 
-// --- Local Storage Utilities for Offline/Reconnect Support ---
-const saveLocalState = (state) => {
+// --- Local durability helpers for active games, pending answers, and recent draws ---
+const ACTIVE_GAME_STORAGE_KEY = 'vv-active-game';
+const PENDING_ANSWERS_STORAGE_KEY = 'vv-pending-answers';
+const RECENT_QUESTIONS_STORAGE_KEY = 'vv-recent-question-ids';
+
+const readJsonStorage = (key, fallback) => {
   try {
-    localStorage.setItem('vv-quiz-state', JSON.stringify(state));
-  } catch (error) {
-    console.warn('Failed to save to localStorage:', error);
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (storageError) {
+    console.warn(`Failed to read ${key}:`, storageError);
+    return fallback;
   }
 };
 
-const loadLocalState = () => {
+const writeJsonStorage = (key, value) => {
   try {
-    const data = localStorage.getItem('vv-quiz-state');
-    return data ? JSON.parse(data) : null;
-  } catch (error) {
-    console.warn('Failed to read from localStorage:', error);
-    return null;
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (storageError) {
+    console.warn(`Failed to save ${key}:`, storageError);
   }
 };
+
+const saveActiveGame = (gameId, userName) => {
+  writeJsonStorage(ACTIVE_GAME_STORAGE_KEY, { gameId, userName });
+};
+
+const loadActiveGame = () => readJsonStorage(ACTIVE_GAME_STORAGE_KEY, null);
 
 const removeLocalState = () => {
   try {
-    localStorage.removeItem('vv-quiz-state');
-  } catch (error) {
-    console.warn('Failed to remove from localStorage:', error);
+    localStorage.removeItem(ACTIVE_GAME_STORAGE_KEY);
+  } catch (storageError) {
+    console.warn('Failed to clear the active game:', storageError);
   }
+};
+
+const readPendingAnswers = () => readJsonStorage(PENDING_ANSWERS_STORAGE_KEY, {});
+
+const pendingAnswerStorageKey = (gameId, roundId, questionKey, userId) =>
+  [gameId, roundId, questionKey, userId].join('|');
+
+const savePendingAnswer = (answer) => {
+  const pending = readPendingAnswers();
+  pending[pendingAnswerStorageKey(
+    answer.gameId,
+    answer.roundId,
+    answer.questionKey,
+    answer.userId
+  )] = answer;
+  writeJsonStorage(PENDING_ANSWERS_STORAGE_KEY, pending);
+};
+
+const removePendingAnswer = (answer) => {
+  const pending = readPendingAnswers();
+  delete pending[pendingAnswerStorageKey(
+    answer.gameId,
+    answer.roundId,
+    answer.questionKey,
+    answer.userId
+  )];
+  writeJsonStorage(PENDING_ANSWERS_STORAGE_KEY, pending);
+};
+
+const getPendingAnswersForUser = (gameId, userId) =>
+  Object.values(readPendingAnswers()).filter(
+    answer => answer.gameId === gameId && answer.userId === userId
+  );
+
+const getPendingAnswer = (gameId, roundId, questionKey, userId) =>
+  readPendingAnswers()[pendingAnswerStorageKey(gameId, roundId, questionKey, userId)] || null;
+
+const loadRecentQuestionIds = () => readJsonStorage(RECENT_QUESTIONS_STORAGE_KEY, []);
+
+const saveRecentQuestionIds = (questionIds) => {
+  writeJsonStorage(RECENT_QUESTIONS_STORAGE_KEY, questionIds.slice(-40));
 };
 
 // --- WINE DATA AND QUIZ QUESTIONS (Updated with full explanations and filtered Loudoun wineries) ---
@@ -2032,30 +2101,241 @@ const WINE_QUIZ_QUESTIONS = [
   },
 
 ];
-const shuffleArray = (array) => {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+const secureRandomInt = (maxExclusive) => {
+  if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) return 0;
+  if (globalThis.crypto?.getRandomValues) {
+    const maxUint32 = 0x100000000;
+    const limit = maxUint32 - (maxUint32 % maxExclusive);
+    const value = new Uint32Array(1);
+    do {
+      globalThis.crypto.getRandomValues(value);
+    } while (value[0] >= limit);
+    return value[0] % maxExclusive;
   }
-  return array;
+  return Math.floor(Math.random() * maxExclusive);
 };
 
-const getTenRandomQuestions = () => {
-  const shuffled = shuffleArray([...WINE_QUIZ_QUESTIONS]);
-  return shuffled.slice(0, 10);
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let currentIndex = shuffled.length - 1; currentIndex > 0; currentIndex -= 1) {
+    const randomIndex = secureRandomInt(currentIndex + 1);
+    [shuffled[currentIndex], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[currentIndex]
+    ];
+  }
+  return shuffled;
+};
+
+const questionId = (question) => question?.question?.trim() || '';
+
+const getTenRandomQuestions = (previousQuestions = []) => {
+  const seen = new Set();
+  const uniqueQuestions = WINE_QUIZ_QUESTIONS.filter(question => {
+    const id = questionId(question);
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+
+  const recentlyUsed = new Set([
+    ...loadRecentQuestionIds(),
+    ...previousQuestions.map(questionId)
+  ]);
+  const freshQuestions = uniqueQuestions.filter(question => !recentlyUsed.has(questionId(question)));
+  const selected = shuffleArray(freshQuestions).slice(0, 10);
+
+  if (selected.length < 10) {
+    const selectedIds = new Set(selected.map(questionId));
+    const fallback = uniqueQuestions.filter(question => !selectedIds.has(questionId(question)));
+    selected.push(...shuffleArray(fallback).slice(0, 10 - selected.length));
+  }
+
+  saveRecentQuestionIds(selected.map(questionId));
+  return selected;
+};
+
+const generateRoundId = () => {
+  const bytes = new Uint32Array(2);
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    bytes[0] = Math.floor(Math.random() * 0x100000000);
+    bytes[1] = Math.floor(Math.random() * 0x100000000);
+  }
+  return `${Date.now().toString(36)}-${bytes[0].toString(36)}${bytes[1].toString(36)}`;
 };
 
 const generateGameCode = () => {
-  // Only use uppercase letters for the game code
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
-  for (let i = 0; i < 4; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  return Array.from({ length: 4 }, () => characters[secureRandomInt(characters.length)]).join('');
+};
+
+const cloneData = (value) => JSON.parse(JSON.stringify(value));
+
+const newRoundState = () => ({
+  score: 0,
+  answers: {},
+  scoredQuestions: {},
+  feedbackByQuestion: {}
+});
+
+const normalizePlayersById = (game) => {
+  const playersById = cloneData(game?.playersById || {});
+  if (Array.isArray(game?.players)) {
+    game.players.forEach(player => {
+      if (!player?.id || playersById[player.id]) return;
+      const legacyRoundId = game.roundId || 'legacy-round';
+      playersById[player.id] = {
+        id: player.id,
+        userName: player.userName || 'Player',
+        rounds: {
+          [legacyRoundId]: {
+            ...newRoundState(),
+            score: player.score || 0
+          }
+        }
+      };
+    });
   }
-  return result;
+  return playersById;
+};
+
+const ensurePlayerRound = (playersById, userId, userName, roundId) => {
+  const player = playersById[userId] || {
+    id: userId,
+    userName: userName || 'Player',
+    rounds: {}
+  };
+  player.userName = userName || player.userName || 'Player';
+  player.rounds = player.rounds || {};
+  player.rounds[roundId] = {
+    ...newRoundState(),
+    ...(player.rounds[roundId] || {})
+  };
+  playersById[userId] = player;
+  return player.rounds[roundId];
+};
+
+const getPlayerRound = (game, userId) =>
+  normalizePlayersById(game)[userId]?.rounds?.[game?.roundId || 'legacy-round'] || newRoundState();
+
+const getPlayersForGame = (game) => {
+  const roundId = game?.roundId || 'legacy-round';
+  return Object.values(normalizePlayersById(game)).map(player => ({
+    id: player.id,
+    userName: player.userName,
+    score: player.rounds?.[roundId]?.score || 0
+  }));
+};
+
+const getPlayerAnswer = (game, userId, questionKey) =>
+  getPlayerRound(game, userId).answers?.[questionKey]?.answer || null;
+
+const getPlayerFeedback = (game, userId, questionKey) =>
+  getPlayerRound(game, userId).feedbackByQuestion?.[questionKey] || '';
+
+const flattenServerPendingAnswers = (gameId, pendingAnswers = {}) => {
+  const flattened = [];
+  Object.entries(pendingAnswers).forEach(([roundId, byQuestion]) => {
+    Object.entries(byQuestion || {}).forEach(([questionKey, byPlayer]) => {
+      Object.entries(byPlayer || {}).forEach(([userId, answer]) => {
+        if (answer?.answer) {
+          flattened.push({ ...answer, gameId, roundId, questionKey, userId });
+        }
+      });
+    });
+  });
+  return flattened;
+};
+
+const removeServerPendingAnswer = (pendingAnswers, answer) => {
+  const copy = cloneData(pendingAnswers || {});
+  if (copy[answer.roundId]?.[answer.questionKey]) {
+    delete copy[answer.roundId][answer.questionKey][answer.userId];
+    if (Object.keys(copy[answer.roundId][answer.questionKey]).length === 0) {
+      delete copy[answer.roundId][answer.questionKey];
+    }
+    if (Object.keys(copy[answer.roundId]).length === 0) {
+      delete copy[answer.roundId];
+    }
+  }
+  return copy;
+};
+
+const reconcilePendingAnswerData = (game, pendingAnswer) => {
+  if (!game || !pendingAnswer?.roundId || !pendingAnswer?.questionKey) return game;
+  const working = cloneData(game);
+  const playersById = normalizePlayersById(working);
+  const round = ensurePlayerRound(
+    playersById,
+    pendingAnswer.userId,
+    pendingAnswer.userName,
+    pendingAnswer.roundId
+  );
+  const existing = round.answers?.[pendingAnswer.questionKey];
+  if (!existing || (pendingAnswer.answeredAt || 0) >= (existing.answeredAt || 0)) {
+    round.answers[pendingAnswer.questionKey] = {
+      answer: pendingAnswer.answer,
+      answeredAt: pendingAnswer.answeredAt || Date.now()
+    };
+  }
+
+  const result = working.questionResults?.[pendingAnswer.roundId]?.[pendingAnswer.questionKey];
+  if (result && !round.scoredQuestions?.[pendingAnswer.questionKey]) {
+    const isCorrect = pendingAnswer.answer === result.correctAnswer;
+    round.score = (round.score || 0) + (isCorrect ? 1 : 0);
+    round.scoredQuestions[pendingAnswer.questionKey] = true;
+    round.feedbackByQuestion[pendingAnswer.questionKey] = isCorrect ? 'Correct!' : 'Incorrect.';
+  }
+
+  working.playersById = playersById;
+  working.pendingAnswers = removeServerPendingAnswer(working.pendingAnswers, pendingAnswer);
+  return working;
+};
+
+const scoreRevealedQuestionData = (game) => {
+  const working = cloneData(game);
+  const roundId = working.roundId || 'legacy-round';
+  const questionKey = String(working.currentQuestionIndex || 0);
+  const currentQuestion = working.questions?.[working.currentQuestionIndex || 0];
+  if (!currentQuestion) return working;
+
+  const playersById = normalizePlayersById(working);
+  flattenServerPendingAnswers('', working.pendingAnswers).forEach(answer => {
+    if (answer.roundId === roundId && answer.questionKey === questionKey) {
+      const round = ensurePlayerRound(playersById, answer.userId, answer.userName, roundId);
+      const existing = round.answers?.[questionKey];
+      if (!existing || (answer.answeredAt || 0) >= (existing.answeredAt || 0)) {
+        round.answers[questionKey] = {
+          answer: answer.answer,
+          answeredAt: answer.answeredAt || Date.now()
+        };
+      }
+      working.pendingAnswers = removeServerPendingAnswer(working.pendingAnswers, answer);
+    }
+  });
+
+  Object.values(playersById).forEach(player => {
+    const round = ensurePlayerRound(playersById, player.id, player.userName, roundId);
+    if (round.scoredQuestions?.[questionKey]) return;
+    const answer = round.answers?.[questionKey]?.answer;
+    if (!answer) return;
+    const isCorrect = answer === currentQuestion.correctAnswer;
+    round.score = (round.score || 0) + (isCorrect ? 1 : 0);
+    round.scoredQuestions[questionKey] = true;
+    round.feedbackByQuestion[questionKey] = isCorrect ? 'Correct!' : 'Incorrect.';
+  });
+
+  working.playersById = playersById;
+  working.questionResults = working.questionResults || {};
+  working.questionResults[roundId] = working.questionResults[roundId] || {};
+  working.questionResults[roundId][questionKey] = {
+    correctAnswer: currentQuestion.correctAnswer,
+    revealedAt: Date.now()
+  };
+  working.revealAnswers = true;
+  return working;
 };
 
 const App = () => {
@@ -2077,34 +2357,121 @@ const App = () => {
   const [answerSelected, setAnswerSelected] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [answerSyncStatus, setAnswerSyncStatus] = useState('');
+  const [isOnline, setIsOnline] = useState(
+    () => typeof navigator === 'undefined' || navigator.onLine
+  );
+
+  const syncPendingAnswer = useCallback(async (pendingAnswer) => {
+    if (!db || !pendingAnswer?.gameId) return false;
+    const gameDocRef = doc(
+      db,
+      `artifacts/${firestoreAppId}/public/data/games`,
+      pendingAnswer.gameId
+    );
+    try {
+      await runTransaction(db, async transaction => {
+        const snapshot = await transaction.get(gameDocRef);
+        if (!snapshot.exists()) return;
+        const reconciled = reconcilePendingAnswerData(snapshot.data(), pendingAnswer);
+        transaction.set(gameDocRef, reconciled);
+      });
+      removePendingAnswer(pendingAnswer);
+      return true;
+    } catch (syncError) {
+      console.warn('Answer reconciliation will retry after reconnect:', syncError);
+      return false;
+    }
+  }, []);
+
+  const queuePendingAnswerWrite = useCallback(async (pendingAnswer) => {
+    if (!db) return;
+    const gameDocRef = doc(
+      db,
+      `artifacts/${firestoreAppId}/public/data/games`,
+      pendingAnswer.gameId
+    );
+    const fieldPath = [
+      'pendingAnswers',
+      pendingAnswer.roundId,
+      pendingAnswer.questionKey,
+      pendingAnswer.userId
+    ].join('.');
+    await updateDoc(gameDocRef, {
+      [fieldPath]: {
+        answer: pendingAnswer.answer,
+        answeredAt: pendingAnswer.answeredAt,
+        userName: pendingAnswer.userName
+      }
+    });
+  }, []);
+
+  const flushPendingAnswers = useCallback(async (gameId, uid) => {
+    const pending = getPendingAnswersForUser(gameId, uid);
+    if (pending.length === 0) return;
+    setAnswerSyncStatus('Syncing saved answer…');
+    const results = await Promise.all(pending.map(syncPendingAnswer));
+    setAnswerSyncStatus(
+      results.every(Boolean) ? 'Answer synced.' : 'Answer saved—waiting to reconnect.'
+    );
+  }, [syncPendingAnswer]);
 
   useEffect(() => {
-    try {
+    let unsubscribeAuth = () => {};
+    let cancelled = false;
+
+    const initialize = async () => {
+      try {
       if (!firebaseConfig.apiKey) {
         throw new Error('Firebase configuration is missing.');
       }
       app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
+      try {
+        db = initializeFirestore(app, {
+          localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager()
+          })
+        });
+      } catch (cacheError) {
+        console.warn('Persistent Firestore cache unavailable; using standard cache:', cacheError);
+        db = getFirestore(app);
+      }
       auth = getAuth(app);
+      await setPersistence(auth, browserLocalPersistence);
 
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        if (cancelled) return;
         if (user) {
-          setUserId(user.uid); // This updates state
-          // Attempt to load user's saved name from their private profile
-          const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', user.uid, 'profile', 'userProfile');
-          const docSnap = await getDoc(userProfileRef);
+          setUserId(user.uid);
+          const savedGame = loadActiveGame();
+          let resolvedName = savedGame?.userName || '';
+          try {
+            const userProfileRef = doc(
+              db,
+              'artifacts',
+              firestoreAppId,
+              'users',
+              user.uid,
+              'profile',
+              'userProfile'
+            );
+            const profileSnapshot = await getDoc(userProfileRef);
+            resolvedName = profileSnapshot.data()?.userName || resolvedName;
+          } catch (profileError) {
+            console.warn('Using locally saved identity while offline:', profileError);
+          }
 
-          if (docSnap.exists() && docSnap.data().userName) {
-            setUserName(docSnap.data().userName);
-            setMode('initial'); // Go directly to mode selection if name exists
+          setUserName(resolvedName);
+          setNameInput(resolvedName);
+          if (savedGame?.gameId && resolvedName) {
+            setActiveGameId(savedGame.gameId);
+            setMode('multiplayer');
           } else {
-            setMode('enterName'); // Prompt for name if not found
+            setMode(resolvedName ? 'initial' : 'enterName');
           }
           setIsAuthReady(true);
           setLoading(false);
-          // Questions are now loaded when entering single player mode or creating/joining multiplayer
         } else {
-          // Sign in anonymously if no user is authenticated
           if (initialAuthToken) {
             await signInWithCustomToken(auth, initialAuthToken);
           } else {
@@ -2112,52 +2479,94 @@ const App = () => {
           }
         }
       });
+      } catch (e) {
+        console.error("Error initializing Firebase:", e);
+        setError("Failed to initialize Firebase. Please try again later.");
+        setLoading(false);
+      }
+    };
 
-      return () => unsubscribe();
-    } catch (e) {
-      console.error("Error initializing Firebase:", e);
-      setError("Failed to initialize Firebase. Please try again later.");
-      setLoading(false);
+    initialize();
+    return () => {
+      cancelled = true;
+      unsubscribeAuth();
+    };
+  }, []);
+
+  useEffect(() => {
+    const goOnline = () => setIsOnline(true);
+    const goOffline = () => setIsOnline(false);
+    window.addEventListener('online', goOnline);
+    window.addEventListener('offline', goOffline);
+    return () => {
+      window.removeEventListener('online', goOnline);
+      window.removeEventListener('offline', goOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isOnline && activeGameId && userId) {
+      flushPendingAnswers(activeGameId, userId);
     }
-  }, []); // Empty dependency array means this runs once on mount
+  }, [isOnline, activeGameId, userId, flushPendingAnswers]);
 
-  // Effect for multiplayer game data subscription
   useEffect(() => {
     let unsubscribe;
-    // Only subscribe if an activeGameId is set
     if (mode === 'multiplayer' && activeGameId && isAuthReady && userId) {
-      const normalizedGameId = activeGameId.toUpperCase(); // Ensure normalized if not already
+      const normalizedGameId = activeGameId.toUpperCase();
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedGameId);
-      unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
+      unsubscribe = onSnapshot(gameDocRef, { includeMetadataChanges: true }, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setGameData(data);
-          // Update local state for multiplayer quiz
           setCurrentQuestionIndex(data.currentQuestionIndex || 0);
           setQuizEnded(data.quizEnded || false);
-          // Ensure questions are updated for all players
           setQuestions(data.questions || []);
-          // Find current player's score using userId
-          const currentPlayerScore = data.players?.find(p => p.id === userId)?.score || 0;
-          setScore(currentPlayerScore);
-          setFeedback('');
-          setAnswerSelected(false);
-          setSelectedAnswer(null);
+          setScore(getPlayerRound(data, userId).score || 0);
+          const questionKey = String(data.currentQuestionIndex || 0);
+          const localPending = getPendingAnswer(
+            normalizedGameId,
+            data.roundId,
+            questionKey,
+            userId
+          );
+          const answer = localPending?.answer || getPlayerAnswer(data, userId, questionKey);
+          setSelectedAnswer(answer);
+          setAnswerSelected(Boolean(answer));
+          setFeedback(getPlayerFeedback(data, userId, questionKey));
+          if (docSnap.metadata.hasPendingWrites) {
+            setAnswerSyncStatus('Answer saved on this device—syncing…');
+          } else if (answer) {
+            setAnswerSyncStatus('Answer synced.');
+          }
+          saveActiveGame(normalizedGameId, userName);
+          flushPendingAnswers(normalizedGameId, userId);
         } else {
           setError('Game not found or ended.');
-          setActiveGameId(null); // Clear active game ID if not found
+          setActiveGameId(null);
           setGameData(null);
-          setMode('multiplayer'); // Go back to lobby to re-enter/create game
+          setMode('multiplayer');
+          removeLocalState();
         }
       }, (err) => {
         console.error("Error listening to game updates:", err);
-        setError("Failed to get real-time game updates.");
+        setAnswerSyncStatus('Offline—saved answers will sync automatically.');
       });
     }
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [mode, activeGameId, isAuthReady, userId]); // Dependency is now activeGameId
+    return () => unsubscribe?.();
+  }, [mode, activeGameId, isAuthReady, userId, userName, flushPendingAnswers]);
+
+  useEffect(() => {
+    if (
+      mode !== 'multiplayer' ||
+      !activeGameId ||
+      !gameData ||
+      gameData.hostId !== userId
+    ) return;
+
+    const pending = flattenServerPendingAnswers(activeGameId, gameData.pendingAnswers);
+    pending.forEach(syncPendingAnswer);
+  }, [mode, activeGameId, gameData, userId, syncPendingAnswer]);
 
   // Function to handle setting the user's name
   const handleSetName = async () => {
@@ -2225,12 +2634,12 @@ const App = () => {
     setFeedback('');
     setAnswerSelected(false);
     setSelectedAnswer(null);
-    setQuestions(getTenRandomQuestions()); // Get new random questions
+    setQuestions(getTenRandomQuestions(questions)); // Avoid immediate repeats
   };
 
   // --- Multiplayer Logic ---
   const createNewGame = async () => {
-    if (!userId || !userName) { // Use userName
+    if (!userId || !userName) {
       setError("User identity not ready or name not set. Please wait.");
       return;
     }
@@ -2240,7 +2649,7 @@ const App = () => {
       let newGameId = '';
       let isUnique = false;
       let attempts = 0;
-      const maxAttempts = 100; // Limit attempts to find a unique code
+      const maxAttempts = 100;
 
       while (!isUnique && attempts < maxAttempts) {
         const generatedCode = generateGameCode();
@@ -2259,20 +2668,25 @@ const App = () => {
         return;
       }
 
-      const selectedGameQuestions = getTenRandomQuestions(); // Select 10 random questions for the game
+      const selectedGameQuestions = getTenRandomQuestions();
+      const roundId = generateRoundId();
 
       const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, newGameId);
       await setDoc(gameDocRef, {
-        hostId: userId, // The creator is the host (Proctor)
-        hostName: userName, // Store Proctor's name
+        hostId: userId,
+        hostName: userName,
         currentQuestionIndex: 0,
         quizEnded: false,
-        revealAnswers: false, // Add this
-        players: [], // Proctor is NOT a player initially
-        questions: selectedGameQuestions, // Store selected questions in game data
+        revealAnswers: false,
+        roundId,
+        playersById: {},
+        pendingAnswers: {},
+        questionResults: {},
+        questions: selectedGameQuestions,
         createdAt: new Date().toISOString(),
       });
-      setActiveGameId(newGameId); // Set activeGameId to trigger listener
+      saveActiveGame(newGameId, userName);
+      setActiveGameId(newGameId);
       setMode('multiplayer');
       setLoading(false);
     } catch (e) {
@@ -2282,7 +2696,7 @@ const App = () => {
     }
   };
 
-  const joinExistingGame = async () => { // No longer takes idToJoin as arg, uses gameCodeInput
+  const joinExistingGame = async () => {
     if (!gameCodeInput.trim() || gameCodeInput.trim().length !== 4) {
       setError("Please enter a 4-character game ID.");
       return;
@@ -2297,101 +2711,99 @@ const App = () => {
     const normalizedIdToJoin = gameCodeInput.trim().toUpperCase();
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedIdToJoin);
     try {
-      const docSnap = await getDoc(gameDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        // Check if player already exists, if not, add them
-        const players = data.players || [];
-        if (!players.some(p => p.id === userId)) { // Use userId
-          players.push({ id: userId, score: 0, userName: userName }); // Use userName
-          await updateDoc(gameDocRef, { players: players });
+      await runTransaction(db, async transaction => {
+        const snapshot = await transaction.get(gameDocRef);
+        if (!snapshot.exists()) {
+          throw new Error('GAME_NOT_FOUND');
         }
-        setActiveGameId(normalizedIdToJoin); // Set activeGameId to trigger listener
-        setMode('multiplayer');
-        setLoading(false);
-      } else {
-        setError('Game ID not found. Please check the code and try again.');
-        setLoading(false);
-      }
+        const data = snapshot.data();
+        const roundId = data.roundId || 'legacy-round';
+        const playersById = normalizePlayersById(data);
+        ensurePlayerRound(playersById, userId, userName, roundId);
+        transaction.update(gameDocRef, {
+          playersById,
+          roundId
+        });
+      });
+      saveActiveGame(normalizedIdToJoin, userName);
+      setActiveGameId(normalizedIdToJoin);
+      setMode('multiplayer');
+      setLoading(false);
     } catch (e) {
       console.error("Error joining game:", e);
-      setError("Failed to join the game.");
+      setError(
+        e.message === 'GAME_NOT_FOUND'
+          ? 'Game ID not found. Please check the code and try again.'
+          : 'Failed to join the game.'
+      );
       setLoading(false);
     }
   };
 
-  const handleMultiplayerAnswerClick = async (selectedOption) => {
-    // CRITICAL GUARD: Only allow action if answers haven't been revealed
-    if (gameData?.revealAnswers || gameData?.quizEnded) {
+  const handleMultiplayerAnswerClick = (selectedOption) => {
+    if (!gameData || gameData.revealAnswers || gameData.quizEnded) {
       setError("Answers have been revealed or quiz is over. Cannot change answer.");
       return;
     }
 
-    // Update local state immediately for visual feedback
-    setAnswerSelected(true); 
+    const roundId = gameData.roundId || 'legacy-round';
+    const questionKey = String(gameData.currentQuestionIndex || 0);
+    const pendingAnswer = {
+      gameId: activeGameId,
+      roundId,
+      questionKey,
+      userId,
+      userName,
+      answer: selectedOption,
+      answeredAt: Date.now()
+    };
+
+    savePendingAnswer(pendingAnswer);
+    setAnswerSelected(true);
     setSelectedAnswer(selectedOption);
+    setFeedback('');
+    setAnswerSyncStatus(
+      isOnline ? 'Answer saved—syncing…' : 'Offline—answer saved on this device.'
+    );
 
-    // Update player's selection in Firestore (without immediate score change)
-    const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-    const currentQuestion = questions[currentQuestionIndex]; // Get the question to check correctness
-    
-    // Store temporary feedback state locally for player's reference
-    const newFeedback = (selectedOption === currentQuestion.correctAnswer) ? 'Correct!' : 'Incorrect.';
-    setFeedback(newFeedback); 
-
-    const updatedPlayers = gameData.players.map(p => {
-        if (p.id === userId) {
-            return {
-                ...p,
-                // Only store the selection, score update is on reveal
-                selectedAnswerForQuestion: selectedOption,
-                feedbackForQuestion: newFeedback 
-            };
+    queuePendingAnswerWrite(pendingAnswer)
+      .then(() => {
+        if (navigator.onLine) {
+          syncPendingAnswer(pendingAnswer).then(synced => {
+            setAnswerSyncStatus(
+              synced ? 'Answer synced.' : 'Answer saved—waiting to reconnect.'
+            );
+          });
         }
-        return p;
-    });
-
-    try {
-      await updateDoc(gameDocRef, { players: updatedPlayers });
-      // Reset local score back to true score, as only Firestore reveal should modify it
-      // This is a crucial reset to prevent premature score viewing by player
-      setScore(gameData.players.find(p => p.id === userId)?.score || 0); 
-    } catch (e) {
-      console.error("Error updating answer selection:", e);
-      setError("Failed to submit your answer selection.");
-    }
+      })
+      .catch(queueError => {
+        console.warn('Answer retained locally until Firestore is available:', queueError);
+        setAnswerSyncStatus('Answer saved—waiting to reconnect.');
+      });
   };
 
-  // Modify next question to reset reveal
   const handleMultiplayerNextQuestion = async () => {
-    if (!gameData || gameData.hostId !== userId) { // Only Proctor can advance questions
+    if (!gameData || gameData.hostId !== userId) {
       setError("Only the Proctor (host) can advance questions.");
       return;
     }
-    if (!gameData.revealAnswers) { // Check if Proctor revealed answers
+    if (!gameData.revealAnswers) {
       setError("Please reveal answers before proceeding to the next question.");
       return;
     }
 
-    setFeedback(''); // Clear local feedback
-    setAnswerSelected(false); // Reset local answer states for next question
-    setSelectedAnswer(null); // Clear selected answer for next question
+    setFeedback('');
+    setAnswerSelected(false);
+    setSelectedAnswer(null);
+    setAnswerSyncStatus('');
     const nextIndex = gameData.currentQuestionIndex + 1;
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-
-    // Clear feedback and selected answers for all players in Firestore for the new question
-    const resetPlayers = gameData.players.map(p => ({
-        ...p,
-        selectedAnswerForQuestion: null, // Clear previous answer
-        feedbackForQuestion: null // Clear previous feedback
-    }));
 
     if (nextIndex < gameData.questions.length) {
       try {
         await updateDoc(gameDocRef, { 
           currentQuestionIndex: nextIndex, 
-          players: resetPlayers,
-          revealAnswers: false // Reset for next question
+          revealAnswers: false
         });
       } catch (e) {
         console.error("Error advancing question:", e);
@@ -2399,7 +2811,7 @@ const App = () => {
       }
     } else {
       try {
-        await updateDoc(gameDocRef, { quizEnded: true, players: resetPlayers });
+        await updateDoc(gameDocRef, { quizEnded: true });
       } catch (e) {
         console.error("Error ending quiz:", e);
         setError("Failed to end quiz.");
@@ -2408,22 +2820,32 @@ const App = () => {
   };
 
   const restartMultiplayerQuiz = async () => {
-    if (!gameData || gameData.hostId !== userId) { // Only Proctor can restart
+    if (!gameData || gameData.hostId !== userId) {
       setError("Only the Proctor (host) can restart the quiz.");
       return;
     }
 
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-    const resetPlayers = gameData.players.map(p => ({ ...p, score: 0, selectedAnswerForQuestion: null, feedbackForQuestion: null }));
-    const newRandomQuestions = getTenRandomQuestions();
+    const newRandomQuestions = getTenRandomQuestions(gameData.questions || []);
+    const newRoundId = generateRoundId();
 
     try {
-      await updateDoc(gameDocRef, {
-        currentQuestionIndex: 0,
-        quizEnded: false,
-        revealAnswers: false, // Reset reveal state
-        players: resetPlayers,
-        questions: newRandomQuestions,
+      await runTransaction(db, async transaction => {
+        const snapshot = await transaction.get(gameDocRef);
+        if (!snapshot.exists()) throw new Error('Game no longer exists.');
+        const latest = snapshot.data();
+        const playersById = normalizePlayersById(latest);
+        Object.values(playersById).forEach(player => {
+          ensurePlayerRound(playersById, player.id, player.userName, newRoundId);
+        });
+        transaction.update(gameDocRef, {
+          currentQuestionIndex: 0,
+          quizEnded: false,
+          revealAnswers: false,
+          roundId: newRoundId,
+          playersById,
+          questions: newRandomQuestions
+        });
       });
     } catch (e) {
       console.error("Error restarting multiplayer quiz:", e);
@@ -2431,30 +2853,19 @@ const App = () => {
     }
   };
 
-  // Add reveal function (UPDATED to calculate score on reveal)
   const revealAnswersToAll = async () => {
     if (!gameData || gameData.hostId !== userId) {
       setError("Only the Proctor (host) can reveal answers.");
       return;
     }
 
-    const currentQuestion = gameData.questions[gameData.currentQuestionIndex];
-    const updatedPlayers = gameData.players.map(p => {
-        const isCorrect = p.selectedAnswerForQuestion === currentQuestion.correctAnswer;
-        const scoreChange = isCorrect ? 1 : 0;
-        
-        return {
-            ...p,
-            score: (p.score || 0) + scoreChange,
-            feedbackForQuestion: isCorrect ? "Correct!" : "Incorrect."
-        };
-    });
-
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
     try {
-      await updateDoc(gameDocRef, { 
-        players: updatedPlayers, 
-        revealAnswers: true 
+      await runTransaction(db, async transaction => {
+        const snapshot = await transaction.get(gameDocRef);
+        if (!snapshot.exists()) throw new Error('Game no longer exists.');
+        const scoredGame = scoreRevealedQuestionData(snapshot.data());
+        transaction.set(gameDocRef, scoredGame);
       });
     } catch (e) {
       console.error("Error revealing answers:", e);
@@ -2701,7 +3112,7 @@ const renderContent = () => {
   } else if (mode === 'multiplayer' && activeGameId) {
     // MOVED: Multiplayer calculations ONLY inside this block
     const safeGameData = gameData || { 
-      players: [], 
+      playersById: {},
       questions: [], 
       currentQuestionIndex: 0, 
       quizEnded: false, 
@@ -2728,7 +3139,7 @@ const renderContent = () => {
       explanation: ''
     };
 
-    const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
+    const currentPlayersArray = getPlayersForGame(safeGameData);
     const sortedPlayers = [...currentPlayersArray].sort((a, b) => (b.score || 0) - (a.score || 0));
     const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
 
@@ -2739,9 +3150,16 @@ const renderContent = () => {
     };
     const winners = getWinners();
 
-    const currentPlayerGameData = currentPlayersArray.find(p => p.id === userId) || {};
-    const playerSelectedAnswer = currentPlayerGameData?.selectedAnswerForQuestion || null;
-    const playerFeedback = currentPlayerGameData?.feedbackForQuestion || '';
+    const questionKey = String(safeGameData.currentQuestionIndex || 0);
+    const localPendingAnswer = getPendingAnswer(
+      activeGameId,
+      safeGameData.roundId,
+      questionKey,
+      userId
+    );
+    const playerSelectedAnswer =
+      localPendingAnswer?.answer || getPlayerAnswer(safeGameData, userId, questionKey);
+    const playerFeedback = getPlayerFeedback(safeGameData, userId, questionKey);
 
     return (
       <div className="space-y-6">
@@ -2816,6 +3234,41 @@ const renderContent = () => {
             ))
           )}
         </div>
+
+        {!isHost && answerSyncStatus && (
+          <p className={`text-center text-sm font-semibold ${
+            answerSyncStatus === 'Answer synced.' ? 'text-green-700' : 'text-amber-700'
+          }`}>
+            {answerSyncStatus}
+          </p>
+        )}
+
+        {!isHost && !isOnline && (
+          <p className="text-center text-sm text-amber-700">
+            You are offline. Keep this page open; your answer will post automatically when you reconnect.
+          </p>
+        )}
+
+        {!isHost && safeGameData.revealAnswers && (
+          <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
+            {playerFeedback && (
+              <p className={`text-lg font-bold ${
+                playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {playerFeedback}
+              </p>
+            )}
+            {!playerFeedback && playerSelectedAnswer && (
+              <p className="text-amber-700 font-semibold">Your saved answer is still syncing.</p>
+            )}
+            <p className="text-gray-700 mt-2">
+              <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
+            </p>
+            <p className="text-gray-700 mt-2">
+              <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+            </p>
+          </div>
+        )}
 
         <div className="mt-4 space-y-4">
           {isHost && (
@@ -2914,6 +3367,8 @@ const renderContent = () => {
             setMode('initial');
             setActiveGameId(null);
             setGameData(null);
+            setAnswerSyncStatus('');
+            removeLocalState();
           }}
           className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
                        hover:bg-gray-600 transition-colors duration-200 shadow-md"
