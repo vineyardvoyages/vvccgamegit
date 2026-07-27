@@ -3,15 +3,14 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore'; 
 
-// Firebase Configuration (will read from Netlify Environment Variable)
+// Firebase web configuration. The API key is supplied by the build environment.
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "YOUR_ACTUAL_FIREBASE_API_KEY_HERE", // TEMPORARY FOR GITPOD PREVIEW ONLY
-  authDomain: "vineyardvoyagesquiz.firebaseapp.com",
-  projectId: "vineyardvoyagesquiz",
-  storageBucket: "vineyardvoyagesquiz.appspot.com",
-  messagingSenderId: "429604849897",
-  appId: "1:429604849897:web:481e9ade4e745ae86f8878",
-  measurementId: "G-KBLZD8FSEM"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: "vineyardvoyagesquiz-33fde.firebaseapp.com",
+  projectId: "vineyardvoyagesquiz-33fde",
+  storageBucket: "vineyardvoyagesquiz-33fde.firebasestorage.app",
+  messagingSenderId: "539449046402",
+  appId: "1:539449046402:web:a88b15a7bb81bdc7d1cb9b"
 };
 
 // Use projectId for Firestore paths to avoid issues with special characters in appId
@@ -1604,9 +1603,6 @@ const getTenRandomQuestions = () => {
   return shuffled.slice(0, 10);
 };
 
-// WINE_VARIETAL_NAMES_SET must be defined after WINE_VARIETALS
-const WINE_VARIETAL_NAMES_SET = new Set(WINE_VARIETALS.map(v => v.name));
-
 const generateGameCode = () => {
   // Only use uppercase letters for the game code
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -1634,18 +1630,14 @@ const App = () => {
   const [quizEnded, setQuizEnded] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [answerSelected, setAnswerSelected] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = null;
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
-
-  const [llmLoading, setLlmLoading] = useState(false);
-  const [varietalElaboration, setVarietalElaboration] = useState('');
-  const [showVarietalModal, setShowVarietalModal] = useState(false);
-  const [newQuestionTopic, setNewQuestionTopic] = useState('');
-  const [showGenerateQuestionModal, setShowGenerateQuestionModal] = useState(false);
-
 
   useEffect(() => {
     try {
+      if (!firebaseConfig.apiKey) {
+        throw new Error('Firebase configuration is missing.');
+      }
       app = initializeApp(firebaseConfig);
       db = getFirestore(app);
       auth = getAuth(app);
@@ -1774,9 +1766,6 @@ const App = () => {
     setFeedback('');
     setAnswerSelected(false);
     setSelectedAnswer(null);
-    setVarietalElaboration(''); // Clear elaboration when moving to next question
-    setShowVarietalModal(false);
-
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -1791,8 +1780,6 @@ const App = () => {
     setFeedback('');
     setAnswerSelected(false);
     setSelectedAnswer(null);
-    setVarietalElaboration('');
-    setShowVarietalModal(false);
     setQuestions(getTenRandomQuestions()); // Get new random questions
   };
 
@@ -1944,9 +1931,6 @@ const App = () => {
     setFeedback(''); // Clear local feedback
     setAnswerSelected(false); // Reset local answer states for next question
     setSelectedAnswer(null); // Clear selected answer for next question
-    setVarietalElaboration('');
-    setShowVarietalModal(false);
-
     const nextIndex = gameData.currentQuestionIndex + 1;
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
 
@@ -2030,121 +2014,6 @@ const App = () => {
     } catch (e) {
       console.error("Error revealing answers:", e);
       setError("Failed to reveal answers.");
-    }
-  };
-
-  // --- LLM Functions ---
-  const callGeminiAPI = async (prompt, schema = null) => {
-    setLlmLoading(true);
-    setError('');
-    let chatHistory = [];
-    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-    const payload = { contents: chatHistory };
-    if (schema) {
-      payload.generationConfig = {
-        responseMimeType: "application/json",
-        responseSchema: schema
-      };
-    }
-
-    // This will be read from Netlify Environment Variable during deployment
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY || "YOUR_ACTUAL_GEMINI_API_KEY_HERE"; // TEMPORARY FOR GITPOD PREVIEW ONLY
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(payload)
-      });
-
-      const result = await response.json();
-      setLlmLoading(false);
-
-      if (result.candidates && result.candidates.length > 0 &&
-          result.candidates[0].content && result.candidates[0].content.parts &&
-          result.candidates[0].content.parts.length > 0) {
-        const text = result.candidates[0].content.parts[0].text;
-        if (schema) {
-          return JSON.parse(text);
-        }
-        return text;
-      } else {
-        setError("LLM did not return a valid response.");
-        console.error("LLM response error:", result);
-        return null;
-      }
-    } catch (e) {
-      setLlmLoading(false);
-      console.error("Error calling Gemini API:", e);
-      setError("Failed to communicate with the AI. Please try again.");
-      return null;
-    }
-  };
-
-  const handleGenerateQuestion = async () => {
-    if (!newQuestionTopic.trim()) {
-      setError("Please enter a topic for the new question.");
-      return;
-    }
-    setShowGenerateQuestionModal(false); // Close the input modal
-    setError('');
-
-    const prompt = `Generate a multiple-choice quiz question about "${newQuestionTopic}" at a beginner level. Provide 4 distinct options, the correct answer, and a concise explanation. Do NOT include any image URLs. Return in the following JSON format:
-    {
-      "question": "...",
-      "options": ["...", "...", "...", "..."],
-      "correctAnswer": "...",
-      "explanation": "..."
-    }`;
-
-    const schema = {
-      type: "OBJECT",
-      properties: {
-        question: { type: "STRING" },
-        options: {
-          type: "ARRAY",
-          items: { type: "STRING" }
-        },
-        correctAnswer: { type: "STRING" },
-        explanation: { type: "STRING" }
-      },
-      required: ["question", "options", "correctAnswer", "explanation"]
-    };
-
-    const generatedQuestion = await callGeminiAPI(prompt, schema);
-
-    if (generatedQuestion) {
-      // Add the new question to the local state
-      setQuestions(prevQuestions => [...prevQuestions, generatedQuestion]);
-      // If in multiplayer, update the game data in Firestore
-      if (mode === 'multiplayer' && activeGameId) {
-        const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
-        try {
-          await updateDoc(gameDocRef, {
-            questions: [...gameData.questions, generatedQuestion]
-          });
-        } catch (e) {
-          console.error("Error updating questions in Firestore:", e);
-          setError("Failed to save the new question to the game.");
-        }
-      }
-      setNewQuestionTopic(''); // Clear topic input
-    }
-  };
-
-  const handleElaborateVarietal = async (varietalName) => {
-    setShowVarietalModal(true);
-    setVarietalElaboration(''); // Clear previous elaboration
-    setError('');
-
-    const prompt = `Provide a concise, 2-3 sentence description of the wine varietal: ${varietalName}. Focus on its typical characteristics and origin.`;
-    const elaboration = await callGeminiAPI(prompt);
-    if (elaboration) {
-      setVarietalElaboration(elaboration);
-    } else {
-      setVarietalElaboration("Could not retrieve elaboration for this varietal.");
     }
   };
 
@@ -2240,9 +2109,6 @@ const renderContent = () => {
     }
 
     const currentQuestion = questions[currentQuestionIndex];
-    const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
-                             WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
-
     return (
       <div className="space-y-6">
         <h2 className="text-3xl font-bold text-gray-900 text-center">Single Player Quiz</h2>
@@ -2295,16 +2161,6 @@ const renderContent = () => {
                 <p className="text-gray-700 mt-2">
                   <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
                 </p>
-                {isVarietalAnswer && (
-                  <button
-                    onClick={() => handleElaborateVarietal(currentQuestion.correctAnswer.split('(')[0].trim())}
-                    className="mt-3 bg-[#9CAC3E] text-white py-2 px-4 rounded-lg text-sm font-bold
-                               hover:bg-[#496E3E] transition-colors duration-200 shadow-md"
-                    disabled={llmLoading}
-                  >
-                    {llmLoading ? 'Generating...' : '✨ Elaborate on Varietal'}
-                  </button>
-                )}
               </div>
             )}
 
@@ -2428,9 +2284,6 @@ const renderContent = () => {
       explanation: ''
     };
 
-    const isVarietalAnswer = currentQuestion.correctAnswer.includes('(') &&
-                             WINE_VARIETAL_NAMES_SET.has(currentQuestion.correctAnswer.split('(')[0].trim());
-
     const currentPlayersArray = Array.isArray(safeGameData.players) ? safeGameData.players : [];
     const sortedPlayers = [...currentPlayersArray].sort((a, b) => (b.score || 0) - (a.score || 0));
     const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
@@ -2552,13 +2405,6 @@ const renderContent = () => {
                   {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
                 </button>
               )}
-              <button
-                onClick={() => setShowGenerateQuestionModal(true)}
-                className="flex-none bg-indigo-600 text-white py-3 px-4 rounded-lg text-xl font-bold
-                                       hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
-              >
-                ✨ New
-              </button>
             </div>
           )}
         </div>
@@ -2656,57 +2502,6 @@ const renderContent = () => {
             </h1>
             {renderContent()}
 
-            {/* Varietal Elaboration Modal */}
-            {showVarietalModal && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Varietal Insight</h3>
-                  {llmLoading ? (
-                    <p className="text-gray-700">Generating elaboration...</p>
-                  ) : (
-                    <p className="text-gray-800">{varietalElaboration}</p>
-                  )}
-                  <button
-                    onClick={() => setShowVarietalModal(false)}
-                    className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Generate Question Modal (Proctor only) */}
-            {showGenerateQuestionModal && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-900">Generate New Question</h3>
-                  <input
-                    type="text"
-                    placeholder="Enter topic (e.g., 'Virginia wines', 'sparkling wines')"
-                    className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-                    value={newQuestionTopic}
-                    onChange={(e) => setNewQuestionTopic(e.target.value)}
-                  />
-                  <button
-                    onClick={handleGenerateQuestion}
-                    className="w-full bg-[#6b2a58] text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-[#496E3E] transition-colors duration-200"
-                    disabled={llmLoading || !newQuestionTopic.trim()}
-                  >
-                    {llmLoading ? 'Generating...' : '✨ Generate New Question'}
-                  </button>
-                  <button
-                    onClick={() => setShowGenerateQuestionModal(false)}
-                    className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                                     hover:bg-gray-600 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       );
