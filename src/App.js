@@ -1576,6 +1576,139 @@ const WINE_QUIZ_QUESTIONS = [
       "Cabernet Sauvignon": "Cabernet Sauvignon is a red Vitis vinifera grape and is not used for the range of white-wine styles described."
     }
   },
+  {
+    question: "What is the term for a person who makes wine?",
+    options: ["Sommelier", "Cooper", "Vintner", "Viticulturist"],
+    correctAnswer: "Vintner",
+    explanation: "A vintner or winemaker is responsible for producing wine, from processing the grapes through fermentation, aging, and blending.",
+    wrongAnswerExplanations: {
+      "Sommelier": "A sommelier specializes in wine service, selection, education, and food pairing rather than wine production.",
+      "Cooper": "A cooper is a craftsperson who makes and repairs wooden barrels.",
+      "Viticulturist": "A viticulturist specializes in growing and managing grapevines in the vineyard."
+    }
+  },
+  {
+    question: "What is the primary purpose of swirling wine in a glass?",
+    options: ["To mix the alcohol", "To lower its temperature", "To aerate the wine and release its aromas", "To remove sediment"],
+    correctAnswer: "To aerate the wine and release its aromas",
+    explanation: "Swirling increases the wine's contact with air and helps volatile aromatic compounds rise from the glass, making the wine easier to smell.",
+    wrongAnswerExplanations: {
+      "To mix the alcohol": "Alcohol is already evenly incorporated in the wine and does not need to be mixed by swirling.",
+      "To lower its temperature": "Swirling does not meaningfully chill wine and may warm it slightly through contact with the surrounding air.",
+      "To remove sediment": "Sediment is separated by careful pouring or decanting, not by swirling the glass."
+    }
+  },
+  {
+    question: "What does 'body' refer to in wine tasting?",
+    options: ["The wine's acidity", "The weight and fullness of the wine in the mouth", "The wine's sweetness", "The wine's age"],
+    correctAnswer: "The weight and fullness of the wine in the mouth",
+    explanation: "Body describes how light, medium, or full a wine feels on the palate, often compared with the differing weights of skim milk, whole milk, and cream.",
+    wrongAnswerExplanations: {
+      "The wine's acidity": "Acidity creates tartness and freshness, but it is only one component of a wine's overall mouthfeel.",
+      "The wine's sweetness": "Sweetness comes from residual sugar and is distinct from the wine's weight or body.",
+      "The wine's age": "A wine's age can affect its flavor and texture, but body does not mean how old the wine is."
+    }
+  },
+  {
+    question: "What does 'palate' refer to in wine tasting?",
+    options: ["The wine's color", "The wine's aroma", "The taste and texture perceived in the mouth", "Only the lingering aftertaste"],
+    correctAnswer: "The taste and texture perceived in the mouth",
+    explanation: "The palate encompasses the flavors, acidity, tannins, sweetness, alcohol, body, and texture perceived while tasting wine.",
+    wrongAnswerExplanations: {
+      "The wine's color": "Color is evaluated visually before tasting and is not what tasters mean by the palate.",
+      "The wine's aroma": "The wine's aroma is commonly called its nose, while the palate refers to sensations in the mouth.",
+      "Only the lingering aftertaste": "The lingering aftertaste is the finish, which is one part of the overall palate experience."
+    }
+  },
+  {
+    question: "What is the 'finish' of a wine?",
+    options: ["The last drop in the bottle", "The lingering taste after the wine is swallowed", "The end of fermentation", "The wine's clarity"],
+    correctAnswer: "The lingering taste after the wine is swallowed",
+    explanation: "The finish is the collection of flavors and sensations that remains after swallowing or spitting the wine; its length and character help describe wine quality.",
+    wrongAnswerExplanations: {
+      "The last drop in the bottle": "Finish is a tasting term, not a reference to the final amount left in a bottle.",
+      "The end of fermentation": "Fermentation completion is a production stage, while finish describes the aftertaste of a wine.",
+      "The wine's clarity": "Clarity describes a wine's visual appearance, not its lingering flavors."
+    }
+  },
+  {
+    question: "What is 'must' in winemaking?",
+    options: ["Wine that has spoiled", "Freshly crushed grape juice containing grape solids", "Sediment left after aging", "A type of oak barrel"],
+    correctAnswer: "Freshly crushed grape juice containing grape solids",
+    explanation: "Must is the unfermented mixture produced after grapes are crushed, generally including juice along with skins, seeds, and sometimes stems.",
+    wrongAnswerExplanations: {
+      "Wine that has spoiled": "Spoiled wine is described by the specific fault present; it is not called must.",
+      "Sediment left after aging": "Sediment may be called lees or deposits, depending on when and how it forms.",
+      "A type of oak barrel": "Must is grape material awaiting fermentation, not a barrel or aging vessel."
+    }
+  },
+  {
+    question: "What does 'punching down' mean in red winemaking?",
+    options: ["Lowering the price of the wine", "Pushing the floating cap of grape skins back into the juice", "Crushing grapes with feet", "Removing alcohol from the wine"],
+    correctAnswer: "Pushing the floating cap of grape skins back into the juice",
+    explanation: "During red-wine fermentation, grape skins rise and form a cap. Punching it down keeps the skins wet and continues the extraction of color, flavor, and tannin.",
+    wrongAnswerExplanations: {
+      "Lowering the price of the wine": "Punching down is a cellar technique and has nothing to do with wine pricing.",
+      "Crushing grapes with feet": "Foot treading is a crushing or extraction technique, but it is not the specific process called punching down.",
+      "Removing alcohol from the wine": "Alcohol reduction requires other processes and is unrelated to cap management."
+    }
+  },
+  {
+    question: "What is 'riddling' in sparkling wine production?",
+    options: ["Guessing the grape variety", "Slowly rotating and tilting bottles to collect yeast sediment in the neck", "Adding the wine label", "Removing the cork"],
+    correctAnswer: "Slowly rotating and tilting bottles to collect yeast sediment in the neck",
+    explanation: "In traditional-method sparkling-wine production, riddling gradually moves the spent yeast sediment into the bottle's neck so it can be removed.",
+    wrongAnswerExplanations: {
+      "Guessing the grape variety": "Riddling is a production technique, not a blind-tasting exercise.",
+      "Adding the wine label": "Labeling occurs after production and is unrelated to moving sediment inside the bottle.",
+      "Removing the cork": "The temporary closure is removed later during disgorgement, after riddling has collected the sediment."
+    }
+  },
+  {
+    question: "What is 'disgorgement' in sparkling wine production?",
+    options: ["Adding carbonation", "Expelling the collected yeast sediment from the bottle", "Blending red and white wine", "Measuring grape sugar"],
+    correctAnswer: "Expelling the collected yeast sediment from the bottle",
+    explanation: "After riddling, disgorgement removes the plug of yeast sediment from the bottle, leaving the sparkling wine clear before final corking.",
+    wrongAnswerExplanations: {
+      "Adding carbonation": "Traditional-method bubbles come from a secondary fermentation in the bottle, not from disgorgement.",
+      "Blending red and white wine": "Blending may occur earlier in production and is separate from sediment removal.",
+      "Measuring grape sugar": "Grape sugar is commonly measured using Brix or a similar scale, not through disgorgement."
+    }
+  },
+  {
+    question: "What is the Brix scale used to measure?",
+    options: ["The acidity of finished wine", "The sugar content of grapes or juice", "The pressure in a sparkling-wine bottle", "The age of a grapevine"],
+    correctAnswer: "The sugar content of grapes or juice",
+    explanation: "Degrees Brix measure dissolved sugar in grape juice and help growers and winemakers assess grape ripeness and potential alcohol.",
+    wrongAnswerExplanations: {
+      "The acidity of finished wine": "Wine acidity is measured using pH and titratable-acidity testing rather than Brix.",
+      "The pressure in a sparkling-wine bottle": "Bottle pressure is measured in units such as bars, not degrees Brix.",
+      "The age of a grapevine": "Vine age is counted in years and is unrelated to the Brix scale."
+    }
+  },
+  {
+    question: "What is the period when grapes begin to change color and ripen called?",
+    options: ["Bud break", "Flowering", "Veraison", "Dormancy"],
+    correctAnswer: "Veraison",
+    explanation: "Veraison marks the onset of ripening, when red grapes begin changing color and both red and white grapes soften and accumulate sugar.",
+    wrongAnswerExplanations: {
+      "Bud break": "Bud break occurs earlier, when new shoots first emerge from dormant buds.",
+      "Flowering": "Flowering is when grapevine flowers bloom and are pollinated, well before ripening begins.",
+      "Dormancy": "Dormancy is the vine's winter resting period after the growing season."
+    }
+  },
+  {
+    question: "How was the phylloxera crisis addressed in European vineyards?",
+    options: ["By harvesting grapes earlier", "By grafting European vines onto resistant American rootstocks", "By replacing grapes with apples", "By irrigating vineyards with seawater"],
+    correctAnswer: "By grafting European vines onto resistant American rootstocks",
+    explanation: "European wine-grape varieties were grafted onto American rootstocks that could tolerate phylloxera, allowing the desired European fruit to grow on resistant roots.",
+    wrongAnswerExplanations: {
+      "By harvesting grapes earlier": "Changing harvest dates does not protect vine roots from phylloxera.",
+      "By replacing grapes with apples": "The solution preserved European grape varieties rather than replacing vineyards with another crop.",
+      "By irrigating vineyards with seawater": "Seawater would damage vines and was not the solution to phylloxera."
+    }
+  },
+
 ];
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
