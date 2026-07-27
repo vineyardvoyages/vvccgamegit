@@ -2479,6 +2479,8 @@ const renderContent = () => {
       </div>
     );
   }
+};
+
   return (
         <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]"
       style={{
@@ -2505,7 +2507,6 @@ const renderContent = () => {
           </div>
         </div>
       );
-    };
 };
 
 export default App;
