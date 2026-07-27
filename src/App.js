@@ -2181,8 +2181,7 @@ const renderContent = () => {
                                    focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
             >
               Play Again
-</button>
-            )}
+            </button>
             
                <a href="https://www.vineyardvoyages.com/tours"
               target="_blank"
