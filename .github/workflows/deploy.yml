@@ -37,6 +37,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          PUBLIC_URL: /vvccgamegit
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
 
       - name: Configure Pages
