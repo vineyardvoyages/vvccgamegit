@@ -1508,8 +1508,74 @@ const WINE_QUIZ_QUESTIONS = [
       "Having no rainfall whatsoever": "Both regions are known for their humidity and the challenges of managing rain.",
       "Being located on a tropical island": "Both are inland continental or maritime temperate regions."
     }
+  },,
+
+  {
+    question: "Which Virginia red grape commonly shows spicy, peppery notes with aromas of plum, blackberry, violets, and tobacco?",
+    options: ["Cabernet Franc", "Pinot Noir", "Chambourcin", "Norton"],
+    correctAnswer: "Cabernet Franc",
+    explanation: "Cabernet Franc has earned a strong reputation in Virginia and is known for its fruit, spice, floral, and tobacco characteristics.",
+    wrongAnswerExplanations: {
+      "Pinot Noir": "Pinot Noir is generally associated with lighter-bodied wines and red-fruit aromas rather than Cabernet Franc's peppery Virginia profile.",
+      "Chambourcin": "Chambourcin is a French-American hybrid known for berry flavors, herbal aromas, and crisp acidity.",
+      "Norton": "Norton is Virginia's historic native grape, known for deep color, bright acidity, and dark-fruit flavors."
+    }
   },
-,
+  {
+    question: "Which grape, traditionally used in Bordeaux blends, has become a successful stand-alone varietal in Virginia?",
+    options: ["Petit Verdot", "Riesling", "Pinot Grigio", "Gamay"],
+    correctAnswer: "Petit Verdot",
+    explanation: "Virginia Petit Verdot produces dark, full-bodied wines with dense fruit, bold tannins, and excellent aging potential.",
+    wrongAnswerExplanations: {
+      "Riesling": "Riesling is an aromatic white grape associated especially with Germany and is not a Bordeaux red blending grape.",
+      "Pinot Grigio": "Pinot Grigio is a white grape and is not part of traditional Bordeaux red blends.",
+      "Gamay": "Gamay is the red grape associated with Beaujolais, not Bordeaux blending."
+    }
+  },
+  {
+    question: "Despite its aromas of stone fruit, pineapple, and orange blossom, how is Virginia Viognier usually made?",
+    options: ["Dry", "Fortified", "Sparkling", "Very sweet"],
+    correctAnswer: "Dry",
+    explanation: "Viognier's intense fruit and floral aromas can suggest sweetness, but Virginia examples are usually produced in a dry style.",
+    wrongAnswerExplanations: {
+      "Fortified": "Fortification involves adding a distilled spirit and is not the usual style for Virginia Viognier.",
+      "Sparkling": "Virginia Viognier is generally produced as a still wine rather than a sparkling wine.",
+      "Very sweet": "Its ripe aromas can suggest sweetness, but most Virginia Viognier is made dry."
+    }
+  },
+  {
+    question: "Which native American wine grape was first cultivated in Richmond, Virginia, during the 1820s?",
+    options: ["Norton", "Cabernet Franc", "Chambourcin", "Petit Verdot"],
+    correctAnswer: "Norton",
+    explanation: "Richmond physician and horticulturist Dr. Daniel Norborne Norton created the Norton grape through crossbreeding in the 1820s. It is recognized as America's oldest cultivated native wine grape.",
+    wrongAnswerExplanations: {
+      "Cabernet Franc": "Cabernet Franc originated in France and is a Vitis vinifera grape, not a native Virginia creation.",
+      "Chambourcin": "Chambourcin is a French-American hybrid developed in France, not the Richmond grape created by Dr. Norton.",
+      "Petit Verdot": "Petit Verdot is a French Bordeaux grape that later found success in Virginia."
+    }
+  },
+  {
+    question: "Which Virginia white grape has loose clusters that allow it to remain on the vine for off-dry and dessert-wine production?",
+    options: ["Petit Manseng", "Chardonnay", "Sauvignon Blanc", "Pinot Grigio"],
+    correctAnswer: "Petit Manseng",
+    explanation: "Petit Manseng's loosely packed clusters help it remain healthy late into the growing season, supporting dry, off-dry, and dessert-wine styles.",
+    wrongAnswerExplanations: {
+      "Chardonnay": "Chardonnay produces many styles in Virginia, but it is not especially identified by the loose-cluster trait described here.",
+      "Sauvignon Blanc": "Sauvignon Blanc is known for acidity and aromatic freshness rather than late-harvest suitability from loose clusters.",
+      "Pinot Grigio": "Pinot Grigio is generally made in a fresh, dry style and is not the Virginia grape described here."
+    }
+  },
+  {
+    question: "Which hardy, thick-skinned hybrid grape can produce dry, late-harvest, and ice-wine styles in Virginia?",
+    options: ["Vidal Blanc", "Merlot", "Viognier", "Cabernet Sauvignon"],
+    correctAnswer: "Vidal Blanc",
+    explanation: "Vidal Blanc handles varied growing conditions and produces wines ranging from crisp and dry to sweet late-harvest and ice-wine styles.",
+    wrongAnswerExplanations: {
+      "Merlot": "Merlot is a red Vitis vinifera grape and is not the hardy white hybrid described here.",
+      "Viognier": "Viognier is an aromatic Vitis vinifera white grape, not a thick-skinned hybrid.",
+      "Cabernet Sauvignon": "Cabernet Sauvignon is a red Vitis vinifera grape and is not used for the range of white-wine styles described."
+    }
+  },
 ];
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
