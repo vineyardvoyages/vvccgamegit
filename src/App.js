@@ -1575,17 +1575,7 @@ const WINE_QUIZ_QUESTIONS = [
       "Being located on a tropical island": "Both are inland continental or maritime temperate regions."
     }
   },
-  ...Array(75).fill(null).map((_, i) => ({
-    question: `Northern Virginia regional question #${i + 22}`,
-    options: ["Option A", "Option B", "Option C", "Option D"],
-    correctAnswer: "Option A",
-    explanation: "This is a placeholder explanation for a Northern Virginia question.",
-    wrongAnswerExplanations: {
-      "Option B": "Placeholder for incorrect explanation B.",
-      "Option C": "Placeholder for incorrect explanation C.",
-      "Option D": "Placeholder for incorrect explanation D."
-    }
-  })),
+,
 ];
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
@@ -2484,7 +2474,7 @@ const renderContent = () => {
   return (
         <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]"
       style={{
-        backgroundImage: 'url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80")',
+        backgroundImage: 'url("https://images.unsplash.com/photo-1656873592841-8ae63d15be24?auto=format&fit=crop&w=1920&q=85")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
