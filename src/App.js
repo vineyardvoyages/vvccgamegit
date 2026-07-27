@@ -365,17 +365,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "What is a 'Proctor'?",
-    options: ["A winemaker", "A wine critic", "A trained and knowledgeable wine professional", "A wine seller"],
-    correctAnswer: "A trained and knowledgeable wine professional",
-    explanation: "A Proctor is a highly trained and knowledgeable wine professional, typically working in fine dining restaurants, now serving as the moderator.",
-    wrongAnswerExplanations: {
-      "A winemaker": "A winemaker produces wine, while a Proctor is more focused on service and education.",
-      "A wine critic": "A wine critic evaluates and reviews wines professionally, which is different from a Proctor's role.",
-      "A wine seller": "A wine seller focuses on sales, while a Proctor provides expertise and guidance in service."
-    }
-  },
-  {
     question: "Which of these is a sweet, fortified wine from Portugal?",
     options: ["Sherry", "Port", "Madeira", "Marsala"],
     correctAnswer: "Port",
@@ -980,17 +969,6 @@ const WINE_QUIZ_QUESTIONS = [
       "Albariño": "Albariño is a newer variety showing promise in Virginia but isn't the signature grape."
     }
   },
-  {
-    question: "Which Virginia AVA is known for its high-quality Chardonnay and Cabernet Franc, located near the town of Middleburg?",
-    options: ["Monticello AVA", "Virginia Peninsula AVA", "Middleburg AVA", "Shenandoah Valley AVA"],
-    correctAnswer: "Middleburg AVA",
-    explanation: "The Middleburg AVA (American Viticultural Area) is a prominent wine region in Northern Virginia, known for its rolling hills and diverse soils.",
-    wrongAnswerExplanations: {
-      "Monticello AVA": "Monticello AVA is in central Virginia around Charlottesville, not near Middleburg.",
-      "Virginia Peninsula AVA": "Virginia Peninsula AVA is in southeastern Virginia, not near Middleburg.",
-      "Shenandoah Valley AVA": "Shenandoah Valley AVA is in northwestern Virginia, not near Middleburg."
-    }
-  },
    {
     question: "What is a common challenge for grape growing in Northern Virginia's climate?",
     options: ["Too much sun", "Lack of rainfall", "Humidity and late spring frosts", "Too cold in winter"],
@@ -1078,17 +1056,6 @@ const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Many Northern Virginia wineries are family-owned and operated. What benefit does this often bring?",
-    options: ["Mass production", "Lower prices", "Personalized service and unique character", "Limited wine selection"],
-    correctAnswer: "Personalized service and unique character",
-    explanation: "Family-owned wineries often offer a more personal touch, unique wines, and a strong connection to the land and their craft.",
-    wrongAnswerExplanations: {
-      "Mass production": "Family operations typically focus on smaller, artisanal production, not mass production.",
-      "Lower prices": "Boutique family wineries often have higher prices due to smaller production sizes.",
-      "Limited wine selection": "While selection may be focused, the benefit is quality and personalization, not a limited selection."
-    }
-  },
-  {
     question: "What is a common challenge for Virginia winemakers related to bird damage?",
     options: ["Birds eating grapes", "Birds nesting in barrels", "Birds spreading disease", "Birds damaging trellises"],
     correctAnswer: "Birds eating grapes",
@@ -1117,17 +1084,6 @@ const WINE_QUIZ_QUESTIONS = [
     explanation: "While some native and hybrid varietals are grown, European (Vitis vinifera) grapes like Viognier, Cabernet Franc, and Chardonnay are widely cultivated and form the backbone of Virginia's fine wine industry.",
     wrongAnswerExplanations: {
       "True": "Virginia grows many European vinifera grapes, not just native American varietals."
-    }
-  },
-  {
-    question: "What is an 'AVA' in the context of Virginia wine?",
-    options: ["American Vineyard Association", "Appellation of Virginia Award", "American Viticultural Area", "Agricultural Vintner Alliance"],
-    correctAnswer: "American Viticultural Area",
-    explanation: "An AVA (American Viticultural Area) is a designated wine grape-growing region in the United States distinguishable by geographic features.",
-    wrongAnswerExplanations: {
-      "American Vineyard Association": "This is not a real organization related to AVAs.",
-      "Appellation of Virginia Award": "This is not what AVA stands for.",
-      "Agricultural Vintner Alliance": "This is not what AVA stands for."
     }
   },
   {
@@ -1192,28 +1148,6 @@ const WINE_QUIZ_QUESTIONS = [
       "Pinot Noir": "Pinot Noir is not typically used in Bordeaux-style blends.",
       "Riesling": "Riesling is a white grape, not used in red blends.",
       "Viognier": "Viognier is a white grape, not used in red blends."
-    }
-  },
-  {
-    question: "What is a common wine tourism experience emphasized in Northern Virginia?",
-    options: ["Budget-friendly travel", "Luxury and personalized attention", "Self-guided tours with no interaction", "Large group parties only"],
-    correctAnswer: "Luxury and personalized attention",
-    explanation: "Northern Virginia's wine tourism often emphasizes a premium experience with comfortable amenities and tailored itineraries.",
-    wrongAnswerExplanations: {
-      "Budget-friendly travel": "While some options are affordable, the region is known for a premium, not budget-focused, experience.",
-      "Self-guided tours with no interaction": "Wineries pride themselves on personal, guided experiences.",
-      "Large group parties only": "Many wineries cater to small, intimate groups as well as larger parties."
-    }
-  },
-  {
-    question: "Which of these is a well-known wine region in Virginia, south of Northern Virginia?",
-    options: ["Finger Lakes", "Willamette Valley", "Monticello AVA", "Sonoma County"],
-    correctAnswer: "Monticello AVA",
-    explanation: "The Monticello AVA, centered around Charlottesville, is another significant and historic wine region in Virginia.",
-    wrongAnswerExplanations: {
-      "Finger Lakes": "This is a wine region in New York.",
-      "Willamette Valley": "This is a wine region in Oregon.",
-      "Sonoma County": "This is a wine region in California."
     }
   },
   {
