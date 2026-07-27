@@ -2183,7 +2183,7 @@ const renderContent = () => {
               Play Again
             </button>
             
-               <a href="https://www.vineyardvoyages.com/tours"
+               <a href="https://www.vineyardvoyages.com"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
@@ -2444,7 +2444,7 @@ const renderContent = () => {
 </button>
             )}
             
-             <a href="https://www.vineyardvoyages.com/tours"
+             <a href="https://www.vineyardvoyages.com"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
