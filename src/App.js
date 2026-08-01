@@ -2679,6 +2679,7 @@ const App = () => {
         quizEnded: false,
         revealAnswers: false,
         roundId,
+        players: [], // Retain the original field expected by existing Firestore rules.
         playersById: {},
         pendingAnswers: {},
         questionResults: {},
@@ -2691,7 +2692,8 @@ const App = () => {
       setLoading(false);
     } catch (e) {
       console.error("Error creating game:", e);
-      setError("Failed to create a new game.");
+      const errorCode = e?.code ? ` (${e.code})` : '';
+      setError(`Failed to create a new game.${errorCode}`);
       setLoading(false);
     }
   };
