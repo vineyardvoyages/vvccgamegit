@@ -1,10 +1,15 @@
-import fs from 'fs';
-import {
+const fs = require('fs');
+const { TextDecoder, TextEncoder } = require('util');
+
+global.TextDecoder = global.TextDecoder || TextDecoder;
+global.TextEncoder = global.TextEncoder || TextEncoder;
+
+const {
   assertFails,
   assertSucceeds,
   initializeTestEnvironment
-} from '@firebase/rules-unit-testing';
-import {
+} = require('@firebase/rules-unit-testing');
+const {
   collection,
   deleteField,
   doc,
@@ -12,7 +17,7 @@ import {
   getDoc,
   setDoc,
   updateDoc
-} from 'firebase/firestore';
+} = require('firebase/firestore');
 
 const projectId = 'vineyardvoyagesquiz-33fde';
 const gamePath = gameId =>
