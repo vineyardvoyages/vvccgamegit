@@ -11,6 +11,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:unit": "react-scripts test --watchAll=false --runInBand --testPathPattern=unit.test.js",
+    "test:rules": "react-scripts test --watchAll=false --runInBand --testPathPattern=firestore.rules.test.js",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
@@ -18,6 +20,7 @@
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.5",
     "@babel/preset-react": "^7.28.5",
+    "@firebase/rules-unit-testing": "3.0.4",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.31",
     "react-scripts": "^5.0.1",
