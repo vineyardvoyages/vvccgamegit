@@ -2,9 +2,13 @@
 
 const fs = require('fs');
 const { TextDecoder, TextEncoder } = require('util');
+const { ReadableStream, TransformStream, WritableStream } = require('stream/web');
 
 global.TextDecoder = global.TextDecoder || TextDecoder;
 global.TextEncoder = global.TextEncoder || TextEncoder;
+global.ReadableStream = global.ReadableStream || ReadableStream;
+global.TransformStream = global.TransformStream || TransformStream;
+global.WritableStream = global.WritableStream || WritableStream;
 
 const {
   assertFails,
@@ -57,7 +61,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await testEnv.cleanup();
+  await testEnv?.cleanup();
 });
 
 beforeEach(async () => {
