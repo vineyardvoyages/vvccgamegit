@@ -1,0 +1,94 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validGameId(gameId) {
+      return gameId.matches('^[A-Z]{4}$');
+    }
+
+    function validGameShape(data) {
+      return data.keys().hasOnly([
+          'hostId',
+          'hostName',
+          'currentQuestionIndex',
+          'quizEnded',
+          'revealAnswers',
+          'roundId',
+          'players',
+          'playersById',
+          'pendingAnswers',
+          'questionResults',
+          'questions',
+          'createdAt'
+        ])
+        && data.hostId is string
+        && data.hostName is string
+        && data.currentQuestionIndex is int
+        && data.quizEnded is bool
+        && data.revealAnswers is bool
+        && data.roundId is string
+        && data.players is list
+        && data.players.size() <= 50
+        && data.playersById is map
+        && data.playersById.size() <= 50
+        && data.pendingAnswers is map
+        && data.questionResults is map
+        && data.questions is list
+        && data.questions.size() == 10
+        && data.createdAt is string;
+    }
+
+    match /artifacts/vineyardvoyagesquiz-33fde/users/{userId}/profile/userProfile {
+      allow read: if signedIn() && request.auth.uid == userId;
+
+      allow create, update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['userName'])
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() > 0
+        && request.resource.data.userName.size() <= 50;
+
+      allow delete: if false;
+    }
+
+    match /artifacts/vineyardvoyagesquiz-33fde/public/data/games/{gameId} {
+      allow get: if signedIn() && validGameId(gameId);
+      allow list: if false;
+
+      allow create: if signedIn()
+        && validGameId(gameId)
+        && validGameShape(request.resource.data)
+        && request.resource.data.hostId == request.auth.uid
+        && request.resource.data.players.size() == 0
+        && request.resource.data.playersById.size() == 0
+        && request.resource.data.pendingAnswers.size() == 0
+        && request.resource.data.questionResults.size() == 0;
+
+      allow update: if signedIn()
+        && validGameId(gameId)
+        && validGameShape(request.resource.data)
+        && request.resource.data.hostId == resource.data.hostId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.questions == resource.data.questions
+        && (
+          request.auth.uid == resource.data.hostId
+          || (
+            request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['playersById', 'pendingAnswers'])
+            && request.resource.data.playersById.diff(resource.data.playersById)
+              .affectedKeys().hasOnly([request.auth.uid])
+          )
+        );
+
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
