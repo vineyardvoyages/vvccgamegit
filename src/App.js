@@ -91,41 +91,6 @@ const WinnerConfetti = () => {
           }}
         />
       ))}
-      <style>{`
-        .vv-winner-confetti {
-          position: fixed;
-          inset: 0;
-          overflow: hidden;
-          pointer-events: none;
-          z-index: 50;
-        }
-        .vv-winner-confetti__piece {
-          position: absolute;
-          top: -24px;
-          opacity: 0;
-          animation-name: vv-confetti-fall;
-          animation-timing-function: ease-out;
-          animation-fill-mode: forwards;
-        }
-        @keyframes vv-confetti-fall {
-          0% {
-            opacity: 1;
-            transform: translate3d(0, -12px, 0) rotate(0deg);
-          }
-          85% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-            transform: translate3d(var(--vv-confetti-drift), 105vh, 0) rotate(760deg);
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .vv-winner-confetti {
-            display: none;
-          }
-        }
-      `}</style>
     </div>
   );
 };
@@ -904,15 +869,103 @@ const App = () => {
 
       const currentPlayersArray = getPlayersForGame(safeGameData);
       const sortedPlayers = [...currentPlayersArray].sort((a, b) => (b.score || 0) - (a.score || 0));
+      const rankedPlayers = sortedPlayers.filter(player => player.id !== safeGameData.hostId);
 
       const getWinners = () => {
-        if (!Array.isArray(sortedPlayers) || sortedPlayers.length === 0) return [];
-        const topScore = sortedPlayers[0].score || 0;
-        return sortedPlayers.filter(player => (player.score || 0) === topScore);
+        if (rankedPlayers.length === 0) return [];
+        const topScore = rankedPlayers[0].score || 0;
+        return rankedPlayers.filter(player => (player.score || 0) === topScore);
       };
       const winners = getWinners();
       const isCurrentPlayerWinner = !isHost && winners.some(winner => winner.id === userId);
       const isCurrentPlayerTiedWinner = isCurrentPlayerWinner && winners.length > 1;
+      const winnerNames = winners.map(winner => winner.userName).join(', ');
+
+      if (safeGameData.quizEnded) {
+        return (
+          <div className="space-y-6">
+            {!isHost && isCurrentPlayerWinner && (
+              <WinnerConfetti key={`winner-confetti-${safeGameData.roundId || 'round'}-${userId}`} />
+            )}
+
+            <div className="text-center space-y-5">
+              {!isHost && isCurrentPlayerWinner ? (
+                <p className="text-4xl font-extrabold text-green-700" role="status">
+                  {isCurrentPlayerTiedWinner ? '🏆 You Tied for First!' : '🏆 You Won!'}
+                </p>
+              ) : winners.length === 1 ? (
+                <p className="text-3xl font-extrabold text-green-700" role="status">
+                  🏆 Winner: {winnerNames}!
+                </p>
+              ) : winners.length > 1 ? (
+                <p className="text-3xl font-extrabold text-green-700" role="status">
+                  🏆 It's a tie! Winners: {winnerNames}!
+                </p>
+              ) : (
+                <p className="text-3xl font-bold text-gray-900" role="status">
+                  Multiplayer Game Complete!
+                </p>
+              )}
+
+              {!isHost && (
+                <p className="text-2xl text-gray-700">
+                  Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+                </p>
+              )}
+
+              <p className="text-sm text-gray-500">
+                Game ID: <span className="font-mono">{activeGameId}</span>
+              </p>
+            </div>
+
+            {isHost && (
+              <div className="p-4 bg-gray-50 rounded-lg shadow-inner">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Final Player Scores:</h3>
+                <ul className="space-y-2">
+                  {rankedPlayers.map(player => (
+                    <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
+                      <span className="font-semibold">{player.userName}</span>
+                      <span className="font-bold text-[#6b2a58]">{player.score || 0}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {isHost && (
+                <button
+                  onClick={restartMultiplayerQuiz}
+                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Restart Game
+                </button>
+              )}
+              <a
+                href="https://www.vineyardvoyages.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl text-center"
+              >
+                Book a Tour Now!
+              </a>
+            </div>
+
+            <button
+              onClick={() => {
+                setMode('initial');
+                setActiveGameId(null);
+                setGameData(null);
+                setAnswerSyncStatus('');
+                removeLocalState();
+              }}
+              className="w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+            >
+              Leave Game
+            </button>
+          </div>
+        );
+      }
 
       const questionKey = String(safeGameData.currentQuestionIndex || 0);
       const answerSubmissionStatus = getAnswerSubmissionStatus(safeGameData, questionKey);
@@ -1094,53 +1147,6 @@ const App = () => {
             </div>
           )}
 
-          {safeGameData.quizEnded && (
-            <div className="text-center space-y-6 mt-8">
-              <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
-              {isHost && (
-                winners.length === 1 ? (
-                  <p className="text-3xl font-extrabold text-green-700">
-                    Winner: {winners[0].userName}!
-                  </p>
-                ) : winners.length > 1 ? (
-                  <p className="text-3xl font-extrabold text-green-700">
-                    It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
-                  </p>
-                ) : null
-              )}
-              {!isHost && (
-                <div className="space-y-3">
-                  {isCurrentPlayerWinner && (
-                    <>
-                      <WinnerConfetti />
-                      <p className="text-3xl font-extrabold text-green-700" role="status">
-                        {isCurrentPlayerTiedWinner ? '🏆 You Tied for First!' : '🏆 You Won!'}
-                      </p>
-                    </>
-                  )}
-                  <p className="text-2xl text-gray-700">
-                    Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                  </p>
-                </div>
-              )}
-              {isHost && (
-                <button
-                  onClick={restartMultiplayerQuiz}
-                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-                >
-                  Restart Game
-                </button>
-              )}
-              <a
-                href="https://www.vineyardvoyages.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-              >
-                Book a Tour Now!
-              </a>
-            </div>
-          )}
           <button
             onClick={() => {
               setMode('initial');
