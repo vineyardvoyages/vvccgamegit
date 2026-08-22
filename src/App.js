@@ -59,6 +59,77 @@ let app;
 let db;
 let auth;
 
+const WinnerConfetti = () => {
+  const colors = ['#6b2a58', '#9CAC3E', '#f59e0b', '#22c55e', '#3b82f6', '#ec4899'];
+  const pieces = Array.from({ length: 48 }, (_, index) => ({
+    id: index,
+    left: (index * 37) % 100,
+    delay: (index % 8) * 0.08,
+    duration: 2.2 + (index % 5) * 0.18,
+    drift: ((index % 7) - 3) * 22,
+    color: colors[index % colors.length],
+    width: index % 3 === 0 ? 10 : 8,
+    height: index % 2 === 0 ? 14 : 9,
+    round: index % 4 === 0
+  }));
+
+  return (
+    <div className="vv-winner-confetti" aria-hidden="true">
+      {pieces.map(piece => (
+        <span
+          key={piece.id}
+          className="vv-winner-confetti__piece"
+          style={{
+            left: `${piece.left}%`,
+            width: `${piece.width}px`,
+            height: `${piece.height}px`,
+            backgroundColor: piece.color,
+            borderRadius: piece.round ? '999px' : '2px',
+            animationDelay: `${piece.delay}s`,
+            animationDuration: `${piece.duration}s`,
+            '--vv-confetti-drift': `${piece.drift}px`
+          }}
+        />
+      ))}
+      <style>{`
+        .vv-winner-confetti {
+          position: fixed;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 50;
+        }
+        .vv-winner-confetti__piece {
+          position: absolute;
+          top: -24px;
+          opacity: 0;
+          animation-name: vv-confetti-fall;
+          animation-timing-function: ease-out;
+          animation-fill-mode: forwards;
+        }
+        @keyframes vv-confetti-fall {
+          0% {
+            opacity: 1;
+            transform: translate3d(0, -12px, 0) rotate(0deg);
+          }
+          85% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+            transform: translate3d(var(--vv-confetti-drift), 105vh, 0) rotate(760deg);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .vv-winner-confetti {
+            display: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 const App = () => {
   const [mode, setMode] = useState('loadingAuth');
   const [userId, setUserId] = useState(null);
@@ -840,6 +911,8 @@ const App = () => {
         return sortedPlayers.filter(player => (player.score || 0) === topScore);
       };
       const winners = getWinners();
+      const isCurrentPlayerWinner = !isHost && winners.some(winner => winner.id === userId);
+      const isCurrentPlayerTiedWinner = isCurrentPlayerWinner && winners.length > 1;
 
       const questionKey = String(safeGameData.currentQuestionIndex || 0);
       const answerSubmissionStatus = getAnswerSubmissionStatus(safeGameData, questionKey);
@@ -1036,9 +1109,19 @@ const App = () => {
                 ) : null
               )}
               {!isHost && (
-                <p className="text-2xl text-gray-700">
-                  Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-                </p>
+                <div className="space-y-3">
+                  {isCurrentPlayerWinner && (
+                    <>
+                      <WinnerConfetti />
+                      <p className="text-3xl font-extrabold text-green-700" role="status">
+                        {isCurrentPlayerTiedWinner ? '🏆 You Tied for First!' : '🏆 You Won!'}
+                      </p>
+                    </>
+                  )}
+                  <p className="text-2xl text-gray-700">
+                    Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+                  </p>
+                </div>
               )}
               {isHost && (
                 <button
