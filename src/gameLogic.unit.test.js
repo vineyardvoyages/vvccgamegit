@@ -1,5 +1,6 @@
 import {
   flattenServerPendingAnswers,
+  getAnswerSubmissionStatus,
   getTenRandomQuestions,
   normalizePlayersById,
   reconcilePendingAnswerData,
@@ -99,6 +100,88 @@ describe('player and pending-answer compatibility', () => {
       gameId: 'ABCD', roundId: 'round-1', questionKey: '0', userId: 'guest-1'
     })]);
     expect(removeServerPendingAnswer(nested, flattened[0])).toEqual({});
+  });
+});
+
+describe('proctor answer submission status', () => {
+  const player = (id, userName, answers = {}) => ({
+    id,
+    userName,
+    rounds: {
+      'round-1': {
+        score: 0,
+        answers,
+        scoredQuestions: {},
+        feedbackByQuestion: {}
+      }
+    }
+  });
+
+  test('counts both reconciled and server-pending answers for the current question', () => {
+    const game = {
+      hostId: 'host-1',
+      roundId: 'round-1',
+      currentQuestionIndex: 0,
+      playersById: {
+        'host-1': player('host-1', 'Proctor'),
+        'guest-1': player('guest-1', 'Alice', { '0': { answer: 'A', answeredAt: 1 } }),
+        'guest-2': player('guest-2', 'Bob')
+      },
+      pendingAnswers: {
+        'round-1': {
+          '0': {
+            'guest-2': { answer: 'B', answeredAt: 2, userName: 'Bob' }
+          }
+        }
+      }
+    };
+
+    expect(getAnswerSubmissionStatus(game, '0')).toEqual({
+      totalPlayers: 2,
+      answeredCount: 2,
+      allAnswered: true,
+      players: [
+        { id: 'guest-1', userName: 'Alice', answered: true },
+        { id: 'guest-2', userName: 'Bob', answered: true }
+      ]
+    });
+  });
+
+  test('reports who is still waiting and excludes the proctor from the total', () => {
+    const game = {
+      hostId: 'host-1',
+      roundId: 'round-1',
+      currentQuestionIndex: 3,
+      playersById: {
+        'host-1': player('host-1', 'Proctor'),
+        'guest-1': player('guest-1', 'Alice', { '3': { answer: 'A', answeredAt: 1 } }),
+        'guest-2': player('guest-2', 'Bob')
+      },
+      pendingAnswers: {}
+    };
+
+    const status = getAnswerSubmissionStatus(game);
+    expect(status.totalPlayers).toBe(2);
+    expect(status.answeredCount).toBe(1);
+    expect(status.allAnswered).toBe(false);
+    expect(status.players).toEqual([
+      { id: 'guest-1', userName: 'Alice', answered: true },
+      { id: 'guest-2', userName: 'Bob', answered: false }
+    ]);
+  });
+
+  test('does not mark an empty lobby as ready to reveal', () => {
+    expect(getAnswerSubmissionStatus({
+      hostId: 'host-1',
+      roundId: 'round-1',
+      currentQuestionIndex: 0,
+      playersById: {},
+      pendingAnswers: {}
+    })).toMatchObject({
+      totalPlayers: 0,
+      answeredCount: 0,
+      allAnswered: false
+    });
   });
 });
 
