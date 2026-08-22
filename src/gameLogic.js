@@ -129,6 +129,35 @@ export const getPlayersForGame = (game) => {
   }));
 };
 
+export const getAnswerSubmissionStatus = (game, questionKey) => {
+  const roundId = game?.roundId || 'legacy-round';
+  const resolvedQuestionKey = String(questionKey ?? game?.currentQuestionIndex ?? 0);
+  const pendingByPlayer = game?.pendingAnswers?.[roundId]?.[resolvedQuestionKey] || {};
+  const players = Object.values(normalizePlayersById(game))
+    .filter(player => player?.id && player.id !== game?.hostId)
+    .map(player => {
+      const round = player.rounds?.[roundId] || newRoundState();
+      const answered = Boolean(
+        round.answers?.[resolvedQuestionKey]?.answer ||
+        pendingByPlayer[player.id]?.answer
+      );
+      return {
+        id: player.id,
+        userName: player.userName || 'Player',
+        answered
+      };
+    });
+  const answeredCount = players.filter(player => player.answered).length;
+  const totalPlayers = players.length;
+
+  return {
+    totalPlayers,
+    answeredCount,
+    allAnswered: totalPlayers > 0 && answeredCount === totalPlayers,
+    players
+  };
+};
+
 export const getPlayerAnswer = (game, userId, questionKey) =>
   getPlayerRound(game, userId).answers?.[questionKey]?.answer || null;
 

@@ -20,7 +20,8 @@ import {
   normalizePlayersById,
   ensurePlayerRound,
   scoreRevealedQuestionData,
-  getPlayersForGame
+  getPlayersForGame,
+  getAnswerSubmissionStatus
 } from './gameLogic';
 import { initializeApp } from 'firebase/app';
 import {
@@ -43,7 +44,6 @@ import {
   runTransaction
 } from 'firebase/firestore';
 
-// Firebase web configuration. The API key is supplied by the build environment.
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "vineyardvoyagesquiz-33fde.firebaseapp.com",
@@ -53,22 +53,91 @@ const firebaseConfig = {
   appId: "1:539449046402:web:a88b15a7bb81bdc7d1cb9b"
 };
 
-// Use projectId for Firestore paths to avoid issues with special characters in appId
 const firestoreAppId = firebaseConfig.projectId;
 
-// Initialize Firebase globally to avoid re-initialization
 let app;
 let db;
 let auth;
 
+const WinnerConfetti = () => {
+  const colors = ['#6b2a58', '#9CAC3E', '#f59e0b', '#22c55e', '#3b82f6', '#ec4899'];
+  const pieces = Array.from({ length: 48 }, (_, index) => ({
+    id: index,
+    left: (index * 37) % 100,
+    delay: (index % 8) * 0.08,
+    duration: 2.2 + (index % 5) * 0.18,
+    drift: ((index % 7) - 3) * 22,
+    color: colors[index % colors.length],
+    width: index % 3 === 0 ? 10 : 8,
+    height: index % 2 === 0 ? 14 : 9,
+    round: index % 4 === 0
+  }));
+
+  return (
+    <div className="vv-winner-confetti" aria-hidden="true">
+      {pieces.map(piece => (
+        <span
+          key={piece.id}
+          className="vv-winner-confetti__piece"
+          style={{
+            left: `${piece.left}%`,
+            width: `${piece.width}px`,
+            height: `${piece.height}px`,
+            backgroundColor: piece.color,
+            borderRadius: piece.round ? '999px' : '2px',
+            animationDelay: `${piece.delay}s`,
+            animationDuration: `${piece.duration}s`,
+            '--vv-confetti-drift': `${piece.drift}px`
+          }}
+        />
+      ))}
+      <style>{`
+        .vv-winner-confetti {
+          position: fixed;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 50;
+        }
+        .vv-winner-confetti__piece {
+          position: absolute;
+          top: -24px;
+          opacity: 0;
+          animation-name: vv-confetti-fall;
+          animation-timing-function: ease-out;
+          animation-fill-mode: forwards;
+        }
+        @keyframes vv-confetti-fall {
+          0% {
+            opacity: 1;
+            transform: translate3d(0, -12px, 0) rotate(0deg);
+          }
+          85% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+            transform: translate3d(var(--vv-confetti-drift), 105vh, 0) rotate(760deg);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .vv-winner-confetti {
+            display: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 const App = () => {
-  const [mode, setMode] = useState('loadingAuth'); // Initial mode: loading authentication
+  const [mode, setMode] = useState('loadingAuth');
   const [userId, setUserId] = useState(null);
-  const [userName, setUserName] = useState(''); // User's typed name
-  const [nameInput, setNameInput] = useState(''); // State for the name input field
+  const [userName, setUserName] = useState('');
+  const [nameInput, setNameInput] = useState('');
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const [gameCodeInput, setGameCodeInput] = useState(''); // State for the game ID input field
-  const [activeGameId, setActiveGameId] = useState(null); // State for the actively joined/created game ID
+  const [gameCodeInput, setGameCodeInput] = useState('');
+  const [activeGameId, setActiveGameId] = useState(null);
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -161,59 +230,59 @@ const App = () => {
 
     const initialize = async () => {
       try {
-      if (!firebaseConfig.apiKey) {
-        throw new Error('Firebase configuration is missing.');
-      }
-      app = initializeApp(firebaseConfig);
-      try {
-        db = initializeFirestore(app, {
-          localCache: persistentLocalCache({
-            tabManager: persistentMultipleTabManager()
-          })
-        });
-      } catch (cacheError) {
-        console.warn('Persistent Firestore cache unavailable; using standard cache:', cacheError);
-        db = getFirestore(app);
-      }
-      auth = getAuth(app);
-      await setPersistence(auth, browserLocalPersistence);
-
-      unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-        if (cancelled) return;
-        if (user) {
-          setUserId(user.uid);
-          const savedGame = loadActiveGame();
-          let resolvedName = savedGame?.userName || '';
-          try {
-            const userProfileRef = doc(
-              db,
-              'artifacts',
-              firestoreAppId,
-              'users',
-              user.uid,
-              'profile',
-              'userProfile'
-            );
-            const profileSnapshot = await getDoc(userProfileRef);
-            resolvedName = profileSnapshot.data()?.userName || resolvedName;
-          } catch (profileError) {
-            console.warn('Using locally saved identity while offline:', profileError);
-          }
-
-          setUserName(resolvedName);
-          setNameInput(resolvedName);
-          if (savedGame?.gameId && resolvedName) {
-            setActiveGameId(savedGame.gameId);
-            setMode('multiplayer');
-          } else {
-            setMode(resolvedName ? 'initial' : 'enterName');
-          }
-          setIsAuthReady(true);
-          setLoading(false);
-        } else {
-          await signInAnonymously(auth);
+        if (!firebaseConfig.apiKey) {
+          throw new Error('Firebase configuration is missing.');
         }
-      });
+        app = initializeApp(firebaseConfig);
+        try {
+          db = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+              tabManager: persistentMultipleTabManager()
+            })
+          });
+        } catch (cacheError) {
+          console.warn('Persistent Firestore cache unavailable; using standard cache:', cacheError);
+          db = getFirestore(app);
+        }
+        auth = getAuth(app);
+        await setPersistence(auth, browserLocalPersistence);
+
+        unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+          if (cancelled) return;
+          if (user) {
+            setUserId(user.uid);
+            const savedGame = loadActiveGame();
+            let resolvedName = savedGame?.userName || '';
+            try {
+              const userProfileRef = doc(
+                db,
+                'artifacts',
+                firestoreAppId,
+                'users',
+                user.uid,
+                'profile',
+                'userProfile'
+              );
+              const profileSnapshot = await getDoc(userProfileRef);
+              resolvedName = profileSnapshot.data()?.userName || resolvedName;
+            } catch (profileError) {
+              console.warn('Using locally saved identity while offline:', profileError);
+            }
+
+            setUserName(resolvedName);
+            setNameInput(resolvedName);
+            if (savedGame?.gameId && resolvedName) {
+              setActiveGameId(savedGame.gameId);
+              setMode('multiplayer');
+            } else {
+              setMode(resolvedName ? 'initial' : 'enterName');
+            }
+            setIsAuthReady(true);
+            setLoading(false);
+          } else {
+            await signInAnonymously(auth);
+          }
+        });
       } catch (e) {
         console.error("Error initializing Firebase:", e);
         setError("Failed to initialize Firebase. Please try again later.");
@@ -305,7 +374,6 @@ const App = () => {
     }
   }, [mode, activeGameId, gameData, userId, syncPendingAnswers]);
 
-  // Function to handle setting the user's name
   const handleSetName = async () => {
     if (!nameInput.trim()) {
       setError("Please enter a name.");
@@ -322,7 +390,7 @@ const App = () => {
       const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', userId, 'profile', 'userProfile');
       await setDoc(userProfileRef, { userName: nameInput.trim() }, { merge: true });
       setUserName(nameInput.trim());
-      setMode('initial'); // Move to mode selection after setting name
+      setMode('initial');
     } catch (e) {
       console.error("Error saving user name:", e);
       setError("Failed to save your name. Please try again.");
@@ -331,7 +399,6 @@ const App = () => {
     }
   };
 
-  // --- Single Player Logic ---
   const handleSinglePlayerAnswerClick = (selectedOption) => {
     if (answerSelected) return;
 
@@ -365,10 +432,9 @@ const App = () => {
     setFeedback('');
     setAnswerSelected(false);
     setSelectedAnswer(null);
-    setQuestions(getTenRandomQuestions(questions)); // Avoid immediate repeats
+    setQuestions(getTenRandomQuestions(questions));
   };
 
-  // --- Multiplayer Logic ---
   const createNewGame = async () => {
     if (!userId || !userName) {
       setError("User identity not ready or name not set. Please wait.");
@@ -410,7 +476,7 @@ const App = () => {
         quizEnded: false,
         revealAnswers: false,
         roundId,
-        players: [], // Retain the original field expected by existing Firestore rules.
+        players: [],
         playersById: {},
         pendingAnswers: {},
         questionResults: {},
@@ -534,8 +600,8 @@ const App = () => {
 
     if (nextIndex < gameData.questions.length) {
       try {
-        await updateDoc(gameDocRef, { 
-          currentQuestionIndex: nextIndex, 
+        await updateDoc(gameDocRef, {
+          currentQuestionIndex: nextIndex,
           revealAnswers: false
         });
       } catch (e) {
@@ -606,539 +672,518 @@ const App = () => {
     }
   };
 
-  // Render based on mode
-const renderContent = () => {
-  if (loading || !isAuthReady) {
-    return <p className="text-center text-gray-700 text-xl">Loading...</p>;
-  }
-
-  if (error) {
-    return (
-      <div className="text-center space-y-4 text-red-600 text-lg">
-        <p>{error}</p>
-        <button
-          onClick={() => {
-            setError('');
-            setMode('initial');
-            setActiveGameId(null);
-            setGameData(null);
-          }}
-          className="mt-4 bg-[#6b2a58] text-white py-2 px-4 rounded-lg hover:bg-[#496E3E] transition-colors"
-        >
-          Go Back
-        </button>
-      </div>
-    );
-  }
-
-  if (mode === 'enterName') {
-    return (
-      <div className="text-center space-y-6">
-        <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
-        <input
-          type="text"
-          placeholder="Your Name"
-          className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-          value={nameInput}
-          onChange={(e) => setNameInput(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleSetName();
-            }
-          }}
-        />
-        <button
-          onClick={handleSetName}
-          className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                       hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                       focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-          disabled={!nameInput.trim()}
-        >
-          Continue
-        </button>
-      </div>
-    );
-  } else if (mode === 'initial') {
-    return (
-      <div className="text-center space-y-6">
-        <h2 className="text-3xl font-bold text-gray-900">Choose Your Mode</h2>
-        <p className="text-gray-700 text-lg">Welcome, <span className="font-mono text-[#6b2a58]">{userName}</span>!</p>
-        <button
-          onClick={() => {
-            setMode('singlePlayer');
-            setQuestions(getTenRandomQuestions());
-          }}
-          className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                       hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                       focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-        >
-          Single Player
-        </button>
-        <button
-          onClick={() => setMode('multiplayer')}
-          className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold
-                       hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                       focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-        >
-          Multiplayer
-        </button>
-        <button
-          onClick={() => setMode('enterName')}
-          className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                       hover:bg-gray-600 transition-colors duration-200 shadow-md"
-        >
-          Edit Name
-        </button>
-      </div>
-    );
-  } else if (mode === 'singlePlayer') {
-    // MOVED: Single player specific calculations here
-    if (!Array.isArray(questions) || questions.length === 0) {
-      return <p className="text-center text-gray-700">Loading questions...</p>;
+  const renderContent = () => {
+    if (loading || !isAuthReady) {
+      return <p className="text-center text-gray-700 text-xl">Loading...</p>;
     }
 
-    const currentQuestion = questions[currentQuestionIndex];
-    return (
-      <div className="space-y-6">
-        <h2 className="text-3xl font-bold text-gray-900 text-center">Single Player Quiz</h2>
-        {!quizEnded ? (
-          <>
-            <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
-              <p className="text-lg font-semibold text-gray-700 mb-2">
-                Question {currentQuestionIndex + 1} of {questions.length}
-              </p>
-              <p className="text-xl text-gray-800 font-medium">
-                {currentQuestion.question}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSinglePlayerAnswerClick(option)}
-                  disabled={answerSelected}
-                  className={`
-                    w-full p-4 rounded-lg text-left text-lg font-medium
-                    transition-all duration-200 ease-in-out
-                    ${answerSelected
-                      ? option === currentQuestion.correctAnswer
-                        ? 'bg-green-100 text-green-800 ring-2 ring-green-500'
-                        : option === selectedAnswer
-                          ? 'bg-red-100 text-red-800 ring-2 ring-red-500'
-                          : 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                      : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'
-                    }
-                    ${!answerSelected && 'hover:scale-[1.02]'}
-                  `}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-
-            {feedback && (
-              <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-                <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                  {feedback}
-                </p>
-                {feedback === 'Incorrect.' && (
-                  <p className="text-gray-700 mt-2">
-                    <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                  </p>
-                )}
-                <p className="text-gray-700 mt-2">
-                  <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                </p>
-              </div>
-            )}
-
-            {answerSelected && (
-              <button
-                onClick={handleSinglePlayerNextQuestion}
-                className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6
-                                   hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                   focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-              >
-                {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
-              </button>
-            )}
-          </>
-        ) : (
-          <div className="text-center space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
-            <p className="text-2xl text-gray-700">
-              You scored <span className="font-extrabold text-[#6b2a58]">{score}</span> out of <span className="font-extrabold text-[#6b2a58]">{questions.length}</span>!
-            </p>
-            <p className="text-lg text-gray-600">
-              Ready to explore more wines?
-            </p>
-            <button
-              onClick={restartSinglePlayerQuiz}
-              className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                   hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                                   focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-            >
-              Play Again
-            </button>
-            
-               <a href="https://www.vineyardvoyages.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-            >
-              Book a Tour Now!
-            </a>
-          </div>
-        )}
-        <button
-          onClick={() => setMode('initial')}
-          className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                       hover:bg-gray-600 transition-colors duration-200 shadow-md"
-        >
-          Back to Mode Selection
-        </button>
-      </div>
-    );
-  } else if (mode === 'multiplayer' && !activeGameId) {
-    return (
-      <div className="text-center space-y-6">
-        <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
-        <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
-        <button
-          onClick={createNewGame}
-          className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                       hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                       focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-        >
-          Create New Game (Proctor Mode)
-        </button>
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="Enter 4-character Game ID"
-            className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
-            value={gameCodeInput}
-            onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
-            maxLength={4}
-          />
-          <button
-            onClick={joinExistingGame}
-            disabled={gameCodeInput.length !== 4}
-            className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl
-                               focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Join Game (Player Mode)
-          </button>
-        </div>
-        <button
-          onClick={() => setMode('initial')}
-          className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                       hover:bg-gray-600 transition-colors duration-200 shadow-md"
-        >
-          Back to Mode Selection
-        </button>
-      </div>
-    );
-  } else if (mode === 'multiplayer' && activeGameId) {
-    // MOVED: Multiplayer calculations ONLY inside this block
-    const safeGameData = gameData || { 
-      playersById: {},
-      questions: [], 
-      currentQuestionIndex: 0, 
-      quizEnded: false, 
-      hostId: '', 
-      hostName: '', 
-      revealAnswers: false 
-    };
-
-    // Wait for game data to be populated
-    if (!Array.isArray(safeGameData.questions) || safeGameData.questions.length === 0) {
+    if (error) {
       return (
-        <div className="text-center space-y-4">
-          <p className="text-gray-700">Waiting for game data from Firestore...</p>
-          <p className="text-sm text-gray-500">Game ID: {activeGameId}</p>
+        <div className="text-center space-y-4 text-red-600 text-lg">
+          <p>{error}</p>
+          <button
+            onClick={() => {
+              setError('');
+              setMode('initial');
+              setActiveGameId(null);
+              setGameData(null);
+            }}
+            className="mt-4 bg-[#6b2a58] text-white py-2 px-4 rounded-lg hover:bg-[#496E3E] transition-colors"
+          >
+            Go Back
+          </button>
         </div>
       );
     }
 
-    const isHost = safeGameData.hostId === userId;
-    const currentQuestion = safeGameData.questions[safeGameData.currentQuestionIndex] || {
-      options: [],
-      correctAnswer: '',
-      question: '',
-      explanation: ''
-    };
-
-    const currentPlayersArray = getPlayersForGame(safeGameData);
-    const sortedPlayers = [...currentPlayersArray].sort((a, b) => (b.score || 0) - (a.score || 0));
-    const currentPlayerRank = sortedPlayers.length > 0 ? sortedPlayers.findIndex(p => p.id === userId) + 1 : 0;
-
-    const getWinners = () => {
-      if (!Array.isArray(sortedPlayers) || sortedPlayers.length === 0) return [];
-      const topScore = sortedPlayers[0].score || 0;
-      return sortedPlayers.filter(player => (player.score || 0) === topScore);
-    };
-    const winners = getWinners();
-
-    const questionKey = String(safeGameData.currentQuestionIndex || 0);
-    const localPendingAnswer = getPendingAnswer(
-      activeGameId,
-      safeGameData.roundId,
-      questionKey,
-      userId
-    );
-    const playerSelectedAnswer =
-      localPendingAnswer?.answer || getPlayerAnswer(safeGameData, userId, questionKey);
-    const playerFeedback = getPlayerFeedback(safeGameData, userId, questionKey);
-
-    return (
-      <div className="space-y-6">
-        <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
-        <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
-        <p className="text-gray-700 text-lg text-center">
-          Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
-          {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
-        </p>
-
-        {!isHost && safeGameData.hostName && (
-          <p className="text-gray-700 text-lg text-center">
-            Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
-          </p>
-        )}
-
-        {!safeGameData.quizEnded && !isHost && (
-          <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
-            <p className="text-lg font-semibold text-gray-800">
-              Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-            </p>
-            {currentPlayersArray.length > 1 && (
-              <p className="text-md text-gray-700">
-                You are in <span className="font-bold text-[#6b2a58]">{currentPlayerRank}</span> place!
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
-          <p className="text-lg font-semibold text-gray-700 mb-2">
-            Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length}
-          </p>
-          <p className="text-xl text-gray-800 font-medium">
-            {currentQuestion.question}
-          </p>
+    if (mode === 'enterName') {
+      return (
+        <div className="text-center space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Enter Your Name</h2>
+          <input
+            type="text"
+            placeholder="Your Name"
+            className="w-full p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSetName();
+              }
+            }}
+          />
+          <button
+            onClick={handleSetName}
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+            disabled={!nameInput.trim()}
+          >
+            Continue
+          </button>
         </div>
+      );
+    } else if (mode === 'initial') {
+      return (
+        <div className="text-center space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Choose Your Mode</h2>
+          <p className="text-gray-700 text-lg">Welcome, <span className="font-mono text-[#6b2a58]">{userName}</span>!</p>
+          <button
+            onClick={() => {
+              setMode('singlePlayer');
+              setQuestions(getTenRandomQuestions());
+            }}
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+          >
+            Single Player
+          </button>
+          <button
+            onClick={() => setMode('multiplayer')}
+            className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
+          >
+            Multiplayer
+          </button>
+          <button
+            onClick={() => setMode('enterName')}
+            className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+          >
+            Edit Name
+          </button>
+        </div>
+      );
+    } else if (mode === 'singlePlayer') {
+      if (!Array.isArray(questions) || questions.length === 0) {
+        return <p className="text-center text-gray-700">Loading questions...</p>;
+      }
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {isHost ? (
+      const currentQuestion = questions[currentQuestionIndex];
+      return (
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900 text-center">Single Player Quiz</h2>
+          {!quizEnded ? (
             <>
-              {currentQuestion.options.map((option, index) => (
-                <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium
-                  ${safeGameData.revealAnswers && option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
-                  {option}
+              <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
+                <p className="text-lg font-semibold text-gray-700 mb-2">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </p>
+                <p className="text-xl text-gray-800 font-medium">
+                  {currentQuestion.question}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentQuestion.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSinglePlayerAnswerClick(option)}
+                    disabled={answerSelected}
+                    className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-200 ease-in-out ${answerSelected ? option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : option === selectedAnswer ? 'bg-red-100 text-red-800 ring-2 ring-red-500' : 'bg-gray-100 text-gray-600 cursor-not-allowed' : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'} ${!answerSelected && 'hover:scale-[1.02]'}`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+
+              {feedback && (
+                <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
+                  <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+                    {feedback}
+                  </p>
+                  {feedback === 'Incorrect.' && (
+                    <p className="text-gray-700 mt-2">
+                      <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
+                    </p>
+                  )}
+                  <p className="text-gray-700 mt-2">
+                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+                  </p>
                 </div>
-              ))}
-            </>
-          ) : (
-            currentQuestion.options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleMultiplayerAnswerClick(option)}
-                disabled={safeGameData.revealAnswers || safeGameData.quizEnded}
-                className={`
-                  w-full p-4 rounded-lg text-left text-lg font-medium
-                  transition-all duration-200 ease-in-out
-                  ${playerSelectedAnswer === option ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500' : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'}
-                  ${safeGameData.revealAnswers
-                    ? option === currentQuestion.correctAnswer
-                      ? '!bg-green-500 text-white ring-2 ring-green-700'
-                      : option === playerSelectedAnswer
-                        ? '!bg-red-500 text-white ring-2 ring-red-700'
-                        : 'cursor-not-allowed opacity-50'
-                    : ''
-                  }
-                  ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'}
-                `}
-              >
-                {option}
-              </button>
-            ))
-          )}
-        </div>
+              )}
 
-        {!isHost && answerSyncStatus && (
-          <p className={`text-center text-sm font-semibold ${
-            answerSyncStatus === 'Answer synced.' ? 'text-green-700' : 'text-amber-700'
-          }`}>
-            {answerSyncStatus}
-          </p>
-        )}
-
-        {!isHost && !isOnline && (
-          <p className="text-center text-sm text-amber-700">
-            You are offline. Keep this page open; your answer will post automatically when you reconnect.
-          </p>
-        )}
-
-        {!isHost && safeGameData.revealAnswers && (
-          <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-            {playerFeedback && (
-              <p className={`text-lg font-bold ${
-                playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {playerFeedback}
-              </p>
-            )}
-            {!playerFeedback && playerSelectedAnswer && (
-              <p className="text-amber-700 font-semibold">Your saved answer is still syncing.</p>
-            )}
-            <p className="text-gray-700 mt-2">
-              <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-            </p>
-            <p className="text-gray-700 mt-2">
-              <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-            </p>
-          </div>
-        )}
-
-        <div className="mt-4 space-y-4">
-          {isHost && (
-            <>
-              <p className="text-gray-700 text-center">
-                <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
-              </p>
-              <p className="text-gray-700 text-center">
-                <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-              </p>
-            </>
-          )}
-
-          {isHost && !safeGameData.quizEnded && (
-            <div className="flex gap-4">
-              {!safeGameData.revealAnswers ? (
+              {answerSelected && (
                 <button
-                  onClick={revealAnswersToAll}
-                  className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold
-                                       hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                  onClick={handleSinglePlayerNextQuestion}
+                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
                 >
-                  Reveal Answers (Score)
-                </button>
-              ) : (
-                <button
-                  onClick={handleMultiplayerNextQuestion}
-                  disabled={!safeGameData.revealAnswers}
-                  className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold
-                                       hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
-                >
-                  {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
+                  {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
                 </button>
               )}
+            </>
+          ) : (
+            <div className="text-center space-y-6">
+              <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
+              <p className="text-2xl text-gray-700">
+                You scored <span className="font-extrabold text-[#6b2a58]">{score}</span> out of <span className="font-extrabold text-[#6b2a58]">{questions.length}</span>!
+              </p>
+              <p className="text-lg text-gray-600">Ready to explore more wines?</p>
+              <button
+                onClick={restartSinglePlayerQuiz}
+                className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+              >
+                Play Again
+              </button>
+              <a
+                href="https://www.vineyardvoyages.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
+              >
+                Book a Tour Now!
+              </a>
             </div>
           )}
+          <button
+            onClick={() => setMode('initial')}
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+          >
+            Back to Mode Selection
+          </button>
         </div>
-
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
-          <ul className="space-y-2">
-            {sortedPlayers.map(player => (
-              <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
-                <span className="font-semibold">
-                  {player.userName}
-                  {player.id === safeGameData.hostId ? (
-                    <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
-                  ) : (
-                    <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
-                  )}
-                </span>
-                <span className="font-bold text-[#6b2a58]">{player.score || 0}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {safeGameData.quizEnded && (
-          <div className="text-center space-y-6 mt-8">
-            <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
-            {winners.length === 1 ? (
-              <p className="text-3xl font-extrabold text-green-700">
-                Winner: {winners[0].userName}!
-              </p>
-            ) : (
-              <p className="text-3xl font-extrabold text-green-700">
-                It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
-              </p>
-            )}
-            {!isHost && (
-              <p className="text-2xl text-gray-700">
-                Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
-              </p>
-            )}
-            {isHost && (
-              <button
-                onClick={restartMultiplayerQuiz}
-                className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4
-                                   hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-              >
-                Restart Game
-</button>
-            )}
-            
-             <a href="https://www.vineyardvoyages.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold
-                               hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
+      );
+    } else if (mode === 'multiplayer' && !activeGameId) {
+      return (
+        <div className="text-center space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
+          <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
+          <button
+            onClick={createNewGame}
+            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
+          >
+            Create New Game (Proctor Mode)
+          </button>
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="text"
+              placeholder="Enter 4-character Game ID"
+              className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
+              value={gameCodeInput}
+              onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
+              maxLength={4}
+            />
+            <button
+              onClick={joinExistingGame}
+              disabled={gameCodeInput.length !== 4}
+              className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Book a Tour Now!
-            </a>
+              Join Game (Player Mode)
+            </button>
           </div>
-        )}
-        <button
-          onClick={() => {
-            setMode('initial');
-            setActiveGameId(null);
-            setGameData(null);
-            setAnswerSyncStatus('');
-            removeLocalState();
-          }}
-          className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold
-                       hover:bg-gray-600 transition-colors duration-200 shadow-md"
-        >
-          Leave Game
-        </button>
-      </div>
-    );
-  }
-};
+          <button
+            onClick={() => setMode('initial')}
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+          >
+            Back to Mode Selection
+          </button>
+        </div>
+      );
+    } else if (mode === 'multiplayer' && activeGameId) {
+      const safeGameData = gameData || {
+        playersById: {},
+        questions: [],
+        currentQuestionIndex: 0,
+        quizEnded: false,
+        hostId: '',
+        hostName: '',
+        revealAnswers: false
+      };
+
+      if (!Array.isArray(safeGameData.questions) || safeGameData.questions.length === 0) {
+        return (
+          <div className="text-center space-y-4">
+            <p className="text-gray-700">Waiting for game data from Firestore...</p>
+            <p className="text-sm text-gray-500">Game ID: {activeGameId}</p>
+          </div>
+        );
+      }
+
+      const isHost = safeGameData.hostId === userId;
+      const currentQuestion = safeGameData.questions[safeGameData.currentQuestionIndex] || {
+        options: [],
+        correctAnswer: '',
+        question: '',
+        explanation: ''
+      };
+
+      const currentPlayersArray = getPlayersForGame(safeGameData);
+      const sortedPlayers = [...currentPlayersArray].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+      const getWinners = () => {
+        if (!Array.isArray(sortedPlayers) || sortedPlayers.length === 0) return [];
+        const topScore = sortedPlayers[0].score || 0;
+        return sortedPlayers.filter(player => (player.score || 0) === topScore);
+      };
+      const winners = getWinners();
+      const isCurrentPlayerWinner = !isHost && winners.some(winner => winner.id === userId);
+      const isCurrentPlayerTiedWinner = isCurrentPlayerWinner && winners.length > 1;
+
+      const questionKey = String(safeGameData.currentQuestionIndex || 0);
+      const answerSubmissionStatus = getAnswerSubmissionStatus(safeGameData, questionKey);
+      const localPendingAnswer = getPendingAnswer(
+        activeGameId,
+        safeGameData.roundId,
+        questionKey,
+        userId
+      );
+      const playerSelectedAnswer =
+        localPendingAnswer?.answer || getPlayerAnswer(safeGameData, userId, questionKey);
+      const playerFeedback = getPlayerFeedback(safeGameData, userId, questionKey);
+
+      return (
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Multiplayer Game</h2>
+          <p className="text-gray-700 text-lg text-center">Game ID: <span className="font-mono text-[#6b2a58] break-all">{activeGameId}</span></p>
+          <p className="text-gray-700 text-lg text-center">
+            Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>
+            {isHost ? <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-sm font-semibold rounded-full">Proctor</span> : <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-sm font-semibold rounded-full">Player</span>}
+          </p>
+
+          {!isHost && safeGameData.hostName && (
+            <p className="text-gray-700 text-lg text-center">
+              Proctor: <span className="font-mono text-[#6b2a58] break-all">{safeGameData.hostName}</span>
+            </p>
+          )}
+
+          {!safeGameData.quizEnded && !isHost && (
+            <div className="bg-[#9CAC3E]/10 p-3 rounded-lg shadow-inner text-center">
+              <p className="text-lg font-semibold text-gray-800">
+                Your Score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+              </p>
+            </div>
+          )}
+
+          <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
+            <p className="text-lg font-semibold text-gray-700 mb-2">
+              Question {safeGameData.currentQuestionIndex + 1} of {safeGameData.questions.length}
+            </p>
+            <p className="text-xl text-gray-800 font-medium">{currentQuestion.question}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {isHost ? (
+              <>
+                {currentQuestion.options.map((option, index) => (
+                  <div key={index} className={`w-full p-4 rounded-lg text-left text-lg font-medium ${safeGameData.revealAnswers && option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : 'bg-gray-100 text-gray-800'}`}>
+                    {option}
+                  </div>
+                ))}
+              </>
+            ) : (
+              currentQuestion.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleMultiplayerAnswerClick(option)}
+                  disabled={safeGameData.revealAnswers || safeGameData.quizEnded}
+                  className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-200 ease-in-out ${playerSelectedAnswer === option ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500' : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'} ${safeGameData.revealAnswers ? option === currentQuestion.correctAnswer ? '!bg-green-500 text-white ring-2 ring-green-700' : option === playerSelectedAnswer ? '!bg-red-500 text-white ring-2 ring-red-700' : 'cursor-not-allowed opacity-50' : ''} ${!safeGameData.revealAnswers && 'hover:scale-[1.02]'}`}
+                >
+                  {option}
+                </button>
+              ))
+            )}
+          </div>
+
+          {!isHost && answerSyncStatus && (
+            <p className={`text-center text-sm font-semibold ${answerSyncStatus === 'Answer synced.' ? 'text-green-700' : 'text-amber-700'}`}>
+              {answerSyncStatus}
+            </p>
+          )}
+
+          {!isHost && !isOnline && (
+            <p className="text-center text-sm text-amber-700">
+              You are offline. Keep this page open; your answer will post automatically when you reconnect.
+            </p>
+          )}
+
+          {!isHost && safeGameData.revealAnswers && (
+            <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
+              {playerFeedback && (
+                <p className={`text-lg font-bold ${playerFeedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
+                  {playerFeedback}
+                </p>
+              )}
+              {!playerFeedback && playerSelectedAnswer && (
+                <p className="text-amber-700 font-semibold">Your saved answer is still syncing.</p>
+              )}
+              <p className="text-gray-700 mt-2">
+                <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
+              </p>
+              <p className="text-gray-700 mt-2">
+                <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+              </p>
+            </div>
+          )}
+
+          <div className="mt-4 space-y-4">
+            {isHost && (
+              <>
+                <p className="text-gray-700 text-center">
+                  <span className="font-semibold text-green-600">Correct Answer:</span> {currentQuestion.correctAnswer}
+                </p>
+                <p className="text-gray-700 text-center">
+                  <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
+                </p>
+              </>
+            )}
+
+            {isHost && !safeGameData.quizEnded && !safeGameData.revealAnswers && (
+              <div className={`p-4 rounded-lg shadow-inner ${answerSubmissionStatus.allAnswered ? 'bg-green-50 ring-2 ring-green-300' : 'bg-amber-50 ring-1 ring-amber-200'}`}>
+                <p className={`text-center text-lg font-bold ${answerSubmissionStatus.allAnswered ? 'text-green-800' : 'text-amber-800'}`}>
+                  {answerSubmissionStatus.totalPlayers === 0
+                    ? 'Waiting for players to join.'
+                    : answerSubmissionStatus.allAnswered
+                      ? `Everyone has answered (${answerSubmissionStatus.answeredCount}/${answerSubmissionStatus.totalPlayers}).`
+                      : `${answerSubmissionStatus.answeredCount} of ${answerSubmissionStatus.totalPlayers} players have answered.`}
+                </p>
+                {answerSubmissionStatus.totalPlayers > 0 && (
+                  <ul className="mt-3 space-y-2">
+                    {answerSubmissionStatus.players.map(player => (
+                      <li key={player.id} className="flex justify-between items-center text-sm text-gray-700 bg-white/70 rounded-md px-3 py-2">
+                        <span className="font-semibold">{player.userName}</span>
+                        <span className={player.answered ? 'font-bold text-green-700' : 'font-bold text-amber-700'}>
+                          {player.answered ? 'Answered' : 'Waiting'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {!answerSubmissionStatus.allAnswered && answerSubmissionStatus.totalPlayers > 0 && (
+                  <p className="mt-3 text-center text-sm text-gray-600">
+                    You can still reveal answers if you need to move on before everyone responds.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {isHost && !safeGameData.quizEnded && (
+              <div className="flex gap-4">
+                {!safeGameData.revealAnswers ? (
+                  <button
+                    onClick={revealAnswersToAll}
+                    className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Reveal Answers (Score)
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleMultiplayerNextQuestion}
+                    disabled={!safeGameData.revealAnswers}
+                    className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                  >
+                    {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {isHost && (
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg shadow-inner">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Player Scores:</h3>
+              <ul className="space-y-2">
+                {sortedPlayers.map(player => (
+                  <li key={player.id} className="flex justify-between items-center text-lg text-gray-700">
+                    <span className="font-semibold">
+                      {player.userName}
+                      {player.id === safeGameData.hostId ? (
+                        <span className="ml-2 px-2 py-1 bg-[#6b2a58] text-white text-xs font-semibold rounded-full">Proctor</span>
+                      ) : (
+                        <span className="ml-2 px-2 py-1 bg-[#9CAC3E] text-white text-xs font-semibold rounded-full">Player</span>
+                      )}
+                    </span>
+                    <span className="font-bold text-[#6b2a58]">{player.score || 0}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {safeGameData.quizEnded && (
+            <div className="text-center space-y-6 mt-8">
+              <h2 className="text-3xl font-bold text-gray-900">Multiplayer Game Complete!</h2>
+              {isHost && (
+                winners.length === 1 ? (
+                  <p className="text-3xl font-extrabold text-green-700">
+                    Winner: {winners[0].userName}!
+                  </p>
+                ) : winners.length > 1 ? (
+                  <p className="text-3xl font-extrabold text-green-700">
+                    It's a tie! Winners: {winners.map(w => w.userName).join(', ')}!
+                  </p>
+                ) : null
+              )}
+              {!isHost && (
+                <div className="space-y-3">
+                  {isCurrentPlayerWinner && (
+                    <>
+                      <WinnerConfetti />
+                      <p className="text-3xl font-extrabold text-green-700" role="status">
+                        {isCurrentPlayerTiedWinner ? '🏆 You Tied for First!' : '🏆 You Won!'}
+                      </p>
+                    </>
+                  )}
+                  <p className="text-2xl text-gray-700">
+                    Your score: <span className="font-extrabold text-[#6b2a58]">{score}</span>
+                  </p>
+                </div>
+              )}
+              {isHost && (
+                <button
+                  onClick={restartMultiplayerQuiz}
+                  className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Restart Game
+                </button>
+              )}
+              <a
+                href="https://www.vineyardvoyages.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
+              >
+                Book a Tour Now!
+              </a>
+            </div>
+          )}
+          <button
+            onClick={() => {
+              setMode('initial');
+              setActiveGameId(null);
+              setGameData(null);
+              setAnswerSyncStatus('');
+              removeLocalState();
+            }}
+            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
+          >
+            Leave Game
+          </button>
+        </div>
+      );
+    }
+  };
 
   return (
-        <div className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]"
+    <div
+      className="min-h-screen bg-gradient-to-br from-[#6b2a58] via-[#6b2a58] to-[#9CAC3E]"
       style={{
         backgroundImage: 'url("https://images.unsplash.com/photo-1656873592841-8ae63d15be24?auto=format&fit=crop&w=1920&q=85")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-      }}>
+      }}
+    >
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 hover:scale-105">
-            {/* Logo Integration */}
-            <div className="flex justify-center mb-4">
-              <img
-                src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
-                alt="Vineyard Voyages Logo"
-                className="h-24 w-auto object-contain"
-                onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
-              />
-            </div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
-              <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
-            </h1>
-            {renderContent()}
-
-          </div>
+        <div className="flex justify-center mb-4">
+          <img
+            src="https://vineyardvoyages.com/wp-content/uploads/2025/06/Untitled-design.png"
+            alt="Vineyard Voyages Logo"
+            className="h-24 w-auto object-contain"
+            onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/96x96/6b2a58/ffffff?text=Logo"; }}
+          />
         </div>
-      );
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-6 text-center">
+          <span className="text-[#6b2a58]">Vineyard Voyages</span> Connoisseur Challenge
+        </h1>
+        {renderContent()}
+      </div>
+    </div>
+  );
 };
 
 export default App;
