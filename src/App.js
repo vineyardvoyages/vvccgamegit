@@ -1009,6 +1009,27 @@ const App = () => {
             <p className="text-xl text-gray-800 font-medium">{currentQuestion.question}</p>
           </div>
 
+          {isHost && !safeGameData.quizEnded && (
+            <div className="flex gap-4">
+              {!safeGameData.revealAnswers ? (
+                <button
+                  onClick={revealAnswersToAll}
+                  className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Reveal Answers (Score)
+                </button>
+              ) : (
+                <button
+                  onClick={handleMultiplayerNextQuestion}
+                  disabled={!safeGameData.revealAnswers}
+                  className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                >
+                  {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {isHost ? (
               <>
@@ -1104,26 +1125,6 @@ const App = () => {
               </div>
             )}
 
-            {isHost && !safeGameData.quizEnded && (
-              <div className="flex gap-4">
-                {!safeGameData.revealAnswers ? (
-                  <button
-                    onClick={revealAnswersToAll}
-                    className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    Reveal Answers (Score)
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleMultiplayerNextQuestion}
-                    disabled={!safeGameData.revealAnswers}
-                    className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
-                  >
-                    {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
-                  </button>
-                )}
-              </div>
-            )}
           </div>
 
           {isHost && (
