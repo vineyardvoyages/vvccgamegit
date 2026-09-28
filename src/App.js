@@ -617,7 +617,7 @@ const App = () => {
     }
   };
 
-  const revealAnswersToAll = async () => {
+  const revealAnswersToAll = useCallback(async () => {
     if (!gameData || gameData.hostId !== userId) {
       setError("Only the Proctor (host) can reveal answers.");
       return;
@@ -635,7 +635,28 @@ const App = () => {
       console.error("Error revealing answers:", e);
       setError("Failed to reveal answers.");
     }
-  };
+  }, [activeGameId, gameData, userId]);
+
+  useEffect(() => {
+    if (
+      mode !== 'multiplayer' ||
+      !activeGameId ||
+      !gameData ||
+      gameData.hostId !== userId ||
+      gameData.quizEnded ||
+      gameData.revealAnswers
+    ) return undefined;
+
+    const questionKey = String(gameData.currentQuestionIndex || 0);
+    const status = getAnswerSubmissionStatus(gameData, questionKey);
+    if (!status.allAnswered) return undefined;
+
+    const autoRevealTimer = window.setTimeout(() => {
+      void revealAnswersToAll();
+    }, 1200);
+
+    return () => window.clearTimeout(autoRevealTimer);
+  }, [mode, activeGameId, gameData, userId, revealAnswersToAll]);
 
   const renderContent = () => {
     if (loading || !isAuthReady) {
@@ -1044,7 +1065,7 @@ const App = () => {
                       {answerSubmissionStatus.totalPlayers === 0
                         ? 'Share the game code to get started.'
                         : answerSubmissionStatus.allAnswered
-                          ? 'The group is ready for you to reveal and score.'
+                          ? 'Revealing automatically… or tap below to reveal now.'
                           : `Waiting for ${remainingAnswerCount} more ${remainingAnswerCount === 1 ? 'player' : 'players'}.`}
                     </p>
                   </div>
@@ -1101,7 +1122,7 @@ const App = () => {
               }`}
             >
               {answerSubmissionStatus.allAnswered
-                ? 'Everyone has answered — waiting for the Proctor to reveal.'
+                ? 'Everyone has answered — answers will reveal automatically.'
                 : `Waiting for ${remainingAnswerCount}/${answerSubmissionStatus.totalPlayers} players to enter their answers.`}
             </div>
           )}
