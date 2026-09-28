@@ -969,6 +969,15 @@ const App = () => {
 
       const questionKey = String(safeGameData.currentQuestionIndex || 0);
       const answerSubmissionStatus = getAnswerSubmissionStatus(safeGameData, questionKey);
+      const remainingAnswerCount = Math.max(
+        answerSubmissionStatus.totalPlayers - answerSubmissionStatus.answeredCount,
+        0
+      );
+      const answerProgressPercent = answerSubmissionStatus.totalPlayers > 0
+        ? Math.round(
+            (answerSubmissionStatus.answeredCount / answerSubmissionStatus.totalPlayers) * 100
+          )
+        : 0;
       const localPendingAnswer = getPendingAnswer(
         activeGameId,
         safeGameData.roundId,
@@ -1010,23 +1019,90 @@ const App = () => {
           </div>
 
           {isHost && !safeGameData.quizEnded && (
-            <div className="flex gap-4">
+            <div
+              className={`p-4 rounded-xl border-2 shadow-lg space-y-4 ${
+                safeGameData.revealAnswers
+                  ? 'bg-[#6b2a58]/5 border-[#6b2a58]/30'
+                  : answerSubmissionStatus.allAnswered
+                    ? 'bg-green-50 border-green-500'
+                    : 'bg-amber-50 border-amber-400'
+              }`}
+            >
               {!safeGameData.revealAnswers ? (
-                <button
-                  onClick={revealAnswersToAll}
-                  className="flex-1 bg-orange-600 text-white py-3 rounded-lg text-xl font-bold hover:bg-orange-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
-                >
-                  Reveal Answers (Score)
-                </button>
+                <>
+                  <div role="status" aria-live="polite" className="text-center">
+                    <p className={`text-2xl font-extrabold ${
+                      answerSubmissionStatus.allAnswered ? 'text-green-800' : 'text-amber-900'
+                    }`}>
+                      {answerSubmissionStatus.totalPlayers === 0
+                        ? 'Waiting for players to join'
+                        : answerSubmissionStatus.allAnswered
+                          ? '✓ Everyone has answered'
+                          : `${answerSubmissionStatus.answeredCount}/${answerSubmissionStatus.totalPlayers} answers are in`}
+                    </p>
+                    <p className="mt-1 text-base font-semibold text-gray-700">
+                      {answerSubmissionStatus.totalPlayers === 0
+                        ? 'Share the game code to get started.'
+                        : answerSubmissionStatus.allAnswered
+                          ? 'The group is ready for you to reveal and score.'
+                          : `Waiting for ${remainingAnswerCount} more ${remainingAnswerCount === 1 ? 'player' : 'players'}.`}
+                    </p>
+                  </div>
+
+                  <div
+                    role="progressbar"
+                    aria-label="Player answers received"
+                    aria-valuemin="0"
+                    aria-valuemax={answerSubmissionStatus.totalPlayers}
+                    aria-valuenow={answerSubmissionStatus.answeredCount}
+                    className="h-4 w-full overflow-hidden rounded-full bg-white ring-1 ring-gray-300"
+                  >
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        answerSubmissionStatus.allAnswered ? 'bg-green-600' : 'bg-amber-500'
+                      }`}
+                      style={{ width: `${answerProgressPercent}%` }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={revealAnswersToAll}
+                    className={`w-full text-white py-4 rounded-lg text-xl font-extrabold transition-colors duration-200 shadow-lg hover:shadow-xl ${
+                      answerSubmissionStatus.allAnswered
+                        ? 'bg-green-700 hover:bg-green-800'
+                        : 'bg-orange-600 hover:bg-orange-700'
+                    }`}
+                  >
+                    {answerSubmissionStatus.allAnswered
+                      ? 'Everyone’s In — Reveal Answers'
+                      : 'Reveal Answers Early'}
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={handleMultiplayerNextQuestion}
                   disabled={!safeGameData.revealAnswers}
-                  className="flex-1 bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                  className="w-full bg-[#6b2a58] text-white py-4 rounded-lg text-xl font-extrabold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                 >
                   {safeGameData.currentQuestionIndex < safeGameData.questions.length - 1 ? 'Next Question' : 'End Game'}
                 </button>
               )}
+            </div>
+          )}
+
+          {!isHost && !safeGameData.quizEnded && !safeGameData.revealAnswers && (
+            <div
+              role="status"
+              aria-live="polite"
+              className={`p-3 rounded-lg text-center font-bold ring-1 ${
+                answerSubmissionStatus.allAnswered
+                  ? 'bg-green-50 text-green-800 ring-green-300'
+                  : 'bg-amber-50 text-amber-900 ring-amber-300'
+              }`}
+            >
+              {answerSubmissionStatus.allAnswered
+                ? 'Everyone has answered — waiting for the Proctor to reveal.'
+                : `Waiting for ${remainingAnswerCount}/${answerSubmissionStatus.totalPlayers} players to enter their answers.`}
             </div>
           )}
 
