@@ -104,19 +104,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "wine-language-and-production"
   },
   {
-    "question": "Which wine region is famous for its Cabernet Sauvignon wines?",
+    "question": "Which classic region is especially associated with Cabernet Sauvignon-led blends from gravelly Left Bank vineyards?",
     "options": [
       "Bordeaux, France",
-      "Napa Valley, USA",
+      "Napa Valley, California",
       "Barossa Valley, Australia",
-      "All of the above"
+      "Coonawarra, Australia"
     ],
-    "correctAnswer": "All of the above",
-    "explanation": "Cabernet Sauvignon is a widely planted grape, and all listed regions are renowned for producing high-quality Cabernet Sauvignon wines.",
+    "correctAnswer": "Bordeaux, France",
+    "explanation": "Cabernet Sauvignon is central to many Left Bank Bordeaux blends, where gravelly soils and maritime influence help define the style.",
     "wrongAnswerExplanations": {
-      "Bordeaux, France": "While Bordeaux is famous for Cabernet Sauvignon, it's not the only region—all options are correct.",
-      "Napa Valley, USA": "While Napa Valley is renowned for Cabernet Sauvignon, other regions also excel—all options are correct.",
-      "Barossa Valley, Australia": "While Barossa Valley produces excellent Cabernet Sauvignon, other regions do too—all options are correct."
+      "Napa Valley, California": "Napa is famous for Cabernet Sauvignon, often as a varietal wine, but it does not have Bordeaux's Left Bank.",
+      "Barossa Valley, Australia": "Barossa is best known for rich Shiraz, although Cabernet is also grown.",
+      "Coonawarra, Australia": "Coonawarra is known for Cabernet on terra rossa soils, not Bordeaux's gravelly Left Bank."
     },
     "category": "grapes-and-wine-styles"
   },
@@ -665,19 +665,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "tasting-and-service"
   },
   {
-    "question": "Which of these is a common characteristic of a full-bodied wine?",
+    "question": "Which combination commonly makes a wine feel fuller-bodied?",
     "options": [
-      "Light and watery texture",
-      "Rich, heavy, and mouth-filling sensation",
-      "High acidity",
-      "Sweet taste"
+      "Higher alcohol and greater extract",
+      "Lower alcohol and very light extract",
+      "Sharper acidity with no change in texture",
+      "Paler color and an earlier harvest date"
     ],
-    "correctAnswer": "Rich, heavy, and mouth-filling sensation",
-    "explanation": "Full-bodied wines have a rich, weighty, and sometimes viscous feel in the mouth, often due to higher alcohol content and extract.",
+    "correctAnswer": "Higher alcohol and greater extract",
+    "explanation": "Alcohol, glycerol, dissolved compounds, and—in sweet wines—residual sugar can all contribute to a fuller, weightier mouthfeel.",
     "wrongAnswerExplanations": {
-      "Light and watery texture": "This describes light-bodied wines, the opposite of full-bodied.",
-      "High acidity": "While full-bodied wines can have good acidity, this isn't the defining characteristic of body.",
-      "Sweet taste": "Full-bodied wines can be dry or sweet; body refers to weight and texture, not sweetness."
+      "Lower alcohol and very light extract": "Those traits generally make a wine feel lighter rather than fuller.",
+      "Sharper acidity with no change in texture": "Acidity adds freshness but does not by itself define full body.",
+      "Paler color and an earlier harvest date": "Color alone does not determine body, and earlier harvest often produces lighter potential alcohol."
     },
     "category": "grapes-and-wine-styles"
   },
@@ -784,19 +784,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "grapes-and-wine-styles"
   },
   {
-    "question": "What does 'DOCG' signify on an Italian wine label?",
+    "question": "What does DOCG indicate on an Italian wine label?",
     "options": [
-      "Denomination of Controlled Origin",
-      "Highest level of Italian wine classification",
-      "Table wine",
-      "Sweet wine"
+      "A protected designation with guaranteed controls",
+      "A generic table wine without geographic rules",
+      "A sparkling-wine sweetness level below Brut",
+      "A vineyard site owned by a single producer"
     ],
-    "correctAnswer": "Highest level of Italian wine classification",
-    "explanation": "DOCG (Denominazione di Origine Controllata e Garantita) is the highest classification for Italian wines, indicating strict quality control.",
+    "correctAnswer": "A protected designation with guaranteed controls",
+    "explanation": "DOCG means Denominazione di Origine Controllata e Garantita, an Italian designation with defined origin and production rules plus additional controls.",
     "wrongAnswerExplanations": {
-      "Denomination of Controlled Origin": "This is a partial translation but doesn't convey that it's the highest level.",
-      "Table wine": "Table wine is the lowest classification in Italy, opposite of DOCG.",
-      "Sweet wine": "DOCG refers to quality level, not sweetness level of the wine."
+      "A generic table wine without geographic rules": "Generic table-wine categories do not carry DOCG's protected origin and controls.",
+      "A sparkling-wine sweetness level below Brut": "DOCG is an origin classification, not a sweetness term.",
+      "A vineyard site owned by a single producer": "A single-owner site may be called a monopole; that is unrelated to DOCG."
     },
     "category": "world-wine-regions"
   },
@@ -820,17 +820,17 @@ const BASE_WINE_QUESTIONS = [
   {
     "question": "What is the term for the 'bouquet' of a wine?",
     "options": [
-      "Its color",
-      "Its taste",
-      "Its aromas developed from aging",
-      "Its sweetness level"
+      "Aromas developed through fermentation and aging",
+      "Fresh grape-derived fruit and floral aromas",
+      "Sweetness perceived from residual grape sugar",
+      "Tactile weight and fullness felt in the mouth"
     ],
-    "correctAnswer": "Its aromas developed from aging",
+    "correctAnswer": "Aromas developed through fermentation and aging",
     "explanation": "The bouquet refers to the complex aromas that develop in a wine as a result of fermentation and aging, particularly in the bottle.",
     "wrongAnswerExplanations": {
-      "Its color": "Color refers to visual appearance, not aromatic characteristics.",
-      "Its taste": "Taste refers to flavors on the palate, while bouquet is about aroma.",
-      "Its sweetness level": "Sweetness is a taste characteristic, not related to bouquet."
+      "Fresh grape-derived fruit and floral aromas": "Those are commonly described as primary aromas rather than bouquet.",
+      "Sweetness perceived from residual grape sugar": "Sweetness is a taste sensation, not bouquet.",
+      "Tactile weight and fullness felt in the mouth": "That describes body, not bouquet."
     },
     "category": "tasting-and-service"
   },
@@ -939,17 +939,17 @@ const BASE_WINE_QUESTIONS = [
   {
     "question": "Which type of wine is typically served with chocolate desserts?",
     "options": [
-      "Dry red wine",
-      "Dry white wine",
-      "Sweet fortified wine (e.g., Port)",
-      "Sparkling wine"
+      "Dry Cabernet with firm tannin",
+      "Dry Sauvignon Blanc with herbs",
+      "Sweet Port or Banyuls with richness",
+      "Brut sparkling wine with citrus"
     ],
-    "correctAnswer": "Sweet fortified wine (e.g., Port)",
+    "correctAnswer": "Sweet Port or Banyuls with richness",
     "explanation": "Sweet, rich wines like Port or Banyuls pair well with chocolate, as their sweetness and intensity can stand up to the dessert.",
     "wrongAnswerExplanations": {
-      "Dry red wine": "Dry reds would contrast harshly with chocolate's sweetness and richness.",
-      "Dry white wine": "Dry whites would be overwhelmed by chocolate's intensity and richness.",
-      "Sparkling wine": "While possible, sparkling wine's acidity and bubbles don't complement chocolate as well as sweet wines."
+      "Dry Cabernet with firm tannin": "A dry, tannic red can seem bitter beside a sweet chocolate dessert.",
+      "Dry Sauvignon Blanc with herbs": "Herbal acidity is usually overwhelmed by rich chocolate.",
+      "Brut sparkling wine with citrus": "Dry sparkling wine can taste severe beside a sweet, intense dessert."
     },
     "category": "tasting-and-service"
   },
@@ -988,19 +988,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "grapes-and-wine-styles"
   },
   {
-    "question": "What is the term for the process of removing dead yeast cells and other solids from wine after fermentation?",
+    "question": "Which cellar technique moves clear wine into another vessel while leaving settled sediment behind?",
     "options": [
       "Racking",
       "Fining",
       "Filtration",
-      "All of the above"
+      "Disgorgement"
     ],
-    "correctAnswer": "All of the above",
-    "explanation": "Racking, fining, and filtration are all methods used to clarify wine by removing suspended solids and impurities.",
+    "correctAnswer": "Racking",
+    "explanation": "Racking gently transfers clear wine off its lees or other sediment. Fining and filtration clarify by different mechanisms.",
     "wrongAnswerExplanations": {
-      "Racking": "Racking is one method, but fining and filtration also remove solids.",
-      "Fining": "Fining is one method, but racking and filtration also clarify wine.",
-      "Filtration": "Filtration is one method, but racking and fining also remove particles."
+      "Fining": "Fining adds a binding agent that helps selected particles settle or become removable.",
+      "Filtration": "Filtration passes wine through a medium that captures selected particles or microorganisms.",
+      "Disgorgement": "Disgorgement ejects collected yeast sediment from a traditional-method sparkling-wine bottle."
     },
     "category": "wine-language-and-production"
   },
@@ -1056,19 +1056,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "tasting-and-service"
   },
   {
-    "question": "What is the term for the body of a wine?",
+    "question": "What does 'balance' mean when describing a wine?",
     "options": [
-      "Its color intensity",
-      "Its perceived weight or fullness in the mouth",
-      "Its sweetness level",
-      "Its alcohol content"
+      "Its sweetness, acidity, alcohol, fruit, and tannin feel harmonious",
+      "Its bottle stands upright without leaning on the table",
+      "Its color stays identical from rim to center",
+      "Its label lists equal amounts of every grape variety"
     ],
-    "correctAnswer": "Its perceived weight or fullness in the mouth",
-    "explanation": "The body of a wine refers to its perceived weight and fullness on the palate, often influenced by alcohol, residual sugar, and extract.",
+    "correctAnswer": "Its sweetness, acidity, alcohol, fruit, and tannin feel harmonious",
+    "explanation": "A balanced wine has no major structural element—such as acidity, sweetness, alcohol, fruit, or tannin—overwhelming the others.",
     "wrongAnswerExplanations": {
-      "Its color intensity": "Color is visual; body is about tactile sensation in the mouth.",
-      "Its sweetness level": "Sweetness is about sugar content; body is about weight and texture.",
-      "Its alcohol content": "While alcohol affects body, body is the overall perception of weight, not just alcohol level."
+      "Its bottle stands upright without leaning on the table": "Physical bottle stability is unrelated to sensory balance.",
+      "Its color stays identical from rim to center": "Color variation can offer clues about age, but it does not define balance.",
+      "Its label lists equal amounts of every grape variety": "A blend can be balanced without equal proportions."
     },
     "category": "tasting-and-service"
   },
@@ -2076,36 +2076,36 @@ const BASE_WINE_QUESTIONS = [
     "category": "tasting-and-service"
   },
   {
-    "question": "What does 'body' refer to in wine tasting?",
+    "question": "Which tasting term covers tactile sensations such as silky, creamy, grippy, or coarse?",
     "options": [
-      "The wine's acidity",
-      "The weight and fullness of the wine in the mouth",
-      "The wine's sweetness",
-      "The wine's age"
+      "Mouthfeel",
+      "Vintage",
+      "Acidity",
+      "Bouquet"
     ],
-    "correctAnswer": "The weight and fullness of the wine in the mouth",
-    "explanation": "Body describes how light, medium, or full a wine feels on the palate, often compared with the differing weights of skim milk, whole milk, and cream.",
+    "correctAnswer": "Mouthfeel",
+    "explanation": "Mouthfeel describes the tactile impression of wine, including texture, viscosity, carbonation, warmth, and tannic grip.",
     "wrongAnswerExplanations": {
-      "The wine's acidity": "Acidity creates tartness and freshness, but it is only one component of a wine's overall mouthfeel.",
-      "The wine's sweetness": "Sweetness comes from residual sugar and is distinct from the wine's weight or body.",
-      "The wine's age": "A wine's age can affect its flavor and texture, but body does not mean how old the wine is."
+      "Vintage": "Vintage identifies the grape harvest year.",
+      "Acidity": "Acidity contributes freshness and is one part of mouthfeel, but it does not cover every tactile sensation.",
+      "Bouquet": "Bouquet describes developed aromas rather than texture."
     },
     "category": "tasting-and-service"
   },
   {
     "question": "What does 'palate' refer to in wine tasting?",
     "options": [
-      "The wine's color",
-      "The wine's aroma",
-      "The taste and texture perceived in the mouth",
-      "Only the lingering aftertaste"
+      "The wine's visual color and clarity",
+      "The wine's aromas above the glass",
+      "The flavors and textures perceived in the mouth",
+      "The sensations that linger only after swallowing"
     ],
-    "correctAnswer": "The taste and texture perceived in the mouth",
+    "correctAnswer": "The flavors and textures perceived in the mouth",
     "explanation": "The palate encompasses the flavors, acidity, tannins, sweetness, alcohol, body, and texture perceived while tasting wine.",
     "wrongAnswerExplanations": {
-      "The wine's color": "Color is evaluated visually before tasting and is not what tasters mean by the palate.",
-      "The wine's aroma": "The wine's aroma is commonly called its nose, while the palate refers to sensations in the mouth.",
-      "Only the lingering aftertaste": "The lingering aftertaste is the finish, which is one part of the overall palate experience."
+      "The wine's visual color and clarity": "Those are appearance observations, not the palate.",
+      "The wine's aromas above the glass": "Those belong to the nose or aroma assessment.",
+      "The sensations that linger only after swallowing": "That narrower idea is the finish; palate covers the experience in the mouth."
     },
     "category": "tasting-and-service"
   },
@@ -2129,17 +2129,17 @@ const BASE_WINE_QUESTIONS = [
   {
     "question": "What is 'must' in winemaking?",
     "options": [
-      "Wine that has spoiled",
-      "Freshly crushed grape juice containing grape solids",
-      "Sediment left after aging",
-      "A type of oak barrel"
+      "Freshly crushed juice with grape solids",
+      "Finished wine spoiled by unwanted microbes",
+      "Fine sediment left after fermentation and aging",
+      "Toasted oak vessel used for wine maturation"
     ],
-    "correctAnswer": "Freshly crushed grape juice containing grape solids",
+    "correctAnswer": "Freshly crushed juice with grape solids",
     "explanation": "Must is the unfermented mixture produced after grapes are crushed, generally including juice along with skins, seeds, and sometimes stems.",
     "wrongAnswerExplanations": {
-      "Wine that has spoiled": "Spoiled wine is described by the specific fault present; it is not called must.",
-      "Sediment left after aging": "Sediment may be called lees or deposits, depending on when and how it forms.",
-      "A type of oak barrel": "Must is grape material awaiting fermentation, not a barrel or aging vessel."
+      "Finished wine spoiled by unwanted microbes": "A spoiled wine is described by its specific fault, not as must.",
+      "Fine sediment left after fermentation and aging": "That sediment is generally called lees.",
+      "Toasted oak vessel used for wine maturation": "That is a barrel; must is grape material before or during early fermentation."
     },
     "category": "wine-language-and-production"
   },
