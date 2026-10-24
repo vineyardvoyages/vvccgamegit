@@ -55,10 +55,28 @@ describe('random question selection', () => {
       .toBe(true);
   });
 
-  test('loads 452 unique, playable questions after the expansion', () => {
-    expect(WINE_QUIZ_QUESTIONS).toHaveLength(452);
+  test('loads 248 unique, fully explained questions after the QA cleanup', () => {
+    expect(WINE_QUIZ_QUESTIONS).toHaveLength(248);
     expect(WINE_QUIZ_QUESTIONS.every(isPlayableQuestion)).toBe(true);
-    expect(new Set(WINE_QUIZ_QUESTIONS.map(questionId)).size).toBe(452);
+    expect(new Set(WINE_QUIZ_QUESTIONS.map(questionId)).size).toBe(248);
+    expect(WINE_QUIZ_QUESTIONS.every(question => question.category !== 'uncategorized')).toBe(true);
+    expect(WINE_QUIZ_QUESTIONS.every(question => (
+      question.options.length === 4 && new Set(question.options).size === 4
+    ))).toBe(true);
+    expect(WINE_QUIZ_QUESTIONS.every(question => (
+      question.options
+        .filter(option => option !== question.correctAnswer)
+        .every(option => Boolean(question.wrongAnswerExplanations?.[option]))
+    ))).toBe(true);
+
+    const conceptIds = WINE_QUIZ_QUESTIONS
+      .map(question => question.conceptId)
+      .filter(Boolean);
+    expect(new Set(conceptIds).size).toBe(conceptIds.length);
+
+    const serializedBank = JSON.stringify(WINE_QUIZ_QUESTIONS);
+    expect(serializedBank).not.toMatch(/Casanel|868 Estate|Williams Gap|partner wineries?/i);
+    expect(serializedBank).not.toMatch(/superlativ/i);
   });
 
   test('keeps 11 consecutive games free of question repeats', () => {
