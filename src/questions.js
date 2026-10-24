@@ -1272,7 +1272,7 @@ export const WINE_QUIZ_QUESTIONS = [
       "Having no rainfall whatsoever": "Both regions are known for their humidity and the challenges of managing rain.",
       "Being located on a tropical island": "Both are inland continental or maritime temperate regions."
     }
-  },,
+  },
 
   {
     question: "Which Virginia red grape commonly shows spicy, peppery notes with aromas of plum, blackberry, violets, and tobacco?",
