@@ -1,740 +1,768 @@
-// 300 additional quiz questions generated from 150 reviewed, stable wine facts.
-// Keeping the source facts compact makes the bank easier to audit and maintain.
+// Curated wine questions generated from unique, reviewed concepts.
+// Each concept produces exactly one question. Distractors are selected only
+// from a comparable subgroup, and every answer teaches why it is right or wrong.
 
 const REGION_FACTS = [
-  [
-    "Chablis, France",
-    "Chardonnay grown for lean, mineral white wine",
-    "Chablis is a Burgundy appellation whose still white wines are made from Chardonnay."
-  ],
-  [
-    "Sancerre, France",
-    "Sauvignon Blanc for the region's principal white wine",
-    "Sancerre is especially known for Sauvignon Blanc, although the appellation also permits Pinot Noir for red and rosé."
-  ],
-  [
-    "Vouvray, France",
-    "Chenin Blanc in styles from dry to sweet and sparkling",
-    "Vouvray in the Loire Valley is based on Chenin Blanc and can produce still or sparkling wines across sweetness levels."
-  ],
-  [
-    "Muscadet Sèvre et Maine, France",
-    "Melon de Bourgogne, often aged on its lees",
-    "Muscadet Sèvre et Maine is made from Melon de Bourgogne and is often labeled sur lie."
-  ],
-  [
-    "Beaujolais, France",
-    "Gamay-based red wine",
-    "Beaujolais is best known for red wines made from Gamay."
-  ],
-  [
-    "Côte-Rôtie, France",
-    "Syrah, with limited Viognier co-fermentation permitted",
-    "Côte-Rôtie is a Northern Rhône appellation centered on Syrah; a small proportion of Viognier may be co-fermented."
-  ],
-  [
-    "Condrieu, France",
-    "Still white wine made from Viognier",
-    "Condrieu is a Northern Rhône appellation devoted to Viognier."
-  ],
-  [
-    "Bandol, France",
-    "Mourvèdre-led red wine",
-    "Bandol in Provence is especially associated with structured red wines led by Mourvèdre."
-  ],
-  [
-    "Cahors, France",
-    "Malbec-led red wine",
-    "Cahors in southwest France is historically associated with Malbec, locally called Côt or Auxerrois."
-  ],
-  [
-    "Madiran, France",
-    "Tannat-led red wine",
-    "Madiran in southwest France is known for deeply colored, tannic wines based on Tannat."
-  ],
-  [
-    "Champagne, France",
-    "Traditional-method sparkling wine",
-    "Champagne is the protected French appellation for sparkling wines made under its rules, chiefly by the traditional method."
-  ],
-  [
-    "Sauternes, France",
-    "Botrytized sweet white wine",
-    "Sauternes in Bordeaux is famous for sweet wines concentrated by noble rot."
-  ],
-  [
-    "Provence, France",
-    "Dry rosé as a signature regional style",
-    "Provence is internationally identified with pale, dry rosé, though it also makes red and white wine."
-  ],
-  [
-    "Vin Jaune in the Jura, France",
-    "Savagnin aged under a veil of yeast",
-    "Vin Jaune is a Jura specialty made from Savagnin and matured oxidatively under a yeast veil."
-  ],
-  [
-    "Alsace, France",
-    "Aromatic varietal whites such as Riesling and Gewürztraminer",
-    "Alsace is known for labeling many wines by grape and for aromatic white varieties."
-  ],
-  [
-    "Barolo, Italy",
-    "Nebbiolo-based red wine",
-    "Barolo in Piedmont must be made from Nebbiolo."
-  ],
-  [
-    "Brunello di Montalcino, Italy",
-    "Sangiovese-based red wine",
-    "Brunello di Montalcino in Tuscany is made from Sangiovese, locally known as Brunello."
-  ],
-  [
-    "Chianti Classico, Italy",
-    "Sangiovese-led Tuscan red wine",
-    "Chianti Classico is a Tuscan appellation whose blends are led by Sangiovese."
-  ],
-  [
-    "Soave, Italy",
-    "Garganega-led white wine",
-    "Soave in Veneto is based primarily on Garganega."
-  ],
-  [
-    "Verdicchio dei Castelli di Jesi, Italy",
-    "White wine based on Verdicchio",
-    "This Marche appellation is centered on the Verdicchio grape."
-  ],
-  [
-    "Etna Rosso, Italy",
-    "Nerello Mascalese-led volcanic red wine",
-    "Etna Rosso from Sicily is led by Nerello Mascalese, often with Nerello Cappuccio."
-  ],
-  [
-    "Taurasi, Italy",
-    "Aglianico-based red wine",
-    "Taurasi in Campania is made principally from Aglianico."
-  ],
-  [
-    "Gavi, Italy",
-    "Cortese-based white wine",
-    "Gavi in Piedmont is made from the Cortese grape."
-  ],
-  [
-    "Valpolicella, Italy",
-    "Corvina-led red blends",
-    "Valpolicella wines from Veneto are commonly led by Corvina with other local grapes."
-  ],
-  [
-    "Franciacorta, Italy",
-    "Traditional-method sparkling wine from Lombardy",
-    "Franciacorta is an Italian appellation for bottle-fermented sparkling wine."
-  ],
-  [
-    "Rioja, Spain",
-    "Tempranillo-led red wine with important blending partners",
-    "Rioja is especially known for Tempranillo-led reds, often blended with grapes such as Garnacha, Graciano, or Mazuelo."
-  ],
-  [
-    "Rías Baixas, Spain",
-    "Albariño-based Atlantic white wine",
-    "Rías Baixas in Galicia is strongly associated with Albariño."
-  ],
-  [
-    "Rueda, Spain",
-    "Verdejo-based white wine",
-    "Rueda is a Spanish appellation best known for Verdejo."
-  ],
-  [
-    "Ribera del Duero, Spain",
-    "Tempranillo-based red wine known locally as Tinto Fino",
-    "Ribera del Duero is centered on Tempranillo, commonly called Tinto Fino or Tinta del País there."
-  ],
-  [
-    "Priorat, Spain",
-    "Powerful reds often blending Garnacha and Cariñena",
-    "Priorat in Catalonia is known for concentrated reds based largely on Garnacha and Cariñena."
-  ],
-  [
-    "Jerez, Spain",
-    "Sherry fortified wine",
-    "The Jerez area of Andalusia is the home of Sherry."
-  ],
-  [
-    "Douro Valley, Portugal",
-    "Port and increasingly important dry table wines",
-    "Portugal's Douro Valley produces Port as well as still dry wines."
-  ],
-  [
-    "Vinho Verde, Portugal",
-    "Fresh, high-acid wines from northwestern Portugal",
-    "Vinho Verde is known especially for light, fresh white wines with bright acidity."
-  ],
-  [
-    "Madeira, Portugal",
-    "Fortified wine deliberately exposed to heat and oxygen",
-    "Madeira's distinctive fortified wines undergo controlled heating and oxidative aging."
-  ],
-  [
-    "Dão, Portugal",
-    "Structured reds often featuring Touriga Nacional",
-    "The Dão region makes distinctive reds from Portuguese varieties including Touriga Nacional."
-  ],
-  [
-    "Mosel, Germany",
-    "Riesling from steep slate slopes",
-    "Germany's Mosel is renowned for Riesling grown on steep river-valley vineyards."
-  ],
-  [
-    "Rheingau, Germany",
-    "Riesling from vineyards along the Rhine",
-    "The Rheingau is a classic German Riesling region."
-  ],
-  [
-    "Wachau, Austria",
-    "Grüner Veltliner and Riesling from Danube terraces",
-    "The Wachau is known for dry Grüner Veltliner and Riesling."
-  ],
-  [
-    "Burgenland, Austria",
-    "Blaufränkisch reds and notable sweet wines",
-    "Burgenland is important for Blaufränkisch and for sweet wines around Lake Neusiedl."
-  ],
-  [
-    "Tokaj, Hungary",
-    "Furmint-led wines including botrytized Tokaji Aszú",
-    "Tokaj is famed for Furmint-based wines and the historic sweet style Tokaji Aszú."
-  ],
-  [
-    "Santorini, Greece",
-    "High-acid Assyrtiko from volcanic soils",
-    "Santorini is closely associated with Assyrtiko trained in low basket-shaped vines."
-  ],
-  [
-    "Nemea, Greece",
-    "Agiorgitiko-based red wine",
-    "Nemea in the Peloponnese is the leading appellation for Agiorgitiko."
-  ],
-  [
-    "Naoussa, Greece",
-    "Xinomavro-based red wine",
-    "Naoussa in northern Greece is centered on Xinomavro."
-  ],
-  [
-    "Napa Valley, California",
-    "Cabernet Sauvignon as a flagship red grape",
-    "Napa Valley is globally recognized for Cabernet Sauvignon, alongside many other styles."
-  ],
-  [
-    "Sonoma Coast, California",
-    "Cool-climate Pinot Noir and Chardonnay",
-    "The Sonoma Coast appellation is particularly associated with cool-climate Pinot Noir and Chardonnay."
-  ],
-  [
-    "Willamette Valley, Oregon",
-    "Pinot Noir as the signature red grape",
-    "Oregon's Willamette Valley is best known for Pinot Noir."
-  ],
-  [
-    "Walla Walla Valley, Washington and Oregon",
-    "Cabernet Sauvignon and Syrah among its leading reds",
-    "Walla Walla Valley spans Washington and Oregon and is known for several red grapes, including Cabernet Sauvignon and Syrah."
-  ],
-  [
-    "Finger Lakes, New York",
-    "Cool-climate Riesling",
-    "New York's Finger Lakes region is especially noted for Riesling."
-  ],
-  [
-    "Mendoza, Argentina",
-    "Malbec as the signature red grape",
-    "Mendoza is Argentina's largest wine region and is internationally associated with Malbec."
-  ],
-  [
-    "Salta, Argentina",
-    "High-altitude Torrontés and red wines",
-    "Salta, especially the Calchaquí Valleys, is known for high vineyards and aromatic Torrontés."
-  ],
-  [
-    "Casablanca Valley, Chile",
-    "Cool-climate Sauvignon Blanc and Chardonnay",
-    "Chile's coastal Casablanca Valley is known for cool-climate white varieties."
-  ],
-  [
-    "Maipo Valley, Chile",
-    "Cabernet Sauvignon as a classic red",
-    "Maipo Valley has a long reputation for Chilean Cabernet Sauvignon."
-  ],
-  [
-    "Colchagua Valley, Chile",
-    "Carménère and other warm-climate reds",
-    "Colchagua is especially associated with Chilean red varieties including Carménère."
-  ],
-  [
-    "Niagara Peninsula, Canada",
-    "Icewine and cool-climate table wines",
-    "Ontario's Niagara Peninsula is renowned for icewine and also produces diverse still and sparkling wines."
-  ],
-  [
-    "Okanagan Valley, Canada",
-    "Dry, sunny vineyards supporting many cool-climate varieties",
-    "British Columbia's Okanagan Valley combines northern latitude with a dry interior climate."
-  ],
-  [
-    "Barossa Valley, Australia",
-    "Rich Shiraz as a signature style",
-    "South Australia's Barossa Valley is famous for Shiraz, including wines from old vines."
-  ],
-  [
-    "Clare Valley, Australia",
-    "Dry Riesling with high acidity",
-    "Clare Valley is one of Australia's classic regions for dry Riesling."
-  ],
-  [
-    "Hunter Valley, Australia",
-    "Ageworthy dry Semillon",
-    "Hunter Valley Semillon is noted for developing complexity with bottle age despite modest alcohol."
-  ],
-  [
-    "Margaret River, Australia",
-    "Cabernet Sauvignon and Chardonnay",
-    "Western Australia's Margaret River is highly regarded for Cabernet Sauvignon and Chardonnay."
-  ],
-  [
-    "Coonawarra, Australia",
-    "Cabernet Sauvignon on terra rossa soils",
-    "Coonawarra is known for Cabernet Sauvignon and its strip of terra rossa soil over limestone."
-  ],
-  [
-    "Tasmania, Australia",
-    "Cool-climate sparkling wine, Pinot Noir, and Chardonnay",
-    "Tasmania's cool climate suits sparkling wine and varieties such as Pinot Noir and Chardonnay."
-  ],
-  [
-    "Marlborough, New Zealand",
-    "Sauvignon Blanc as the signature export style",
-    "Marlborough established New Zealand's global reputation for pungent Sauvignon Blanc."
-  ],
-  [
-    "Central Otago, New Zealand",
-    "Pinot Noir from a cool, inland region",
-    "Central Otago is the world's southernmost major wine region and is best known for Pinot Noir."
-  ],
-  [
-    "Hawke's Bay, New Zealand",
-    "Syrah and Bordeaux-style red blends",
-    "Hawke's Bay is one of New Zealand's warmest major regions and is known for Syrah and Bordeaux varieties."
-  ],
-  [
-    "Stellenbosch, South Africa",
-    "Cabernet Sauvignon and Chenin Blanc among leading grapes",
-    "Stellenbosch is a leading South African region for structured reds and diverse whites."
-  ],
-  [
-    "Swartland, South Africa",
-    "Chenin Blanc and Rhône varieties from dry-farmed sites",
-    "Swartland is known for old-vine Chenin Blanc and Mediterranean varieties."
-  ],
-  [
-    "Constantia, South Africa",
-    "Historic sweet wine made from Muscat",
-    "Constantia's historic sweet wines are associated with Muscat, particularly Muscat de Frontignan."
-  ],
-  [
-    "Kakheti, Georgia",
-    "Traditional qvevri winemaking",
-    "Kakheti is Georgia's largest wine region and a center of traditional qvevri wine production."
-  ],
-  [
-    "Yamanashi, Japan",
-    "Koshu as a signature white grape",
-    "Yamanashi is Japan's leading wine prefecture and is closely associated with Koshu."
-  ],
-  [
-    "Ningxia, China",
-    "High-altitude vineyards near the Helan Mountains",
-    "Ningxia has emerged as a major Chinese fine-wine region along the Helan Mountain foothills."
-  ],
-  [
-    "Bekaa Valley, Lebanon",
-    "Lebanon's principal wine-growing valley",
-    "The Bekaa Valley is the historic center of Lebanese wine production."
-  ],
-  [
-    "Uco Valley, Argentina",
-    "High-altitude vineyards at the foot of the Andes",
-    "The Uco Valley is a high-elevation subregion of Mendoza known for Malbec and other varieties."
-  ],
-  [
-    "Savoie, France",
-    "Alpine whites from grapes such as Jacquère",
-    "Savoie in the French Alps is known for fresh white wines from local grapes including Jacquère."
-  ],
-  [
-    "Ahr, Germany",
-    "Pinot Noir, locally called Spätburgunder",
-    "The small, northerly Ahr region is unusually focused on Spätburgunder."
-  ],
-  [
-    "Canary Islands, Spain",
-    "Volcanic island wines from ungrafted vines",
-    "The Canary Islands are known for volcanic soils, distinctive local grapes, and many own-rooted vines."
-  ]
+  {
+    "conceptId": "region:vouvray, france",
+    "region": "Vouvray, France",
+    "association": "Chenin Blanc in styles from dry to sweet and sparkling",
+    "explanation": "Vouvray in the Loire Valley is based on Chenin Blanc and can produce still or sparkling wines across sweetness levels.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:muscadet sèvre et maine, france",
+    "region": "Muscadet Sèvre et Maine, France",
+    "association": "Melon de Bourgogne, often aged on its lees",
+    "explanation": "Muscadet Sèvre et Maine is made from Melon de Bourgogne and is often labeled sur lie.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:beaujolais, france",
+    "region": "Beaujolais, France",
+    "association": "Gamay-based red wine",
+    "explanation": "Beaujolais is best known for red wines made from Gamay.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:côte-rôtie, france",
+    "region": "Côte-Rôtie, France",
+    "association": "Syrah, with limited Viognier co-fermentation permitted",
+    "explanation": "Côte-Rôtie is a Northern Rhône appellation centered on Syrah; a small proportion of Viognier may be co-fermented.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:condrieu, france",
+    "region": "Condrieu, France",
+    "association": "Still white wine made from Viognier",
+    "explanation": "Condrieu is a Northern Rhône appellation devoted to Viognier.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:bandol, france",
+    "region": "Bandol, France",
+    "association": "Mourvèdre-led red wine",
+    "explanation": "Bandol in Provence is especially associated with structured red wines led by Mourvèdre.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:provence, france",
+    "region": "Provence, France",
+    "association": "Dry rosé as a signature regional style",
+    "explanation": "Provence is internationally identified with pale, dry rosé, though it also makes red and white wine.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:vin jaune in the jura, france",
+    "region": "Vin Jaune in the Jura, France",
+    "association": "Savagnin aged under a veil of yeast",
+    "explanation": "Vin Jaune is a Jura specialty made from Savagnin and matured oxidatively under a yeast veil.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:brunello di montalcino, italy",
+    "region": "Brunello di Montalcino, Italy",
+    "association": "Sangiovese-based red wine",
+    "explanation": "Brunello di Montalcino in Tuscany is made from Sangiovese, locally known as Brunello.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:soave, italy",
+    "region": "Soave, Italy",
+    "association": "Garganega-led white wine",
+    "explanation": "Soave in Veneto is based primarily on Garganega.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:verdicchio dei castelli di jesi, italy",
+    "region": "Verdicchio dei Castelli di Jesi, Italy",
+    "association": "White wine based on Verdicchio",
+    "explanation": "This Marche appellation is centered on the Verdicchio grape.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:etna rosso, italy",
+    "region": "Etna Rosso, Italy",
+    "association": "Nerello Mascalese-led volcanic red wine",
+    "explanation": "Etna Rosso from Sicily is led by Nerello Mascalese, often with Nerello Cappuccio.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:taurasi, italy",
+    "region": "Taurasi, Italy",
+    "association": "Aglianico-based red wine",
+    "explanation": "Taurasi in Campania is made principally from Aglianico.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:gavi, italy",
+    "region": "Gavi, Italy",
+    "association": "Cortese-based white wine",
+    "explanation": "Gavi in Piedmont is made from the Cortese grape.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:valpolicella, italy",
+    "region": "Valpolicella, Italy",
+    "association": "Corvina-led red blends",
+    "explanation": "Valpolicella wines from Veneto are commonly led by Corvina with other local grapes.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:franciacorta, italy",
+    "region": "Franciacorta, Italy",
+    "association": "Traditional-method sparkling wine from Lombardy",
+    "explanation": "Franciacorta is an Italian appellation for bottle-fermented sparkling wine.",
+    "subGroup": "italy"
+  },
+  {
+    "conceptId": "region:rías baixas, spain",
+    "region": "Rías Baixas, Spain",
+    "association": "Albariño-based Atlantic white wine",
+    "explanation": "Rías Baixas in Galicia is strongly associated with Albariño.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:rueda, spain",
+    "region": "Rueda, Spain",
+    "association": "Verdejo-based white wine",
+    "explanation": "Rueda is a Spanish appellation best known for Verdejo.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:ribera del duero, spain",
+    "region": "Ribera del Duero, Spain",
+    "association": "Tempranillo-based red wine known locally as Tinto Fino",
+    "explanation": "Ribera del Duero is centered on Tempranillo, commonly called Tinto Fino or Tinta del País there.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:priorat, spain",
+    "region": "Priorat, Spain",
+    "association": "Powerful reds often blending Garnacha and Cariñena",
+    "explanation": "Priorat in Catalonia is known for concentrated reds based largely on Garnacha and Cariñena.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:vinho verde, portugal",
+    "region": "Vinho Verde, Portugal",
+    "association": "Fresh, high-acid wines from northwestern Portugal",
+    "explanation": "Vinho Verde is known especially for light, fresh white wines with bright acidity.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:madeira, portugal",
+    "region": "Madeira, Portugal",
+    "association": "Fortified wine deliberately exposed to heat and oxygen",
+    "explanation": "Madeira's distinctive fortified wines undergo controlled heating and oxidative aging.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:dão, portugal",
+    "region": "Dão, Portugal",
+    "association": "Structured reds often featuring Touriga Nacional",
+    "explanation": "The Dão region makes distinctive reds from Portuguese varieties including Touriga Nacional.",
+    "subGroup": "iberia"
+  },
+  {
+    "conceptId": "region:rheingau, germany",
+    "region": "Rheingau, Germany",
+    "association": "Riesling from vineyards along the Rhine",
+    "explanation": "The Rheingau is a classic German Riesling region.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:wachau, austria",
+    "region": "Wachau, Austria",
+    "association": "Grüner Veltliner and Riesling from Danube terraces",
+    "explanation": "The Wachau is known for dry Grüner Veltliner and Riesling.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:burgenland, austria",
+    "region": "Burgenland, Austria",
+    "association": "Blaufränkisch reds and notable sweet wines",
+    "explanation": "Burgenland is important for Blaufränkisch and for sweet wines around Lake Neusiedl.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:tokaj, hungary",
+    "region": "Tokaj, Hungary",
+    "association": "Furmint-led wines including botrytized Tokaji Aszú",
+    "explanation": "Tokaj is famed for Furmint-based wines and the historic sweet style Tokaji Aszú.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:santorini, greece",
+    "region": "Santorini, Greece",
+    "association": "High-acid Assyrtiko from volcanic soils",
+    "explanation": "Santorini is closely associated with Assyrtiko trained in low basket-shaped vines.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:nemea, greece",
+    "region": "Nemea, Greece",
+    "association": "Agiorgitiko-based red wine",
+    "explanation": "Nemea in the Peloponnese is the leading appellation for Agiorgitiko.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:naoussa, greece",
+    "region": "Naoussa, Greece",
+    "association": "Xinomavro-based red wine",
+    "explanation": "Naoussa in northern Greece is centered on Xinomavro.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:napa valley, california",
+    "region": "Napa Valley, California",
+    "association": "Cabernet Sauvignon as a flagship red grape",
+    "explanation": "Napa Valley is globally recognized for Cabernet Sauvignon, alongside many other styles.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:sonoma coast, california",
+    "region": "Sonoma Coast, California",
+    "association": "Cool-climate Pinot Noir and Chardonnay",
+    "explanation": "The Sonoma Coast appellation is particularly associated with cool-climate Pinot Noir and Chardonnay.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:willamette valley, oregon",
+    "region": "Willamette Valley, Oregon",
+    "association": "Pinot Noir as the signature red grape",
+    "explanation": "Oregon's Willamette Valley is best known for Pinot Noir.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:walla walla valley, washington and oregon",
+    "region": "Walla Walla Valley, Washington and Oregon",
+    "association": "Cabernet Sauvignon and Syrah among its leading reds",
+    "explanation": "Walla Walla Valley spans Washington and Oregon and is known for several red grapes, including Cabernet Sauvignon and Syrah.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:finger lakes, new york",
+    "region": "Finger Lakes, New York",
+    "association": "Cool-climate Riesling",
+    "explanation": "New York's Finger Lakes region is especially noted for Riesling.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:salta, argentina",
+    "region": "Salta, Argentina",
+    "association": "High-altitude Torrontés and red wines",
+    "explanation": "Salta, especially the Calchaquí Valleys, is known for high vineyards and aromatic Torrontés.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:colchagua valley, chile",
+    "region": "Colchagua Valley, Chile",
+    "association": "Carménère and other warm-climate reds",
+    "explanation": "Colchagua is especially associated with Chilean red varieties including Carménère.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:niagara peninsula, canada",
+    "region": "Niagara Peninsula, Canada",
+    "association": "Icewine and cool-climate table wines",
+    "explanation": "Ontario's Niagara Peninsula is renowned for icewine and also produces diverse still and sparkling wines.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:okanagan valley, canada",
+    "region": "Okanagan Valley, Canada",
+    "association": "Dry, sunny vineyards supporting many cool-climate varieties",
+    "explanation": "British Columbia's Okanagan Valley combines northern latitude with a dry interior climate.",
+    "subGroup": "north-america"
+  },
+  {
+    "conceptId": "region:barossa valley, australia",
+    "region": "Barossa Valley, Australia",
+    "association": "Rich Shiraz as a signature style",
+    "explanation": "South Australia's Barossa Valley is famous for Shiraz, including wines from old vines.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:clare valley, australia",
+    "region": "Clare Valley, Australia",
+    "association": "Dry Riesling with high acidity",
+    "explanation": "Clare Valley is one of Australia's classic regions for dry Riesling.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:hunter valley, australia",
+    "region": "Hunter Valley, Australia",
+    "association": "Ageworthy dry Semillon",
+    "explanation": "Hunter Valley Semillon is noted for developing complexity with bottle age despite modest alcohol.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:margaret river, australia",
+    "region": "Margaret River, Australia",
+    "association": "Cabernet Sauvignon and Chardonnay",
+    "explanation": "Western Australia's Margaret River is highly regarded for Cabernet Sauvignon and Chardonnay.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:coonawarra, australia",
+    "region": "Coonawarra, Australia",
+    "association": "Cabernet Sauvignon on terra rossa soils",
+    "explanation": "Coonawarra is known for Cabernet Sauvignon and its strip of terra rossa soil over limestone.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:tasmania, australia",
+    "region": "Tasmania, Australia",
+    "association": "Cool-climate sparkling wine, Pinot Noir, and Chardonnay",
+    "explanation": "Tasmania's cool climate suits sparkling wine and varieties such as Pinot Noir and Chardonnay.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:marlborough, new zealand",
+    "region": "Marlborough, New Zealand",
+    "association": "Sauvignon Blanc as the signature export style",
+    "explanation": "Marlborough established New Zealand's global reputation for pungent Sauvignon Blanc.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:central otago, new zealand",
+    "region": "Central Otago, New Zealand",
+    "association": "Pinot Noir from a cool, inland region",
+    "explanation": "Central Otago is the world's southernmost major wine region and is best known for Pinot Noir.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:hawke's bay, new zealand",
+    "region": "Hawke's Bay, New Zealand",
+    "association": "Syrah and Bordeaux-style red blends",
+    "explanation": "Hawke's Bay is one of New Zealand's warmest major regions and is known for Syrah and Bordeaux varieties.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:stellenbosch, south africa",
+    "region": "Stellenbosch, South Africa",
+    "association": "Cabernet Sauvignon and Chenin Blanc among leading grapes",
+    "explanation": "Stellenbosch is a leading South African region for structured reds and diverse whites.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:swartland, south africa",
+    "region": "Swartland, South Africa",
+    "association": "Chenin Blanc and Rhône varieties from dry-farmed sites",
+    "explanation": "Swartland is known for old-vine Chenin Blanc and Mediterranean varieties.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:constantia, south africa",
+    "region": "Constantia, South Africa",
+    "association": "Historic sweet wine made from Muscat",
+    "explanation": "Constantia's historic sweet wines are associated with Muscat, particularly Muscat de Frontignan.",
+    "subGroup": "southern-hemisphere"
+  },
+  {
+    "conceptId": "region:kakheti, georgia",
+    "region": "Kakheti, Georgia",
+    "association": "Traditional qvevri winemaking",
+    "explanation": "Kakheti is Georgia's largest wine region and a center of traditional qvevri wine production.",
+    "subGroup": "ancient-and-emerging"
+  },
+  {
+    "conceptId": "region:yamanashi, japan",
+    "region": "Yamanashi, Japan",
+    "association": "Koshu as a signature white grape",
+    "explanation": "Yamanashi is Japan's leading wine prefecture and is closely associated with Koshu.",
+    "subGroup": "ancient-and-emerging"
+  },
+  {
+    "conceptId": "region:ningxia, china",
+    "region": "Ningxia, China",
+    "association": "High-altitude vineyards near the Helan Mountains",
+    "explanation": "Ningxia has emerged as a major Chinese fine-wine region along the Helan Mountain foothills.",
+    "subGroup": "ancient-and-emerging"
+  },
+  {
+    "conceptId": "region:bekaa valley, lebanon",
+    "region": "Bekaa Valley, Lebanon",
+    "association": "Lebanon's principal wine-growing valley",
+    "explanation": "The Bekaa Valley is the historic center of Lebanese wine production.",
+    "subGroup": "ancient-and-emerging"
+  },
+  {
+    "conceptId": "region:savoie, france",
+    "region": "Savoie, France",
+    "association": "Alpine whites from grapes such as Jacquère",
+    "explanation": "Savoie in the French Alps is known for fresh white wines from local grapes including Jacquère.",
+    "subGroup": "france"
+  },
+  {
+    "conceptId": "region:ahr, germany",
+    "region": "Ahr, Germany",
+    "association": "Pinot Noir, locally called Spätburgunder",
+    "explanation": "The small, northerly Ahr region is unusually focused on Spätburgunder.",
+    "subGroup": "central-europe"
+  },
+  {
+    "conceptId": "region:canary islands, spain",
+    "region": "Canary Islands, Spain",
+    "association": "Volcanic island wines from ungrafted vines",
+    "explanation": "The Canary Islands are known for volcanic soils, distinctive local grapes, and many own-rooted vines.",
+    "subGroup": "iberia"
+  }
 ];
 
 const TERM_FACTS = [
-  [
-    "veraison",
-    "the stage when grapes begin to soften and change color as they ripen"
-  ],
-  [
-    "must",
-    "freshly crushed grape juice that may also contain skins, seeds, and stems"
-  ],
-  [
-    "pomace",
-    "the skins, seeds, and other solids left after grapes are pressed"
-  ],
-  [
-    "lees",
-    "spent yeast cells and other sediment that settle after fermentation"
-  ],
-  [
-    "sur lie",
-    "aging wine in contact with its lees"
-  ],
-  [
-    "bâtonnage",
-    "stirring the lees during wine aging"
-  ],
-  [
-    "malolactic fermentation",
-    "the conversion of sharper malic acid into softer lactic acid by bacteria"
-  ],
-  [
-    "maceration",
-    "keeping juice or wine in contact with grape solids to extract compounds"
-  ],
-  [
-    "carbonic maceration",
-    "fermenting intact grape clusters in a carbon-dioxide-rich environment"
-  ],
-  [
-    "cold soak",
-    "a cool pre-fermentation maceration used to extract color and aroma with little alcohol present"
-  ],
-  [
-    "punch-down",
-    "pushing the floating cap of skins back into fermenting red wine"
-  ],
-  [
-    "pump-over",
-    "pumping fermenting juice from below over the cap of skins"
-  ],
-  [
-    "racking",
-    "moving clear wine off settled sediment into another vessel"
-  ],
-  [
-    "fining",
-    "adding a binding agent so suspended particles can be removed"
-  ],
-  [
-    "filtration",
-    "passing wine through a medium to remove particles or microorganisms"
-  ],
-  [
-    "disgorgement",
-    "removing the sediment collected in the neck of a traditional-method sparkling-wine bottle"
-  ],
-  [
-    "dosage",
-    "the small addition made after disgorgement that helps set a sparkling wine's final sweetness"
-  ],
-  [
-    "riddling",
-    "gradually turning and tilting sparkling-wine bottles to move sediment into the neck"
-  ],
-  [
-    "tirage",
-    "the addition of yeast and sugar that starts the second fermentation for traditional-method sparkling wine"
-  ],
-  [
-    "autolysis",
-    "the breakdown of yeast cells that can add bread or biscuit notes during lees aging"
-  ],
-  [
-    "traditional method",
-    "a sparkling-wine process in which the second fermentation occurs in the bottle sold"
-  ],
-  [
-    "pétillant naturel",
-    "sparkling wine bottled before its first fermentation has finished"
-  ],
-  [
-    "fortification",
-    "adding distilled grape spirit to wine or fermenting must"
-  ],
-  [
-    "solera",
-    "a fractional blending system that mixes younger wine with progressively older wine"
-  ],
-  [
-    "flor",
-    "a film of yeast that protects some Sherries from oxygen while shaping their flavor"
-  ],
-  [
-    "noble rot",
-    "beneficial Botrytis infection that concentrates grapes for certain sweet wines"
-  ],
-  [
-    "icewine",
-    "sweet wine made from grapes frozen naturally on the vine before pressing"
-  ],
-  [
-    "late harvest",
-    "wine made from grapes left on the vine longer to accumulate sugar and flavor"
-  ],
-  [
-    "chaptalization",
-    "adding sugar before or during fermentation to raise potential alcohol rather than sweetness"
-  ],
-  [
-    "acidification",
-    "adding acid to must or wine to increase freshness and lower pH"
-  ],
-  [
-    "deacidification",
-    "reducing excessive acidity in must or wine"
-  ],
-  [
-    "whole-cluster fermentation",
-    "fermenting grapes with some or all stems and bunches intact"
-  ],
-  [
-    "destemming",
-    "removing grapes from their stems before fermentation"
-  ],
-  [
-    "crushing",
-    "breaking grape skins to release juice before fermentation"
-  ],
-  [
-    "press wine",
-    "wine obtained by applying pressure to fermented grape solids"
-  ],
-  [
-    "free-run juice",
-    "juice or wine that flows without heavy pressing"
-  ],
-  [
-    "cap",
-    "the layer of skins and solids that rises during red-wine fermentation"
-  ],
-  [
-    "tannin",
-    "a phenolic compound that creates a drying, astringent sensation"
-  ],
-  [
-    "acidity",
-    "the component that gives wine freshness, tartness, and structural lift"
-  ],
-  [
-    "body",
-    "the perceived weight and fullness of wine in the mouth"
-  ],
-  [
-    "finish",
-    "the flavors and sensations that remain after swallowing or spitting wine"
-  ],
-  [
-    "bouquet",
-    "complex aromas that develop through fermentation and aging"
-  ],
-  [
-    "aroma",
-    "a smell perceived from wine, often including primary fruit or floral notes"
-  ],
-  [
-    "palate",
-    "the mouth's perception of a wine's flavor, texture, and structure"
-  ],
-  [
-    "blind tasting",
-    "evaluating wine without knowing its identity"
-  ],
-  [
-    "horizontal tasting",
-    "comparing different wines from the same vintage or closely matched context"
-  ],
-  [
-    "vertical tasting",
-    "comparing multiple vintages of the same wine or producer"
-  ],
-  [
-    "vintage",
-    "the year in which the grapes for a wine were harvested"
-  ],
-  [
-    "non-vintage",
-    "a wine blended from more than one harvest year"
-  ],
-  [
-    "cuvée",
-    "a selected blend or batch of wine"
-  ],
-  [
-    "reserve",
-    "a term suggesting special selection or aging whose legal meaning varies by place"
-  ],
-  [
-    "appellation",
-    "a legally defined geographic wine origin with associated rules"
-  ],
-  [
-    "American Viticultural Area",
-    "a federally recognized U.S. wine-grape-growing region"
-  ],
-  [
-    "Protected Designation of Origin",
-    "an EU category linking a product to a defined place and production rules"
-  ],
-  [
-    "monopole",
-    "a vineyard appellation or named site controlled by a single owner"
-  ],
-  [
-    "négociant",
-    "a merchant who buys grapes, must, or wine and sells wine under its own name"
-  ],
-  [
-    "estate bottled",
-    "wine produced and bottled by the estate from grapes it controls, subject to local legal definitions"
-  ],
-  [
-    "cork taint",
-    "a musty fault most often associated with TCA contamination"
-  ],
-  [
-    "volatile acidity",
-    "volatile acids that can smell like vinegar or nail-polish remover at high levels"
-  ],
-  [
-    "reduction",
-    "aromas caused by limited oxygen exposure, sometimes resembling struck match or rotten egg"
-  ],
-  [
-    "oxidation",
-    "chemical change from oxygen exposure that can brown wine and alter its aromas"
-  ],
-  [
-    "Brettanomyces",
-    "a spoilage yeast that can create barnyard, medicinal, or smoky aromas"
-  ],
-  [
-    "tartrate crystals",
-    "harmless crystals formed when tartaric acid salts precipitate from wine"
-  ],
-  [
-    "ullage",
-    "the empty space between wine and the closure in a container"
-  ],
-  [
-    "decanting",
-    "transferring wine to another vessel to separate sediment or increase air contact"
-  ],
-  [
-    "aeration",
-    "deliberately exposing wine to air"
-  ],
-  [
-    "phenolics",
-    "a broad group of compounds including tannins, pigments, and many flavor-related substances"
-  ],
-  [
-    "anthocyanins",
-    "the pigments responsible for much of a red grape skin's color"
-  ],
-  [
-    "Brix",
-    "a scale used to estimate dissolved sugar in grape juice"
-  ],
-  [
-    "residual sugar",
-    "sugar remaining in wine after fermentation stops"
-  ],
-  [
-    "dry wine",
-    "wine with little perceptible sweetness"
-  ],
-  [
-    "Brut",
-    "a common sparkling-wine sweetness category that is drier than Extra Dry"
-  ],
-  [
-    "Extra Brut",
-    "a sparkling-wine category with less dosage and sugar than Brut"
-  ],
-  [
-    "Demi-Sec",
-    "a noticeably sweet sparkling-wine category"
-  ],
-  [
-    "magnum",
-    "a wine bottle holding 1.5 liters, equal to two standard bottles"
-  ]
+  {
+    "conceptId": "term:pomace",
+    "term": "pomace",
+    "definition": "the skins, seeds, and other solids left after grapes are pressed",
+    "explanation": "Pomace can be composted, distilled into spirits such as grappa, or reused in other products instead of being discarded.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:bâtonnage",
+    "term": "bâtonnage",
+    "definition": "stirring the lees during wine aging",
+    "explanation": "Stirring fine lees can release compounds that build creaminess and body, especially in some barrel-aged white wines.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:cold soak",
+    "term": "cold soak",
+    "definition": "a cool pre-fermentation maceration used to extract color and aroma with little alcohol present",
+    "explanation": "Because little alcohol is present before fermentation, a cold soak emphasizes water-soluble color and aroma extraction.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:tirage",
+    "term": "tirage",
+    "definition": "the addition of yeast and sugar that starts the second fermentation for traditional-method sparkling wine",
+    "explanation": "The tirage addition creates the carbon dioxide that becomes trapped as bubbles during bottle fermentation.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:autolysis",
+    "term": "autolysis",
+    "definition": "the breakdown of yeast cells that can add bread or biscuit notes during lees aging",
+    "explanation": "As yeast cells break down during lees aging, they can contribute brioche, biscuit, and pastry-like complexity.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:traditional method",
+    "term": "traditional method",
+    "definition": "a sparkling-wine process in which the second fermentation occurs in the bottle sold",
+    "explanation": "Bottle fermentation and lees aging make this method especially suited to fine, complex sparkling wine.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:pétillant naturel",
+    "term": "pétillant naturel",
+    "definition": "sparkling wine bottled before its first fermentation has finished",
+    "explanation": "Often shortened to pét-nat, this ancestral-method style captures bubbles by bottling before the first fermentation ends.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:solera",
+    "term": "solera",
+    "definition": "a fractional blending system that mixes younger wine with progressively older wine",
+    "explanation": "Repeatedly blending younger wine into older tiers helps maintain a consistent mature house style over time.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:flor",
+    "term": "flor",
+    "definition": "a film of yeast that protects some Sherries from oxygen while shaping their flavor",
+    "explanation": "Flor consumes oxygen and alcohol-related compounds, helping create the saline, nutty character of biologically aged Sherry.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:late harvest",
+    "term": "late harvest",
+    "definition": "wine made from grapes left on the vine longer to accumulate sugar and flavor",
+    "explanation": "Extra hang time can raise sugar and flavor concentration, although the finished wine may be dry or sweet depending on fermentation.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:chaptalization",
+    "term": "chaptalization",
+    "definition": "adding sugar before or during fermentation to raise potential alcohol rather than sweetness",
+    "explanation": "Where permitted, the goal is adequate alcohol after fermentation—not making the finished wine taste sweet.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:acidification",
+    "term": "acidification",
+    "definition": "adding acid to must or wine to increase freshness and lower pH",
+    "explanation": "Winemakers may acidify warm-climate fruit to improve freshness, microbial stability, and balance.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:deacidification",
+    "term": "deacidification",
+    "definition": "reducing excessive acidity in must or wine",
+    "explanation": "Reducing excessive acidity can make a sharply tart wine more balanced without adding sweetness.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:whole-cluster fermentation",
+    "term": "whole-cluster fermentation",
+    "definition": "fermenting grapes with some or all stems and bunches intact",
+    "explanation": "Including stems and intact bunches can change tannin, aroma, and fermentation behavior, so winemakers use it selectively.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:destemming",
+    "term": "destemming",
+    "definition": "removing grapes from their stems before fermentation",
+    "explanation": "Removing stems helps a winemaker control herbal flavors and stem-derived tannin before fermentation.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:crushing",
+    "term": "crushing",
+    "definition": "breaking grape skins to release juice before fermentation",
+    "explanation": "Crushing breaks skins and releases juice, while destemming is the separate act of removing berries from stems.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:press wine",
+    "term": "press wine",
+    "definition": "wine obtained by applying pressure to fermented grape solids",
+    "explanation": "Press wine is usually more tannic and structured than free-run wine, so it may be blended back in carefully.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:free-run juice",
+    "term": "free-run juice",
+    "definition": "juice or wine that flows without heavy pressing",
+    "explanation": "Free-run liquid generally has softer tannin than press wine because it drains with little mechanical pressure.",
+    "subGroup": "cellar-production"
+  },
+  {
+    "conceptId": "term:acidity",
+    "term": "acidity",
+    "definition": "the component that gives wine freshness, tartness, and structural lift",
+    "explanation": "Acidity makes wine refreshing, supports balance with sweetness, and contributes to aging potential.",
+    "subGroup": "tasting"
+  },
+  {
+    "conceptId": "term:aroma",
+    "term": "aroma",
+    "definition": "a smell perceived from wine, often including primary fruit or floral notes",
+    "explanation": "Primary aromas often come from grapes, while fermentation and aging can add secondary and tertiary notes.",
+    "subGroup": "tasting"
+  },
+  {
+    "conceptId": "term:blind tasting",
+    "term": "blind tasting",
+    "definition": "evaluating wine without knowing its identity",
+    "explanation": "Removing label cues helps tasters focus on evidence in the glass rather than reputation or price.",
+    "subGroup": "tasting"
+  },
+  {
+    "conceptId": "term:horizontal tasting",
+    "term": "horizontal tasting",
+    "definition": "comparing different wines from the same vintage or closely matched context",
+    "explanation": "A horizontal lineup highlights differences among producers or sites while holding the vintage broadly constant.",
+    "subGroup": "tasting"
+  },
+  {
+    "conceptId": "term:vertical tasting",
+    "term": "vertical tasting",
+    "definition": "comparing multiple vintages of the same wine or producer",
+    "explanation": "A vertical shows how one wine changes across growing seasons and bottle age.",
+    "subGroup": "tasting"
+  },
+  {
+    "conceptId": "term:cuvée",
+    "term": "cuvée",
+    "definition": "a selected blend or batch of wine",
+    "explanation": "The word can identify a particular blend or bottling, but its precise significance depends on the producer and region.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:reserve",
+    "term": "reserve",
+    "definition": "a term suggesting special selection or aging whose legal meaning varies by place",
+    "explanation": "Because reserve is not regulated everywhere, guests should look beyond the word to the producer's actual aging and selection practices.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:appellation",
+    "term": "appellation",
+    "definition": "a legally defined geographic wine origin with associated rules",
+    "explanation": "Appellations connect wine to place and may regulate grapes, yields, production methods, or aging.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:protected designation of origin",
+    "term": "Protected Designation of Origin",
+    "definition": "an EU category linking a product to a defined place and production rules",
+    "explanation": "PDO is the EU's broad legal framework for products whose identity and production are tied to a defined place.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:monopole",
+    "term": "monopole",
+    "definition": "a vineyard appellation or named site controlled by a single owner",
+    "explanation": "Monopoles are especially notable in Burgundy, where most named vineyards are divided among many owners.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:négociant",
+    "term": "négociant",
+    "definition": "a merchant who buys grapes, must, or wine and sells wine under its own name",
+    "explanation": "A négociant may make, blend, age, and market wine without owning every vineyard that supplied it.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:estate bottled",
+    "term": "estate bottled",
+    "definition": "wine produced and bottled by the estate from grapes it controls, subject to local legal definitions",
+    "explanation": "Estate wording usually signals tighter control of growing and production, but the exact legal requirements depend on jurisdiction.",
+    "subGroup": "labels-trade-and-format"
+  },
+  {
+    "conceptId": "term:reduction",
+    "term": "reduction",
+    "definition": "aromas caused by limited oxygen exposure, sometimes resembling struck match or rotten egg",
+    "explanation": "A little reduction may dissipate with air, while severe sulfur aromas can signal a cellar problem.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:aeration",
+    "term": "aeration",
+    "definition": "deliberately exposing wine to air",
+    "explanation": "Controlled air exposure can open aromas, but excessive oxygen eventually risks oxidation.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:phenolics",
+    "term": "phenolics",
+    "definition": "a broad group of compounds including tannins, pigments, and many flavor-related substances",
+    "explanation": "Phenolics influence color, bitterness, astringency, and aging behavior, especially in red wine.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:anthocyanins",
+    "term": "anthocyanins",
+    "definition": "the pigments responsible for much of a red grape skin's color",
+    "explanation": "These red-blue pigments are extracted from skins and interact with tannins as red wine ages.",
+    "subGroup": "cellar-chemistry"
+  },
+  {
+    "conceptId": "term:brut",
+    "term": "Brut",
+    "definition": "a common sparkling-wine sweetness category that is drier than Extra Dry",
+    "explanation": "Brut is dry, but it generally allows more sugar than Extra Brut and less than Extra Dry.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:extra brut",
+    "term": "Extra Brut",
+    "definition": "a sparkling-wine category with less dosage and sugar than Brut",
+    "explanation": "Extra Brut signals a very low dosage range and a particularly dry sparkling-wine style.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:demi-sec",
+    "term": "Demi-Sec",
+    "definition": "a noticeably sweet sparkling-wine category",
+    "explanation": "Demi-Sec contains noticeably more sugar than Brut and is often paired with fruit or lightly sweet desserts.",
+    "subGroup": "sparkling"
+  },
+  {
+    "conceptId": "term:magnum",
+    "term": "magnum",
+    "definition": "a wine bottle holding 1.5 liters, equal to two standard bottles",
+    "explanation": "A 1.5-liter magnum equals two standard bottles and can age wine slowly because it has less oxygen relative to its volume.",
+    "subGroup": "labels-trade-and-format"
+  }
 ];
 
-const fourOptions = (facts, index, valueIndex) => {
-  const correct = facts[index][valueIndex];
-  const options = [correct];
-
-  for (let offset = 1; options.length < 4 && offset < facts.length; offset += 1) {
-    const candidate = facts[(index + offset) % facts.length][valueIndex];
-    if (!options.includes(candidate)) options.push(candidate);
+const hashText = (value) => {
+  let hash = 2166136261;
+  for (const char of value) {
+    hash ^= char.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
   }
+  return hash >>> 0;
+};
 
+const chooseComparableDistractors = (items, item, answerKey) =>
+  items
+    .filter((candidate) =>
+      candidate.conceptId !== item.conceptId
+      && candidate.subGroup === item.subGroup
+    )
+    .map((candidate) => ({
+      candidate,
+      rank: hashText(`${item.conceptId}|${candidate.conceptId}`)
+    }))
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, 3)
+    .map(({ candidate }) => candidate);
+
+const placeAnswer = (correctAnswer, wrongAnswers, conceptId) => {
+  const options = [...wrongAnswers];
+  options.splice(hashText(conceptId) % 4, 0, correctAnswer);
   return options;
 };
 
-const regionQuestions = REGION_FACTS.flatMap((fact, index) => {
-  const [place, association, explanation] = fact;
+const regionQuestions = REGION_FACTS.map((item) => {
+  const distractors = chooseComparableDistractors(REGION_FACTS, item, 'region');
+  const wrongAnswerExplanations = Object.fromEntries(
+    distractors.map((candidate) => [
+      candidate.region,
+      `${candidate.region} is instead associated with ${candidate.association.toLowerCase()}.`
+    ])
+  );
 
-  return [
-    {
-      category: 'world-wine-regions',
-      question: `Which classic wine association belongs to ${place}?`,
-      options: fourOptions(REGION_FACTS, index, 1),
-      correctAnswer: association,
-      explanation
-    },
-    {
-      category: 'world-wine-regions',
-      question: `Which place matches this wine clue: ${association}?`,
-      options: fourOptions(REGION_FACTS, index, 0),
-      correctAnswer: place,
-      explanation
-    }
-  ];
+  return {
+    conceptId: item.conceptId,
+    category: 'world-wine-regions',
+    question: `A wine traveler is looking for ${item.association.toLowerCase()}. Which region should be on the itinerary?`,
+    options: placeAnswer(
+      item.region,
+      distractors.map((candidate) => candidate.region),
+      item.conceptId
+    ),
+    correctAnswer: item.region,
+    explanation: item.explanation,
+    wrongAnswerExplanations
+  };
 });
 
-const termQuestions = TERM_FACTS.flatMap((fact, index) => {
-  const [term, definition] = fact;
-  const explanation = `${term} means ${definition}.`;
+const termPromptLead = {
+  'cellar-production': 'A cellar note describes',
+  sparkling: 'During sparkling-wine production, a winemaker describes',
+  'cellar-chemistry': 'A winemaker is managing',
+  tasting: 'At a guided tasting, the host describes',
+  'labels-trade-and-format': 'On a label, bottle, or trade sheet, a guest encounters'
+};
 
-  return [
-    {
-      category: 'wine-language-and-production',
-      question: `What does the wine term "${term}" mean?`,
-      options: fourOptions(TERM_FACTS, index, 1),
-      correctAnswer: definition,
-      explanation
-    },
-    {
-      category: 'wine-language-and-production',
-      question: `Which wine term matches this definition: ${definition}?`,
-      options: fourOptions(TERM_FACTS, index, 0),
-      correctAnswer: term,
-      explanation
-    }
-  ];
+const termQuestions = TERM_FACTS.map((item) => {
+  const distractors = chooseComparableDistractors(TERM_FACTS, item, 'term');
+  const wrongAnswerExplanations = Object.fromEntries(
+    distractors.map((candidate) => [
+      candidate.term,
+      `${candidate.term} means ${candidate.definition}.`
+    ])
+  );
+
+  return {
+    conceptId: item.conceptId,
+    category: 'wine-language-and-production',
+    question: `${termPromptLead[item.subGroup]} ${item.definition}. Which term fits?`,
+    options: placeAnswer(
+      item.term,
+      distractors.map((candidate) => candidate.term),
+      item.conceptId
+    ),
+    correctAnswer: item.term,
+    explanation: `${item.term} means ${item.definition}. ${item.explanation}`,
+    wrongAnswerExplanations
+  };
 });
 
 export const ADDITIONAL_WINE_QUESTIONS = [...regionQuestions, ...termQuestions];
