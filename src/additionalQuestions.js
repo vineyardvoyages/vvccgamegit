@@ -709,6 +709,13 @@ const placeAnswer = (correctAnswer, wrongAnswers, conceptId) => {
   return options;
 };
 
+const REGION_PROMPTS = {
+  'Verdicchio dei Castelli di Jesi, Italy':
+    'Which Italian appellation is known for crisp Adriatic white wines with citrus, fennel, and a subtle almond note?',
+  'Bekaa Valley, Lebanon':
+    'Which historic Middle Eastern valley lies between the Mount Lebanon and Anti-Lebanon ranges and anchors its country\'s wine industry?'
+};
+
 const regionQuestions = REGION_FACTS.map((item) => {
   const distractors = chooseComparableDistractors(REGION_FACTS, item, 'region');
   const wrongAnswerExplanations = Object.fromEntries(
@@ -721,7 +728,8 @@ const regionQuestions = REGION_FACTS.map((item) => {
   return {
     conceptId: item.conceptId,
     category: 'world-wine-regions',
-    question: `A wine traveler is looking for ${item.association.toLowerCase()}. Which region should be on the itinerary?`,
+    question: REGION_PROMPTS[item.region]
+      || `A wine traveler is looking for ${item.association.toLowerCase()}. Which region should be on the itinerary?`,
     options: placeAnswer(
       item.region,
       distractors.map((candidate) => candidate.region),
@@ -741,24 +749,61 @@ const termPromptLead = {
   'labels-trade-and-format': 'On a label, bottle, or trade sheet, a guest encounters'
 };
 
+const SPECIAL_TERM_CHOICES = {
+  'whole-cluster fermentation': {
+    wrongAnswers: [
+      'destemmed-berry fermentation',
+      'pre-fermentation cold soak',
+      'intracellular carbonic maceration'
+    ],
+    explanations: {
+      'destemmed-berry fermentation':
+        'Destemmed-berry fermentation removes stems rather than keeping bunches intact.',
+      'pre-fermentation cold soak':
+        'A cold soak holds crushed fruit at low temperature before alcoholic fermentation.',
+      'intracellular carbonic maceration':
+        'Carbonic maceration begins inside intact berries in a carbon-dioxide-rich environment.'
+    }
+  },
+  'Protected Designation of Origin': {
+    wrongAnswers: [
+      'Protected Geographical Indication',
+      'Traditional Speciality Guaranteed',
+      'Geographical indication without production rules'
+    ],
+    explanations: {
+      'Protected Geographical Indication':
+        'PGI also links a product to place, but generally requires a less complete connection than PDO.',
+      'Traditional Speciality Guaranteed':
+        'TSG protects a traditional recipe or production method rather than a defined geographic origin.',
+      'Geographical indication without production rules':
+        'A PDO includes defined origin and production requirements rather than place-name use alone.'
+    }
+  }
+};
+
 const termQuestions = TERM_FACTS.map((item) => {
-  const distractors = chooseComparableDistractors(TERM_FACTS, item, 'term');
-  const wrongAnswerExplanations = Object.fromEntries(
-    distractors.map((candidate) => [
-      candidate.term,
-      `${candidate.term} means ${candidate.definition}.`
-    ])
-  );
+  const special = SPECIAL_TERM_CHOICES[item.term];
+  const distractors = special
+    ? []
+    : chooseComparableDistractors(TERM_FACTS, item, 'term');
+  const wrongAnswers = special
+    ? special.wrongAnswers
+    : distractors.map((candidate) => candidate.term);
+  const wrongAnswerExplanations = special
+    ? special.explanations
+    : Object.fromEntries(
+      distractors.map((candidate) => [
+        candidate.term,
+        `${candidate.term} means ${candidate.definition}.`
+      ])
+    );
 
   return {
     conceptId: item.conceptId,
     category: 'wine-language-and-production',
     question: `${termPromptLead[item.subGroup]} ${item.definition}. Which term fits?`,
-    options: placeAnswer(
-      item.term,
-      distractors.map((candidate) => candidate.term),
-      item.conceptId
-    ),
+    options: placeAnswer(item.term, wrongAnswers, item.conceptId),
     correctAnswer: item.term,
     explanation: `${item.term} means ${item.definition}. ${item.explanation}`,
     wrongAnswerExplanations
