@@ -11,7 +11,7 @@ import {
 import {
   getTenRandomQuestions,
   generateRoundId,
-  generateGameCode,
+  getGameCodeCandidates,
   reconcilePendingAnswerData,
   getPlayerRound,
   getPlayerAnswer,
@@ -41,7 +41,8 @@ import {
   getDoc,
   updateDoc,
   onSnapshot,
-  runTransaction
+  runTransaction,
+  Timestamp
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -54,6 +55,10 @@ const firebaseConfig = {
 };
 
 const firestoreAppId = firebaseConfig.projectId;
+const GAME_SESSION_DURATION_MS = 12 * 60 * 60 * 1000;
+const isValidGameCode = code => (
+  /^[A-Z][0-9]$/.test(code) || /^[A-Z]{4}$/.test(code)
+);
 
 let app;
 let db;
@@ -409,23 +414,25 @@ const App = () => {
     setError('');
     try {
       let newGameId = '';
-      let isUnique = false;
-      let attempts = 0;
-      const maxAttempts = 100;
+      const now = Date.now();
+      const codeCandidates = getGameCodeCandidates();
 
-      while (!isUnique && attempts < maxAttempts) {
-        const generatedCode = generateGameCode();
+      for (const generatedCode of codeCandidates) {
         const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, generatedCode);
         const docSnap = await getDoc(gameDocRef);
-        if (!docSnap.exists()) {
+        const expiresAt = docSnap.data()?.expiresAt;
+        const expiresAtMs = typeof expiresAt?.toMillis === 'function'
+          ? expiresAt.toMillis()
+          : Number.POSITIVE_INFINITY;
+
+        if (!docSnap.exists() || expiresAtMs <= now) {
           newGameId = generatedCode;
-          isUnique = true;
+          break;
         }
-        attempts++;
       }
 
-      if (!isUnique) {
-        setError("Could not generate a unique game ID. Please try again.");
+      if (!newGameId) {
+        setError("All simple game codes are in use. Please try again later.");
         setLoading(false);
         return;
       }
@@ -447,6 +454,7 @@ const App = () => {
         questionResults: {},
         questions: selectedGameQuestions,
         createdAt: new Date().toISOString(),
+        expiresAt: Timestamp.fromMillis(Date.now() + GAME_SESSION_DURATION_MS),
       });
       saveActiveGame(newGameId, userName);
       setActiveGameId(newGameId);
@@ -461,8 +469,9 @@ const App = () => {
   };
 
   const joinExistingGame = async () => {
-    if (!gameCodeInput.trim() || gameCodeInput.trim().length !== 4) {
-      setError("Please enter a 4-character game ID.");
+    const normalizedIdToJoin = gameCodeInput.trim().toUpperCase();
+    if (!isValidGameCode(normalizedIdToJoin)) {
+      setError("Please enter a code like A7.");
       return;
     }
     if (!userId || !userName) {
@@ -472,7 +481,6 @@ const App = () => {
 
     setLoading(true);
     setError('');
-    const normalizedIdToJoin = gameCodeInput.trim().toUpperCase();
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, normalizedIdToJoin);
     try {
       await runTransaction(db, async transaction => {
@@ -838,15 +846,17 @@ const App = () => {
           <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"
-              placeholder="Enter 4-character Game ID"
+              placeholder="Enter code (example: A7)"
               className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
               value={gameCodeInput}
-              onChange={(e) => setGameCodeInput(e.target.value.toUpperCase())}
+              onChange={(e) => setGameCodeInput(
+                e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+              )}
               maxLength={4}
             />
             <button
               onClick={joinExistingGame}
-              disabled={gameCodeInput.length !== 4}
+              disabled={!isValidGameCode(gameCodeInput)}
               className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Join Game (Player Mode)
