@@ -716,8 +716,21 @@ const REGION_PROMPTS = {
     'Which historic Middle Eastern valley lies between the Mount Lebanon and Anti-Lebanon ranges and anchors its country\'s wine industry?'
 };
 
+const SPECIAL_REGION_WRONG_ANSWERS = {
+  'Verdicchio dei Castelli di Jesi, Italy': [
+    'Brunello di Montalcino, Italy',
+    'Franciacorta, Italy',
+    'Etna Rosso, Italy'
+  ]
+};
+
 const regionQuestions = REGION_FACTS.map((item) => {
-  const distractors = chooseComparableDistractors(REGION_FACTS, item, 'region');
+  const specialRegions = SPECIAL_REGION_WRONG_ANSWERS[item.region];
+  const distractors = specialRegions
+    ? specialRegions.map((region) =>
+      REGION_FACTS.find((candidate) => candidate.region === region)
+    )
+    : chooseComparableDistractors(REGION_FACTS, item, 'region');
   const wrongAnswerExplanations = Object.fromEntries(
     distractors.map((candidate) => [
       candidate.region,
