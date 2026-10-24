@@ -1,6 +1,7 @@
 import {
   flattenServerPendingAnswers,
   getAnswerSubmissionStatus,
+  getGameCodeCandidates,
   getTenRandomQuestions,
   isPlayableQuestion,
   normalizePlayersById,
@@ -84,6 +85,13 @@ describe('random question selection', () => {
     expect(shuffleArray([1])).toEqual([1]);
     expect(shuffleArray(original)).toEqual(expect.arrayContaining(original));
     expect(original).toEqual([1, 2, 3, 4]);
+  });
+
+  test('provides every letter-number game code exactly once in random order', () => {
+    const codes = getGameCodeCandidates();
+    expect(codes).toHaveLength(260);
+    expect(new Set(codes).size).toBe(260);
+    expect(codes.every(code => /^[A-Z][0-9]$/.test(code))).toBe(true);
   });
 
   test('secureRandomInt validates its range and stays within bounds', () => {
