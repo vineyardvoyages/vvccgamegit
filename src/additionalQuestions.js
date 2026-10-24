@@ -111,7 +111,7 @@ const REGION_FACTS = [
   {
     "conceptId": "region:franciacorta, italy",
     "region": "Franciacorta, Italy",
-    "association": "Traditional-method sparkling wine from Lombardy",
+    "association": "Bottle-fermented Italian sparkling wine made from Chardonnay, Pinot Nero, and Pinot Bianco",
     "explanation": "Franciacorta is an Italian appellation for bottle-fermented sparkling wine.",
     "subGroup": "italy"
   },
@@ -146,7 +146,7 @@ const REGION_FACTS = [
   {
     "conceptId": "region:vinho verde, portugal",
     "region": "Vinho Verde, Portugal",
-    "association": "Fresh, high-acid wines from northwestern Portugal",
+    "association": "Light, zesty, high-acid white wines—often with a slight spritz—made from grapes like Alvarinho and Loureiro",
     "explanation": "Vinho Verde is known especially for light, fresh white wines with bright acidity.",
     "subGroup": "iberia"
   },
@@ -167,14 +167,14 @@ const REGION_FACTS = [
   {
     "conceptId": "region:rheingau, germany",
     "region": "Rheingau, Germany",
-    "association": "Riesling from vineyards along the Rhine",
+    "association": "Structured, ageworthy Riesling ranging from dry to sweet",
     "explanation": "The Rheingau is a classic German Riesling region.",
     "subGroup": "central-europe"
   },
   {
     "conceptId": "region:wachau, austria",
     "region": "Wachau, Austria",
-    "association": "Grüner Veltliner and Riesling from Danube terraces",
+    "association": "Dry Grüner Veltliner and Riesling labeled with terms such as Steinfeder, Federspiel, and Smaragd",
     "explanation": "The Wachau is known for dry Grüner Veltliner and Riesling.",
     "subGroup": "central-europe"
   },
@@ -384,14 +384,14 @@ const REGION_FACTS = [
   {
     "conceptId": "region:bekaa valley, lebanon",
     "region": "Bekaa Valley, Lebanon",
-    "association": "Lebanon's principal wine-growing valley",
+    "association": "Historic red blends and white wines from a high-elevation Mediterranean valley",
     "explanation": "The Bekaa Valley is the historic center of Lebanese wine production.",
     "subGroup": "ancient-and-emerging"
   },
   {
     "conceptId": "region:savoie, france",
     "region": "Savoie, France",
-    "association": "Alpine whites from grapes such as Jacquère",
+    "association": "Light, high-acid whites made from Jacquère, Altesse, and other local grapes",
     "explanation": "Savoie in the French Alps is known for fresh white wines from local grapes including Jacquère.",
     "subGroup": "france"
   },
@@ -438,28 +438,28 @@ const TERM_FACTS = [
     "term": "tirage",
     "definition": "the addition of yeast and sugar that starts the second fermentation for traditional-method sparkling wine",
     "explanation": "The tirage addition creates the carbon dioxide that becomes trapped as bubbles during bottle fermentation.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-production"
   },
   {
     "conceptId": "term:autolysis",
     "term": "autolysis",
     "definition": "the breakdown of yeast cells that can add bread or biscuit notes during lees aging",
     "explanation": "As yeast cells break down during lees aging, they can contribute brioche, biscuit, and pastry-like complexity.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-production"
   },
   {
     "conceptId": "term:traditional method",
     "term": "traditional method",
     "definition": "a sparkling-wine process in which the second fermentation occurs in the bottle sold",
     "explanation": "Bottle fermentation and lees aging make this method especially suited to fine, complex sparkling wine.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-production"
   },
   {
     "conceptId": "term:pétillant naturel",
     "term": "pétillant naturel",
     "definition": "sparkling wine bottled before its first fermentation has finished",
     "explanation": "Often shortened to pét-nat, this ancestral-method style captures bubbles by bottling before the first fermentation ends.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-production"
   },
   {
     "conceptId": "term:solera",
@@ -543,35 +543,35 @@ const TERM_FACTS = [
     "term": "acidity",
     "definition": "the component that gives wine freshness, tartness, and structural lift",
     "explanation": "Acidity makes wine refreshing, supports balance with sweetness, and contributes to aging potential.",
-    "subGroup": "tasting"
+    "subGroup": "tasting-sensory"
   },
   {
     "conceptId": "term:aroma",
     "term": "aroma",
     "definition": "a smell perceived from wine, often including primary fruit or floral notes",
     "explanation": "Primary aromas often come from grapes, while fermentation and aging can add secondary and tertiary notes.",
-    "subGroup": "tasting"
+    "subGroup": "tasting-sensory"
   },
   {
     "conceptId": "term:blind tasting",
     "term": "blind tasting",
     "definition": "evaluating wine without knowing its identity",
     "explanation": "Removing label cues helps tasters focus on evidence in the glass rather than reputation or price.",
-    "subGroup": "tasting"
+    "subGroup": "tasting-format"
   },
   {
     "conceptId": "term:horizontal tasting",
     "term": "horizontal tasting",
     "definition": "comparing different wines from the same vintage or closely matched context",
     "explanation": "A horizontal lineup highlights differences among producers or sites while holding the vintage broadly constant.",
-    "subGroup": "tasting"
+    "subGroup": "tasting-format"
   },
   {
     "conceptId": "term:vertical tasting",
     "term": "vertical tasting",
     "definition": "comparing multiple vintages of the same wine or producer",
     "explanation": "A vertical shows how one wine changes across growing seasons and bottle age.",
-    "subGroup": "tasting"
+    "subGroup": "tasting-format"
   },
   {
     "conceptId": "term:cuvée",
@@ -653,30 +653,88 @@ const TERM_FACTS = [
   {
     "conceptId": "term:brut",
     "term": "Brut",
-    "definition": "a common sparkling-wine sweetness category that is drier than Extra Dry",
+    "definition": "a widely used dry sparkling-wine category with more sugar allowed than Extra Brut but less than Extra Dry",
     "explanation": "Brut is dry, but it generally allows more sugar than Extra Brut and less than Extra Dry.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-sweetness"
   },
   {
     "conceptId": "term:extra brut",
     "term": "Extra Brut",
-    "definition": "a sparkling-wine category with less dosage and sugar than Brut",
+    "definition": "a very dry sparkling-wine category with less sugar than Brut but generally more than Brut Nature",
     "explanation": "Extra Brut signals a very low dosage range and a particularly dry sparkling-wine style.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-sweetness"
   },
   {
     "conceptId": "term:demi-sec",
     "term": "Demi-Sec",
-    "definition": "a noticeably sweet sparkling-wine category",
+    "definition": "a sweet sparkling-wine category, sweeter than Extra Dry but less sweet than Doux",
     "explanation": "Demi-Sec contains noticeably more sugar than Brut and is often paired with fruit or lightly sweet desserts.",
-    "subGroup": "sparkling"
+    "subGroup": "sparkling-sweetness"
   },
   {
     "conceptId": "term:magnum",
     "term": "magnum",
     "definition": "a wine bottle holding 1.5 liters, equal to two standard bottles",
     "explanation": "A 1.5-liter magnum equals two standard bottles and can age wine slowly because it has less oxygen relative to its volume.",
-    "subGroup": "labels-trade-and-format"
+    "subGroup": "bottle-format"
+  }
+];
+
+// These comparable concepts improve distractors without adding more questions.
+const TERM_DISTRACTOR_FACTS = [
+  {
+    conceptId: 'distractor:brut-nature',
+    term: 'Brut Nature / Zero Dosage',
+    definition: 'the driest sparkling-wine category, with little or no added dosage',
+    subGroup: 'sparkling-sweetness'
+  },
+  {
+    conceptId: 'distractor:extra-dry',
+    term: 'Extra Dry',
+    definition: 'a sparkling-wine category that is sweeter than Brut despite its name',
+    subGroup: 'sparkling-sweetness'
+  },
+  {
+    conceptId: 'distractor:doux',
+    term: 'Doux',
+    definition: 'the sweetest standard sparkling-wine category',
+    subGroup: 'sparkling-sweetness'
+  },
+  {
+    conceptId: 'distractor:tannin',
+    term: 'tannin',
+    definition: 'the group of phenolic compounds that creates drying and astringent sensations',
+    subGroup: 'tasting-sensory'
+  },
+  {
+    conceptId: 'distractor:body',
+    term: 'body',
+    definition: 'the perceived weight and fullness of a wine in the mouth',
+    subGroup: 'tasting-sensory'
+  },
+  {
+    conceptId: 'distractor:bouquet',
+    term: 'bouquet',
+    definition: "a wine's developed aromas, especially those associated with fermentation and aging",
+    subGroup: 'tasting-sensory'
+  },
+  {
+    conceptId: 'distractor:finish',
+    term: 'finish',
+    definition: 'the flavors and sensations that linger after wine is swallowed or tasted',
+    subGroup: 'tasting-sensory'
+  },
+  {
+    conceptId: 'distractor:double-blind-tasting',
+    term: 'double-blind tasting',
+    definition: 'evaluating wine with neither its identity nor the possible lineup disclosed',
+    subGroup: 'tasting-format'
+  },
+  {
+    conceptId: 'distractor:barrel-tasting',
+    term: 'barrel tasting',
+    definition: 'sampling unfinished wine directly from barrel before bottling',
+    subGroup: 'tasting-format'
   }
 ];
 
@@ -709,11 +767,56 @@ const placeAnswer = (correctAnswer, wrongAnswers, conceptId) => {
   return options;
 };
 
+const capitalizeFirst = (value) =>
+  value ? `${value[0].toLocaleUpperCase()}${value.slice(1)}` : value;
+
+const COMMON_ASSOCIATION_STARTS = new Set([
+  'Ageworthy',
+  'Alpine',
+  'Bottle-fermented',
+  'Cool-climate',
+  'Dry',
+  'Fortified',
+  'Fresh',
+  'High-acid',
+  'High-altitude',
+  'Historic',
+  'Icewine',
+  'Light',
+  'Powerful',
+  'Rich',
+  'Still',
+  'Structured',
+  'Traditional-method',
+  'Traditional',
+  'Volcanic',
+  'White'
+]);
+
+const formatInlineAssociation = (association) => {
+  const firstWord = association.match(/^[\p{L}-]+/u)?.[0];
+  return COMMON_ASSOCIATION_STARTS.has(firstWord)
+    ? `${association[0].toLocaleLowerCase()}${association.slice(1)}`
+    : association;
+};
+
 const REGION_PROMPTS = {
+  'Franciacorta, Italy':
+    'Which region is known for bottle-fermented Italian sparkling wine made from Chardonnay, Pinot Nero, and Pinot Bianco?',
+  'Rías Baixas, Spain':
+    'Which region is renowned for intensely aromatic, high-acid white wines centered on Albariño, often showing citrus, stone fruit, and saline notes?',
+  'Vinho Verde, Portugal':
+    'Which region is known for light, zesty, high-acid white wines—often with a slight spritz—made from grapes like Alvarinho and Loureiro?',
+  'Rheingau, Germany':
+    'Which region is renowned for structured, ageworthy Riesling ranging from dry to sweet?',
+  'Wachau, Austria':
+    'Which region is known for dry Grüner Veltliner and Riesling labeled with terms such as Steinfeder, Federspiel, and Smaragd?',
   'Verdicchio dei Castelli di Jesi, Italy':
     'Which Italian appellation is known for crisp Adriatic white wines with citrus, fennel, and a subtle almond note?',
   'Bekaa Valley, Lebanon':
-    'Which historic Middle Eastern valley lies between the Mount Lebanon and Anti-Lebanon ranges and anchors its country\'s wine industry?'
+    'Which historic Middle Eastern valley, home to Roman temple ruins at Baalbek and high-elevation vineyards, anchors its country\'s wine industry?',
+  'Savoie, France':
+    'Which region is known for light, high-acid whites made from Jacquère, Altesse, and other local grapes?'
 };
 
 const SPECIAL_REGION_WRONG_ANSWERS = {
@@ -734,7 +837,7 @@ const regionQuestions = REGION_FACTS.map((item) => {
   const wrongAnswerExplanations = Object.fromEntries(
     distractors.map((candidate) => [
       candidate.region,
-      `${candidate.region} is instead associated with ${candidate.association.toLowerCase()}.`
+      `${candidate.region} is instead associated with ${formatInlineAssociation(candidate.association)}.`
     ])
   );
 
@@ -742,7 +845,7 @@ const regionQuestions = REGION_FACTS.map((item) => {
     conceptId: item.conceptId,
     category: 'world-wine-regions',
     question: REGION_PROMPTS[item.region]
-      || `A wine traveler is looking for ${item.association.toLowerCase()}. Which region should be on the itinerary?`,
+      || `A wine traveler is looking for ${formatInlineAssociation(item.association)}. Which region should be on the itinerary?`,
     options: placeAnswer(
       item.region,
       distractors.map((candidate) => candidate.region),
@@ -756,10 +859,13 @@ const regionQuestions = REGION_FACTS.map((item) => {
 
 const termPromptLead = {
   'cellar-production': 'A cellar note describes',
-  sparkling: 'During sparkling-wine production, a winemaker describes',
-  'cellar-chemistry': 'A winemaker is managing',
-  tasting: 'At a guided tasting, the host describes',
-  'labels-trade-and-format': 'On a label, bottle, or trade sheet, a guest encounters'
+  'sparkling-production': 'During sparkling-wine production, a winemaker describes',
+  'sparkling-sweetness': 'On a sparkling-wine label, a guest encounters',
+  'cellar-chemistry': 'In the cellar, a winemaker describes',
+  'tasting-sensory': 'At a guided tasting, the host describes',
+  'tasting-format': 'At a guided tasting, the host describes',
+  'labels-trade-and-format': 'On a label or trade sheet, a guest encounters',
+  'bottle-format': 'In a discussion of bottle formats, a guest encounters'
 };
 
 const SPECIAL_TERM_CHOICES = {
@@ -792,6 +898,21 @@ const SPECIAL_TERM_CHOICES = {
       'Geographical indication without production rules':
         'A PDO includes defined origin and production requirements rather than place-name use alone.'
     }
+  },
+  magnum: {
+    wrongAnswers: [
+      'split / piccolo (187.5 mL)',
+      'demi / half-bottle (375 mL)',
+      'double magnum / Champagne jeroboam (3.0 L)'
+    ],
+    explanations: {
+      'split / piccolo (187.5 mL)':
+        'A split or piccolo holds 187.5 mL, one quarter of a standard 750 mL bottle.',
+      'demi / half-bottle (375 mL)':
+        'A demi or half-bottle holds 375 mL, half of a standard bottle.',
+      'double magnum / Champagne jeroboam (3.0 L)':
+        'A double magnum holds 3.0 liters, twice the volume of a magnum.'
+    }
   }
 };
 
@@ -799,7 +920,11 @@ const termQuestions = TERM_FACTS.map((item) => {
   const special = SPECIAL_TERM_CHOICES[item.term];
   const distractors = special
     ? []
-    : chooseComparableDistractors(TERM_FACTS, item, 'term');
+    : chooseComparableDistractors(
+      [...TERM_FACTS, ...TERM_DISTRACTOR_FACTS],
+      item,
+      'term'
+    );
   const wrongAnswers = special
     ? special.wrongAnswers
     : distractors.map((candidate) => candidate.term);
@@ -808,7 +933,7 @@ const termQuestions = TERM_FACTS.map((item) => {
     : Object.fromEntries(
       distractors.map((candidate) => [
         candidate.term,
-        `${candidate.term} means ${candidate.definition}.`
+        `${capitalizeFirst(candidate.term)} means ${candidate.definition}.`
       ])
     );
 
@@ -818,9 +943,10 @@ const termQuestions = TERM_FACTS.map((item) => {
     question: `${termPromptLead[item.subGroup]} ${item.definition}. Which term fits?`,
     options: placeAnswer(item.term, wrongAnswers, item.conceptId),
     correctAnswer: item.term,
-    explanation: `${item.term} means ${item.definition}. ${item.explanation}`,
+    explanation: `${capitalizeFirst(item.term)} means ${item.definition}. ${item.explanation}`,
     wrongAnswerExplanations
   };
 });
 
 export const ADDITIONAL_WINE_QUESTIONS = [...regionQuestions, ...termQuestions];
+

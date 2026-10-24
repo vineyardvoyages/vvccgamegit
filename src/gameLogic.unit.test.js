@@ -79,6 +79,88 @@ describe('random question selection', () => {
     expect(serializedBank).not.toMatch(/superlativ/i);
   });
 
+  test('keeps audited concepts, categories, and generated distractors distinct', () => {
+    const byPrompt = prompt => WINE_QUIZ_QUESTIONS.find(
+      question => question.question === prompt
+    );
+    const questionsWithAnswer = answer => WINE_QUIZ_QUESTIONS.filter(
+      question => question.correctAnswer === answer
+    );
+
+    expect(questionsWithAnswer('Thomas Jefferson')).toHaveLength(1);
+    expect(questionsWithAnswer('Petit Verdot')).toHaveLength(1);
+    expect(byPrompt("Which fortified wine is produced in northern Portugal's Douro Valley?"))
+      .toBeDefined();
+    expect(byPrompt('The Douro Valley in Portugal is most famous for being the birthplace of which fortified wine?'))
+      .toBeUndefined();
+
+    [
+      'Which of these is a sparkling wine from Spain?',
+      'Which white grape is typically used to make dry, aromatic wines in the Loire Valley, France?',
+      'Which region is known for producing high-quality Riesling wines?',
+      'Uruguay’s wine regions are heavily influenced by their proximity to which body of water?',
+      "While Malbec is the king of red grapes in Argentina, which unique white grape is considered its aromatic white 'queen'?",
+      'Blanquette de Limoux is traditionally cited as an early recorded sparkling wine. What year appears in that historic claim?'
+    ].forEach(prompt => {
+      expect(byPrompt(prompt)?.category).toBe('world-wine-regions');
+    });
+
+    [
+      'What is the term for the process of allowing wine to age in the bottle before release?',
+      "What is a 'blend' in winemaking?",
+      "What does the winemaking term 'sur lie' mean?",
+      'What is a cooper?'
+    ].forEach(prompt => {
+      expect(byPrompt(prompt)?.category).toBe('wine-language-and-production');
+    });
+
+    [
+      'What is the ideal temperature range for storing most wines long-term?',
+      'Which type of wine is typically served very chilled, often as a dessert wine?'
+    ].forEach(prompt => {
+      expect(byPrompt(prompt)?.category).toBe('tasting-and-service');
+    });
+
+    const generated = WINE_QUIZ_QUESTIONS.slice(152);
+    const generatedText = JSON.stringify(generated);
+    expect(generatedText).not.toMatch(/looking for (chenin blanc|melon de bourgogne|tokaji aszú|rhône|helan mountains)/);
+    expect(generatedText).not.toMatch(/is managing (adding|reducing|deliberately)/);
+    expect(generatedText).not.toMatch(/Mount Lebanon|Anti-Lebanon/);
+
+    const sparklingProduction = new Set([
+      'tirage', 'autolysis', 'traditional method', 'pétillant naturel'
+    ]);
+    const sparklingSweetness = new Set([
+      'Brut Nature / Zero Dosage', 'Extra Brut', 'Brut', 'Extra Dry',
+      'Demi-Sec', 'Doux'
+    ]);
+    const tastingFormats = new Set([
+      'blind tasting', 'horizontal tasting', 'vertical tasting',
+      'double-blind tasting', 'barrel tasting'
+    ]);
+
+    generated.forEach(question => {
+      if (sparklingProduction.has(question.correctAnswer)) {
+        expect(question.options.every(option => sparklingProduction.has(option)))
+          .toBe(true);
+      }
+      if (sparklingSweetness.has(question.correctAnswer)) {
+        expect(question.options.every(option => sparklingSweetness.has(option)))
+          .toBe(true);
+      }
+      if (tastingFormats.has(question.correctAnswer)) {
+        expect(question.options.every(option => tastingFormats.has(option)))
+          .toBe(true);
+      }
+    });
+
+    expect(questionsWithAnswer('magnum')[0].options).toEqual(expect.arrayContaining([
+      'split / piccolo (187.5 mL)',
+      'demi / half-bottle (375 mL)',
+      'double magnum / Champagne jeroboam (3.0 L)'
+    ]));
+  });
+
   test('keeps 11 consecutive games free of question repeats', () => {
     const questions = Array.from({ length: 11 }, () => getTenRandomQuestions()).flat();
     expect(questions).toHaveLength(110);
