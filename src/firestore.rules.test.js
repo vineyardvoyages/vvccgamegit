@@ -22,6 +22,7 @@ const {
   getDocs,
   getDoc,
   setDoc,
+  Timestamp,
   updateDoc
 } = require('firebase/firestore');
 
@@ -29,7 +30,7 @@ const projectId = 'vineyardvoyagesquiz-33fde';
 const gamePath = gameId =>
   `artifacts/${projectId}/public/data/games/${gameId}`;
 
-const newGame = hostId => ({
+const newGame = (hostId, overrides = {}) => ({
   hostId,
   hostName: 'Host',
   currentQuestionIndex: 0,
@@ -44,7 +45,8 @@ const newGame = hostId => ({
     question: `Question ${index + 1}`,
     correctAnswer: 'A'
   })),
-  createdAt: '2026-08-13T12:00:00.000Z'
+  createdAt: '2026-08-13T12:00:00.000Z',
+  ...overrides
 });
 
 let testEnv;
@@ -74,8 +76,61 @@ const seedGame = async (gameId = 'ABCD') => {
   });
 };
 
+const seedShortGame = async (gameId, expiresAt, hostId = 'host-1') => {
+  await testEnv.withSecurityRulesDisabled(async context => {
+    await setDoc(
+      doc(context.firestore(), gamePath(gameId)),
+      newGame(hostId, { expiresAt })
+    );
+  });
+};
+
 describe('game rules', () => {
-  test('authenticated hosts can create valid games', async () => {
+  test('authenticated hosts can create letter-number games', async () => {
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertSucceeds(setDoc(
+      doc(db, gamePath('A7')),
+      newGame('host-1', {
+        expiresAt: Timestamp.fromMillis(Date.now() + (12 * 60 * 60 * 1000))
+      })
+    ));
+  });
+
+  test('active short codes cannot be taken over by another host', async () => {
+    const activeExpiry = Timestamp.fromMillis(Date.now() + (12 * 60 * 60 * 1000));
+    await seedShortGame('B4', activeExpiry);
+    const db = testEnv.authenticatedContext('host-2').firestore();
+
+    await assertFails(setDoc(
+      doc(db, gamePath('B4')),
+      newGame('host-2', { expiresAt: activeExpiry })
+    ));
+  });
+
+  test('expired short codes can be reused by a new authenticated host', async () => {
+    await seedShortGame('C2', Timestamp.fromMillis(Date.now() - 60000));
+    const db = testEnv.authenticatedContext('host-2').firestore();
+
+    await assertSucceeds(setDoc(
+      doc(db, gamePath('C2')),
+      newGame('host-2', {
+        createdAt: new Date().toISOString(),
+        expiresAt: Timestamp.fromMillis(Date.now() + (12 * 60 * 60 * 1000))
+      })
+    ));
+  });
+
+  test('malformed game codes are rejected', async () => {
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertFails(setDoc(
+      doc(db, gamePath('77')),
+      newGame('host-1', {
+        expiresAt: Timestamp.fromMillis(Date.now() + (12 * 60 * 60 * 1000))
+      })
+    ));
+  });
+
+  test('authenticated hosts can create valid legacy games', async () => {
     const db = testEnv.authenticatedContext('host-1').firestore();
     await assertSucceeds(setDoc(doc(db, gamePath('WINE')), newGame('host-1')));
   });

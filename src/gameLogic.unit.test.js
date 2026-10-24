@@ -1,14 +1,18 @@
 import {
   flattenServerPendingAnswers,
   getAnswerSubmissionStatus,
+  getGameCodeCandidates,
   getTenRandomQuestions,
+  isPlayableQuestion,
   normalizePlayersById,
+  questionId,
   reconcilePendingAnswerData,
   removeServerPendingAnswer,
   scoreRevealedQuestionData,
   secureRandomInt,
   shuffleArray
 } from './gameLogic';
+import { WINE_QUIZ_QUESTIONS } from './questions';
 
 const originalCrypto = globalThis.crypto;
 let randomSeed = 1;
@@ -51,12 +55,43 @@ describe('random question selection', () => {
       .toBe(true);
   });
 
+  test('loads 452 unique, playable questions after the expansion', () => {
+    expect(WINE_QUIZ_QUESTIONS).toHaveLength(452);
+    expect(WINE_QUIZ_QUESTIONS.every(isPlayableQuestion)).toBe(true);
+    expect(new Set(WINE_QUIZ_QUESTIONS.map(questionId)).size).toBe(452);
+  });
+
+  test('keeps 11 consecutive games free of question repeats', () => {
+    const questions = Array.from({ length: 11 }, () => getTenRandomQuestions()).flat();
+    expect(questions).toHaveLength(110);
+    expect(new Set(questions.map(questionId)).size).toBe(110);
+  });
+
+  test('shuffles correct answers across every option position', () => {
+    const positions = [0, 0, 0, 0];
+
+    for (let round = 0; round < 30; round += 1) {
+      getTenRandomQuestions().forEach(question => {
+        positions[question.options.indexOf(question.correctAnswer)] += 1;
+      });
+    }
+
+    expect(positions.every(count => count > 0)).toBe(true);
+  });
+
   test('shuffle handles edge cases without mutating its input', () => {
     const original = [1, 2, 3, 4];
     expect(shuffleArray([])).toEqual([]);
     expect(shuffleArray([1])).toEqual([1]);
     expect(shuffleArray(original)).toEqual(expect.arrayContaining(original));
     expect(original).toEqual([1, 2, 3, 4]);
+  });
+
+  test('provides every letter-number game code exactly once in random order', () => {
+    const codes = getGameCodeCandidates();
+    expect(codes).toHaveLength(260);
+    expect(new Set(codes).size).toBe(260);
+    expect(codes.every(code => /^[A-Z][0-9]$/.test(code))).toBe(true);
   });
 
   test('secureRandomInt validates its range and stays within bounds', () => {

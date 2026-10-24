@@ -29,16 +29,43 @@ export const shuffleArray = (array) => {
   return shuffled;
 };
 
-export const questionId = (question) => question?.question?.trim() || '';
+export const questionId = (question) =>
+  question?.question
+    ?.normalize('NFKD')
+    .toLowerCase()
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim() || '';
+
+export const isPlayableQuestion = (question) => (
+  Boolean(questionId(question)) &&
+  typeof question?.correctAnswer === 'string' &&
+  question.correctAnswer.trim().length > 0 &&
+  Array.isArray(question?.options) &&
+  question.options.length >= 2 &&
+  question.options.every(option => typeof option === 'string' && option.trim().length > 0) &&
+  new Set(question.options).size === question.options.length &&
+  question.options.includes(question.correctAnswer)
+);
+
+export const shuffleQuestionOptions = (question) => ({
+  ...question,
+  options: shuffleArray(question.options)
+});
 
 export const getTenRandomQuestions = (previousQuestions = []) => {
   const seen = new Set();
   const uniqueQuestions = WINE_QUIZ_QUESTIONS.filter(question => {
+    if (!isPlayableQuestion(question)) return false;
     const id = questionId(question);
-    if (!id || seen.has(id)) return false;
+    if (seen.has(id)) return false;
     seen.add(id);
     return true;
   });
+
+  if (uniqueQuestions.length < 10) {
+    throw new Error('At least 10 unique, playable questions are required.');
+  }
 
   const recentlyUsed = new Set([
     ...loadRecentQuestionIds(),
@@ -54,7 +81,7 @@ export const getTenRandomQuestions = (previousQuestions = []) => {
   }
 
   saveRecentQuestionIds(selected.map(questionId));
-  return selected;
+  return selected.map(shuffleQuestionOptions);
 };
 
 export const generateRoundId = () => {
@@ -66,10 +93,21 @@ export const generateRoundId = () => {
   return `${Date.now().toString(36)}-${bytes[0].toString(36)}${bytes[1].toString(36)}`;
 };
 
-export const generateGameCode = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return Array.from({ length: 4 }, () => characters[secureRandomInt(characters.length)]).join('');
+export const getGameCodeCandidates = () => {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const digits = '0123456789';
+  const codes = [];
+
+  for (const letter of letters) {
+    for (const digit of digits) {
+      codes.push(`${letter}${digit}`);
+    }
+  }
+
+  return shuffleArray(codes);
 };
+
+export const generateGameCode = () => getGameCodeCandidates()[0];
 
 export const cloneData = (value) => JSON.parse(JSON.stringify(value));
 

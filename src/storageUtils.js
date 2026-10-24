@@ -75,5 +75,12 @@ export const getPendingAnswer = (gameId, roundId, questionKey, userId) =>
 export const loadRecentQuestionIds = () => readJsonStorage(RECENT_QUESTIONS_STORAGE_KEY, []);
 
 export const saveRecentQuestionIds = (questionIds) => {
-  writeJsonStorage(RECENT_QUESTIONS_STORAGE_KEY, questionIds.slice(-40));
+  const combined = [
+    ...loadRecentQuestionIds(),
+    ...(Array.isArray(questionIds) ? questionIds : [])
+  ].filter(Boolean);
+  const latestUniqueIds = combined.filter(
+    (id, index) => combined.lastIndexOf(id) === index
+  );
+  writeJsonStorage(RECENT_QUESTIONS_STORAGE_KEY, latestUniqueIds.slice(-100));
 };

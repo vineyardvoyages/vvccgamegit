@@ -1,3 +1,5 @@
+import { ADDITIONAL_WINE_QUESTIONS } from './additionalQuestions';
+
 export const WINE_QUIZ_QUESTIONS = [
   // --- General Wine Knowledge (100 questions) ---
   {
@@ -665,14 +667,14 @@ export const WINE_QUIZ_QUESTIONS = [
     }
   },
   {
-    question: "Which grape varietal is the most widely planted in the world?",
+    question: "Which variety is ranked as the world's most widely planted wine grape in modern global vineyard-area studies?",
     options: ["Merlot", "Airén", "Cabernet Sauvignon", "Chardonnay"],
-    correctAnswer: "Airén",
-    explanation: "While Cabernet Sauvignon and Merlot are very popular, Airén, a white grape primarily grown in Spain, historically holds the title for most widely planted by area.",
+    correctAnswer: "Cabernet Sauvignon",
+    explanation: "Cabernet Sauvignon overtook Airén in modern global wine-grape bearing-area rankings. Airén led around the start of this century, while Kyoho ranks above Cabernet Sauvignon only when table grapes and other non-wine uses are included.",
     wrongAnswerExplanations: {
-      "Merlot": "Merlot is widely planted but not the most extensive by vineyard area.",
-      "Cabernet Sauvignon": "Cabernet Sauvignon is popular globally but doesn't have the largest vineyard area.",
-      "Chardonnay": "Chardonnay is widely planted but has less total vineyard area than Airén."
+      "Merlot": "Merlot is among the world's most planted wine grapes, but it ranks behind Cabernet Sauvignon.",
+      "Airén": "Airén was the leading wine grape around the start of this century, but it no longer holds the top position.",
+      "Chardonnay": "Chardonnay is planted worldwide, but its total bearing area is smaller than Cabernet Sauvignon's."
     }
   },
   {
@@ -1270,7 +1272,7 @@ export const WINE_QUIZ_QUESTIONS = [
       "Having no rainfall whatsoever": "Both regions are known for their humidity and the challenges of managing rain.",
       "Being located on a tropical island": "Both are inland continental or maritime temperate regions."
     }
-  },,
+  },
 
   {
     question: "Which Virginia red grape commonly shows spicy, peppery notes with aromas of plum, blackberry, violets, and tobacco?",
@@ -1792,5 +1794,5 @@ export const WINE_QUIZ_QUESTIONS = [
       "Annual rainfall and elevation only": "Weather and elevation can matter in viticulture, but the Loudoun tool specifically combines soil type, aspect, and slope percentage."
     }
   },
-
+  ...ADDITIONAL_WINE_QUESTIONS
 ];
