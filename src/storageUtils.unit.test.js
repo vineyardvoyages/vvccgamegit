@@ -51,7 +51,7 @@ describe('recent-question history', () => {
     const saved = loadRecentQuestionIds();
     expect(saved).toHaveLength(100);
     expect(saved[0]).toBe('q-21');
-    expect(saved.at(-1)).toBe('q-120');
+    expect(saved[saved.length - 1]).toBe('q-120');
     expect(new Set(saved).size).toBe(100);
   });
 });
