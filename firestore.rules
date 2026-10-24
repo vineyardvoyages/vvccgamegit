@@ -6,8 +6,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function validGameId(gameId) {
+    function isShortGameId(gameId) {
+      return gameId.matches('^[A-Z][0-9]$');
+    }
+
+    function isLegacyGameId(gameId) {
       return gameId.matches('^[A-Z]{4}$');
+    }
+
+    function validGameId(gameId) {
+      return isShortGameId(gameId) || isLegacyGameId(gameId);
     }
 
     function validGameShape(data) {
@@ -23,7 +31,8 @@ service cloud.firestore {
           'pendingAnswers',
           'questionResults',
           'questions',
-          'createdAt'
+          'createdAt',
+          'expiresAt'
         ])
         && data.hostId is string
         && data.hostName is string
@@ -39,7 +48,51 @@ service cloud.firestore {
         && data.questionResults is map
         && data.questions is list
         && data.questions.size() == 10
-        && data.createdAt is string;
+        && data.createdAt is string
+        && (
+          !data.keys().hasAny(['expiresAt'])
+          || data.expiresAt is timestamp
+        );
+    }
+
+    function validInitialGameState(data) {
+      return data.currentQuestionIndex == 0
+        && data.quizEnded == false
+        && data.revealAnswers == false
+        && data.players.size() == 0
+        && data.playersById.size() == 0
+        && data.pendingAnswers.size() == 0
+        && data.questionResults.size() == 0;
+    }
+
+    function validNewExpiration(gameId, data) {
+      return (
+          isShortGameId(gameId)
+          && data.keys().hasAny(['expiresAt'])
+          && data.expiresAt > request.time
+          && data.expiresAt <= request.time + duration.value(24, 'h')
+        )
+        || (
+          isLegacyGameId(gameId)
+          && !data.keys().hasAny(['expiresAt'])
+        );
+    }
+
+    function sameSession() {
+      return request.resource.data.hostId == resource.data.hostId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.questions == resource.data.questions
+        && request.resource.data.get('expiresAt', null)
+          == resource.data.get('expiresAt', null);
+    }
+
+    function canReuseExpiredShortCode(gameId) {
+      return isShortGameId(gameId)
+        && resource.data.keys().hasAny(['expiresAt'])
+        && resource.data.expiresAt < request.time
+        && request.resource.data.hostId == request.auth.uid
+        && validInitialGameState(request.resource.data)
+        && validNewExpiration(gameId, request.resource.data);
     }
 
     match /artifacts/vineyardvoyagesquiz-33fde/users/{userId}/profile/userProfile {
@@ -62,26 +115,27 @@ service cloud.firestore {
       allow create: if signedIn()
         && validGameId(gameId)
         && validGameShape(request.resource.data)
-        && request.resource.data.hostId == request.auth.uid
-        && request.resource.data.players.size() == 0
-        && request.resource.data.playersById.size() == 0
-        && request.resource.data.pendingAnswers.size() == 0
-        && request.resource.data.questionResults.size() == 0;
+        && validInitialGameState(request.resource.data)
+        && validNewExpiration(gameId, request.resource.data)
+        && request.resource.data.hostId == request.auth.uid;
 
       allow update: if signedIn()
         && validGameId(gameId)
         && validGameShape(request.resource.data)
-        && request.resource.data.hostId == resource.data.hostId
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.questions == resource.data.questions
         && (
-          request.auth.uid == resource.data.hostId
-          || (
-            request.resource.data.diff(resource.data).affectedKeys()
-              .hasOnly(['playersById', 'pendingAnswers'])
-            && request.resource.data.playersById.diff(resource.data.playersById)
-              .affectedKeys().hasOnly([request.auth.uid])
+          (
+            sameSession()
+            && (
+              request.auth.uid == resource.data.hostId
+              || (
+                request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['playersById', 'pendingAnswers'])
+                && request.resource.data.playersById.diff(resource.data.playersById)
+                  .affectedKeys().hasOnly([request.auth.uid])
+              )
+            )
           )
+          || canReuseExpiredShortCode(gameId)
         );
 
       allow delete: if false;
