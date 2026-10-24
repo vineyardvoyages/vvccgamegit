@@ -1158,36 +1158,36 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which type of climate does Northern Virginia have, generally suitable for grape growing?",
+    "question": "Which growing-season condition commonly challenges Northern Virginia vineyards?",
     "options": [
-      "Mediterranean",
-      "Desert",
-      "Humid Continental",
-      "Tropical"
+      "Warm humidity and frequent rainfall",
+      "A completely rainless summer",
+      "Year-round tropical heat",
+      "Permanent winter frost"
     ],
-    "correctAnswer": "Humid Continental",
-    "explanation": "Northern Virginia experiences a humid continental climate, characterized by warm, humid summers and cold winters, which presents both opportunities and challenges for viticulture.",
+    "correctAnswer": "Warm humidity and frequent rainfall",
+    "explanation": "Northern Virginia's warm, humid growing season can increase fungal pressure, so airflow, canopy management, drainage, and timely vineyard work are important.",
     "wrongAnswerExplanations": {
-      "Mediterranean": "Mediterranean climates are dry in summer, unlike Virginia's humid summers.",
-      "Desert": "Desert climates are extremely dry, completely different from Virginia's humid climate.",
-      "Tropical": "Tropical climates are consistently warm year-round, unlike Virginia's seasonal variations."
+      "A completely rainless summer": "Northern Virginia normally receives summer rainfall and is not a desert climate.",
+      "Year-round tropical heat": "The region has four distinct seasons rather than tropical temperatures all year.",
+      "Permanent winter frost": "Winter cold occurs, but frost is not permanent through the growing season."
     },
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which type of soil is common in some Northern Virginia vineyards, contributing to mineral notes in wines?",
+    "question": "Which site characteristic can help a Northern Virginia vineyard recover after heavy rain?",
     "options": [
-      "Sandy soil",
-      "Clay soil",
-      "Loamy soil",
-      "Slate or rocky soil"
+      "Well-drained, sloping soil",
+      "A low pocket where water collects",
+      "Compacted soil with no pore space",
+      "A permanently saturated root zone"
     ],
-    "correctAnswer": "Slate or rocky soil",
-    "explanation": "Some areas of Northern Virginia, particularly in the foothills, have rocky or slate-rich soils that can impart distinct minerality to the wines.",
+    "correctAnswer": "Well-drained, sloping soil",
+    "explanation": "A well-drained slope can move excess water and cold air away from vines, reducing waterlogging and some disease and frost risks.",
     "wrongAnswerExplanations": {
-      "Sandy soil": "Sandy soils drain well but don't typically contribute mineral notes.",
-      "Clay soil": "Clay soils retain water but don't typically impart mineral characteristics.",
-      "Loamy soil": "Loamy soils are fertile but don't typically contribute mineral notes."
+      "A low pocket where water collects": "Low pockets can retain water and cold air, increasing vineyard risk.",
+      "Compacted soil with no pore space": "Compaction restricts drainage and root growth.",
+      "A permanently saturated root zone": "Grapevine roots need oxygen; persistent saturation can damage roots and encourage disease."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1209,15 +1209,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "True or False: Virginia is one of the oldest wine-producing states in the United States.",
+    "question": "Which historical figure experimented extensively with European wine grapes at Monticello?",
     "options": [
-      "True",
-      "False"
+      "Thomas Jefferson",
+      "Benjamin Franklin",
+      "James Madison",
+      "George Mason"
     ],
-    "correctAnswer": "True",
-    "explanation": "Virginia has a long history of winemaking, dating back to the early colonial period, making it one of the oldest wine states.",
+    "correctAnswer": "Thomas Jefferson",
+    "explanation": "Thomas Jefferson pursued viticulture at Monticello and promoted the idea that Virginia could produce fine wine, even though his own experiments struggled.",
     "wrongAnswerExplanations": {
-      "False": "Virginia indeed has one of the longest histories of winemaking in the United States."
+      "Benjamin Franklin": "Franklin appreciated wine but is not the figure most associated with Monticello's vineyard experiments.",
+      "James Madison": "Madison lived at Montpelier, not Monticello.",
+      "George Mason": "Mason's home was Gunston Hall; Monticello belonged to Jefferson."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1273,15 +1277,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "True or False: All grapes grown in Northern Virginia are native American varietals.",
+    "question": "Which statement best describes the grapes grown in Northern Virginia?",
     "options": [
-      "True",
-      "False"
+      "Growers use European vinifera grapes, hybrids, and some native varieties",
+      "Every vineyard grows only native American grape species",
+      "European wine grapes cannot survive anywhere in the region",
+      "All local wine must be made from a single hybrid grape"
     ],
-    "correctAnswer": "False",
-    "explanation": "While some native and hybrid varietals are grown, European (Vitis vinifera) grapes like Viognier, Cabernet Franc, and Chardonnay are widely cultivated and form the backbone of Virginia's fine wine industry.",
+    "correctAnswer": "Growers use European vinifera grapes, hybrids, and some native varieties",
+    "explanation": "Northern Virginia vineyards grow many Vitis vinifera varieties—including Cabernet Franc, Petit Verdot, Chardonnay, and Viognier—alongside selected hybrids and native grapes.",
     "wrongAnswerExplanations": {
-      "True": "Virginia grows many European vinifera grapes, not just native American varietals."
+      "Every vineyard grows only native American grape species": "European vinifera varieties are widely planted in Northern Virginia.",
+      "European wine grapes cannot survive anywhere in the region": "Many vinifera grapes are successfully cultivated with careful site and disease management.",
+      "All local wine must be made from a single hybrid grape": "Virginia wineries work with many grapes and styles; no such single-grape requirement exists."
     },
     "category": "virginia-and-local-terroir"
   },
