@@ -152,7 +152,7 @@ const BASE_WINE_QUESTIONS = [
       "Champagne": "Champagne is a sparkling wine exclusively from the Champagne region of France.",
       "Lambrusco": "Lambrusco is a sparkling red wine from Italy, not Spain."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "What does 'tannin' refer to in wine?",
@@ -186,7 +186,7 @@ const BASE_WINE_QUESTIONS = [
       "Pinot Gris": "Pinot Gris is more associated with Alsace than the Loire Valley's aromatic wines.",
       "Riesling": "Riesling is primarily grown in Germany and Alsace, not the Loire Valley."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "Which fortified wine is produced in northern Portugal's Douro Valley?",
@@ -475,7 +475,7 @@ const BASE_WINE_QUESTIONS = [
       "Napa Valley, USA": "Napa Valley is known for Cabernet Sauvignon and Chardonnay, not primarily Riesling.",
       "Tuscany, Italy": "Tuscany is famous for Sangiovese-based wines like Chianti, not Riesling."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "What is the difference between red and white wine production?",
@@ -628,7 +628,7 @@ const BASE_WINE_QUESTIONS = [
       "Racking": "Racking is transferring wine from one container to another to separate it from sediment.",
       "Fining": "Fining is adding agents to clarify wine by removing particles and impurities."
     },
-    "category": "tasting-and-service"
+    "category": "wine-language-and-production"
   },
   {
     "question": "Which type of wine is typically served as an aperitif (before a meal)?",
@@ -662,7 +662,7 @@ const BASE_WINE_QUESTIONS = [
       "Co-fermenting must with neutral grape spirit": "Adding grape spirit is fortification, not blending.",
       "Aging one grape in two kinds of oak without combining lots": "Using different barrels becomes a blend only when the resulting lots are combined."
     },
-    "category": "tasting-and-service"
+    "category": "wine-language-and-production"
   },
   {
     "question": "Which combination commonly makes a wine feel fuller-bodied?",
@@ -866,7 +866,7 @@ const BASE_WINE_QUESTIONS = [
       "70-80°F": "This is too warm and would accelerate aging, potentially causing wines to deteriorate quickly.",
       "Below 30°F": "Freezing temperatures would damage the wine and could cause bottles to break."
     },
-    "category": "grapes-and-wine-styles"
+    "category": "tasting-and-service"
   },
   {
     "question": "Which of these terms describes a wine with high acidity?",
@@ -1087,7 +1087,7 @@ const BASE_WINE_QUESTIONS = [
       "Dry white wine": "White wines are served chilled but not as cold as dessert wines.",
       "Rosé wine": "Rosé is served chilled but not as cold as sweet dessert wines like Ice Wine."
     },
-    "category": "grapes-and-wine-styles"
+    "category": "tasting-and-service"
   },
   {
     "question": "Which grape varietal is considered Virginia's signature white grape?",
@@ -1124,36 +1124,36 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "What is a common red grape varietal grown in Northern Virginia, known for its deep color and firm tannins?",
+    "question": "In vineyard site selection, what does a slope's aspect describe?",
     "options": [
-      "Pinot Noir",
-      "Petit Verdot",
-      "Gamay",
-      "Zinfandel"
+      "The direction the slope faces",
+      "The percentage of clay in the subsoil",
+      "The age of the vines on the slope",
+      "The legal yield limit for the vineyard"
     ],
-    "correctAnswer": "Petit Verdot",
-    "explanation": "Petit Verdot, traditionally a blending grape in Bordeaux, has found success in Virginia as a standalone varietal, producing bold, structured wines.",
+    "correctAnswer": "The direction the slope faces",
+    "explanation": "Aspect is the compass direction a slope faces. It affects sunlight, warmth, wind exposure, and how quickly a vineyard dries after rain.",
     "wrongAnswerExplanations": {
-      "Pinot Noir": "Pinot Noir produces light-colored wines with soft tannins, opposite of the description.",
-      "Gamay": "Gamay creates light, fruity wines, not deeply colored tannic wines.",
-      "Zinfandel": "Zinfandel isn't commonly grown in Northern Virginia's climate."
+      "The percentage of clay in the subsoil": "Soil composition matters, but it is not what vineyard workers mean by aspect.",
+      "The age of the vines on the slope": "Vine age and slope aspect are separate vineyard characteristics.",
+      "The legal yield limit for the vineyard": "Yield rules may come from an appellation or producer decision, not the slope's aspect."
     },
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which historical figure is credited with early attempts to grow European grapes in Virginia?",
+    "question": "Which Virginia AVA surrounds Charlottesville and includes Thomas Jefferson's Monticello?",
     "options": [
-      "George Washington",
-      "Thomas Jefferson",
-      "James Madison",
-      "Patrick Henry"
+      "Monticello AVA",
+      "Middleburg Virginia AVA",
+      "Shenandoah Valley AVA",
+      "Virginia's Eastern Shore AVA"
     ],
-    "correctAnswer": "Thomas Jefferson",
-    "explanation": "Thomas Jefferson was a passionate advocate for viticulture and made significant efforts to establish European grapevines at Monticello.",
+    "correctAnswer": "Monticello AVA",
+    "explanation": "The Monticello AVA is centered around Charlottesville in Virginia's Piedmont and takes its name from Thomas Jefferson's nearby home.",
     "wrongAnswerExplanations": {
-      "George Washington": "While Washington was interested in agriculture, Jefferson was more focused on viticulture.",
-      "James Madison": "Madison wasn't particularly associated with early Virginia viticulture efforts.",
-      "Patrick Henry": "Patrick Henry wasn't known for involvement in early Virginia wine growing attempts."
+      "Middleburg Virginia AVA": "The Middleburg Virginia AVA lies in Northern Virginia around Middleburg, not Charlottesville.",
+      "Shenandoah Valley AVA": "The Shenandoah Valley AVA follows the valley west of the Blue Ridge rather than surrounding Charlottesville.",
+      "Virginia's Eastern Shore AVA": "Virginia's Eastern Shore AVA is on the coastal peninsula between the Chesapeake Bay and Atlantic Ocean."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1311,19 +1311,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "What is a common practice in Virginia vineyards to manage humidity and promote air circulation?",
+    "question": "What does hedging accomplish in a vigorous vineyard canopy?",
     "options": [
-      "Dense planting",
-      "Leaf pulling (canopy management)",
-      "Deep irrigation",
-      "Using plastic covers"
+      "It trims shoot tips to keep growth manageable",
+      "It removes every leaf from the fruiting zone",
+      "It adds sugar to grapes before harvest",
+      "It seals the vineyard floor against rainfall"
     ],
-    "correctAnswer": "Leaf pulling (canopy management)",
-    "explanation": "Canopy management, including leaf pulling, helps improve air circulation around grape clusters, reducing disease risk in humid climates.",
+    "correctAnswer": "It trims shoot tips to keep growth manageable",
+    "explanation": "Hedging trims long shoot tips so rows remain workable and the canopy does not become excessively tangled or shaded.",
     "wrongAnswerExplanations": {
-      "Dense planting": "Dense planting would reduce air circulation, not improve it.",
-      "Deep irrigation": "Irrigation doesn't directly address air circulation issues.",
-      "Using plastic covers": "Plastic covers would trap humidity, not reduce it."
+      "It removes every leaf from the fruiting zone": "Complete defoliation is not the goal of hedging; hedging trims shoot growth.",
+      "It adds sugar to grapes before harvest": "Adding sugar is a cellar decision called chaptalization, not a vineyard hedging practice.",
+      "It seals the vineyard floor against rainfall": "Hedging concerns vine shoots, not waterproofing the soil."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1430,19 +1430,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "world-wine-regions"
   },
   {
-    "question": "The Douro Valley in Portugal is most famous for being the birthplace of which fortified wine?",
+    "question": "What type of traditional boat historically carried barrels of Port down the Douro River?",
     "options": [
-      "Sherry",
-      "Port",
-      "Madeira",
-      "Marsala"
+      "Barco rabelo",
+      "Gondola",
+      "Bateau-mouche",
+      "Punt"
     ],
-    "correctAnswer": "Port",
-    "explanation": "Port is produced exclusively in the Douro Valley, where steep terraced vineyards have been designated a UNESCO World Heritage site.",
+    "correctAnswer": "Barco rabelo",
+    "explanation": "Flat-bottomed barcos rabelos historically transported Port barrels from the Douro Valley toward the lodges near Porto and Vila Nova de Gaia.",
     "wrongAnswerExplanations": {
-      "Sherry": "Sherry is produced in the 'Sherry Triangle' of Spain.",
-      "Madeira": "Madeira comes from the Portuguese island of the same name, not the Douro Valley.",
-      "Marsala": "Marsala is a fortified wine from Sicily, Italy."
+      "Gondola": "A gondola is associated with Venice rather than the Douro wine trade.",
+      "Bateau-mouche": "A bateau-mouche is a sightseeing boat associated with Paris, not a traditional Port carrier.",
+      "Punt": "A punt is a flat-bottomed recreational boat propelled with a pole, not the named Douro cargo boat."
     },
     "category": "world-wine-regions"
   },
@@ -1546,7 +1546,7 @@ const BASE_WINE_QUESTIONS = [
       "Mediterranean Sea": "This is located between Europe and Africa.",
       "Gulf of Mexico": "This is located in North America."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "Who is credited with bringing the first Tannat vines to Uruguay in the 1870s?",
@@ -1699,7 +1699,7 @@ const BASE_WINE_QUESTIONS = [
       "Riesling": "Mostly associated with Germany and cooler climates like Virginia or the Finger Lakes.",
       "Gewürztraminer": "Known for lychee notes, it is much less common in Argentina than Torrontés."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "In Argentina, 'High Altitude' viticulture is essential. In which province would you find the celebrated Uco Valley?",
@@ -1838,21 +1838,21 @@ const BASE_WINE_QUESTIONS = [
     "category": "world-wine-regions"
   },
   {
-    "question": "In 1787, which future US President visited Bordeaux and Southwest France, meticulously cataloging renowned vineyards that influenced Virginia wine history?",
+    "question": "Which southwest French appellation is especially associated with white wines made from Petit Manseng and Gros Manseng?",
     "options": [
-      "George Washington",
-      "Thomas Jefferson",
-      "Alexander Hamilton",
-      "John Adams"
+      "Jurançon",
+      "Madiran",
+      "Cahors",
+      "Fronton"
     ],
-    "correctAnswer": "Thomas Jefferson",
-    "explanation": "As Minister to France, Jefferson’s tours of Bordeaux and Occitanie convinced him that Virginia could produce world-class wine from the same varietals.",
+    "correctAnswer": "Jurançon",
+    "explanation": "Jurançon in southwest France produces dry and sweet white wines, principally from Petit Manseng and Gros Manseng.",
     "wrongAnswerExplanations": {
-      "George Washington": "While he grew grapes, he was more focused on whiskey and general farming.",
-      "Alexander Hamilton": "More focused on urban finance than rural viticulture.",
-      "John Adams": "Preferred cider over wine, according to most historical accounts."
+      "Madiran": "Madiran is best known for powerful red wines led by Tannat.",
+      "Cahors": "Cahors is the historic home of Malbec-led red wine.",
+      "Fronton": "Fronton is known for red and rosé wines centered on Négrette."
     },
-    "category": "virginia-and-local-terroir"
+    "category": "world-wine-regions"
   },
   {
     "question": "Which red grape gives the wines of Madiran their famously powerful tannic structure?",
@@ -1889,21 +1889,21 @@ const BASE_WINE_QUESTIONS = [
     "category": "world-wine-regions"
   },
   {
-    "question": "Which Bordeaux varietal is often used in very small percentages to add deep color and spice, a practice mirrored in Loudoun 'Meritage' blends?",
+    "question": "What does the vineyard term 'coulure' describe?",
     "options": [
-      "Chardonnay",
-      "Petit Verdot",
-      "Pinot Grigio",
-      "Tempranillo"
+      "Poor fruit set after flowering",
+      "Sunburn on ripening berries",
+      "Splitting berries after heavy rain",
+      "Uneven color change within a cluster"
     ],
-    "correctAnswer": "Petit Verdot",
-    "explanation": "Petit Verdot ripens late and provides deep color and firm structure. It is becoming a standalone varietal in Virginia.",
+    "correctAnswer": "Poor fruit set after flowering",
+    "explanation": "Coulure occurs when flowers fail to develop into berries, often after cool, wet, or otherwise unfavorable conditions around flowering.",
     "wrongAnswerExplanations": {
-      "Chardonnay": "A white grape, never used for color in red Bordeaux blends.",
-      "Pinot Grigio": "A white grape used for light, crisp wines.",
-      "Tempranillo": "The main grape of Rioja, Spain, not used in traditional Bordeaux blends."
+      "Sunburn on ripening berries": "Sunburn is heat or light damage to exposed berries, not coulure.",
+      "Splitting berries after heavy rain": "Berry splitting can follow rapid water uptake but is not the flowering-stage problem called coulure.",
+      "Uneven color change within a cluster": "Uneven ripening or color change is described separately; coulure is failed fruit set."
     },
-    "category": "virginia-and-local-terroir"
+    "category": "wine-language-and-production"
   },
   {
     "question": "Blanquette de Limoux is traditionally cited as an early recorded sparkling wine. What year appears in that historic claim?",
@@ -1920,7 +1920,7 @@ const BASE_WINE_QUESTIONS = [
       "1729": "That is associated with the founding era of early Champagne houses, later than the Limoux record.",
       "1815": "This is centuries after the traditional 1531 Limoux reference."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "What broad geographic influence do Bordeaux and Loudoun County both experience?",
@@ -2311,7 +2311,7 @@ const BASE_WINE_QUESTIONS = [
       "Fermented with whole clusters and stems": "That describes whole-cluster fermentation.",
       "Fortified with a distilled grape spirit": "That describes fortification."
     },
-    "category": "tasting-and-service"
+    "category": "wine-language-and-production"
   },
   {
     "question": "What is a cooper?",
@@ -2328,7 +2328,7 @@ const BASE_WINE_QUESTIONS = [
       "A vineyard irrigation specialist": "Irrigation specialists manage water systems rather than barrel construction.",
       "A laboratory that tests grape sugar": "A cooper is a person and craft, not a wine laboratory."
     },
-    "category": "tasting-and-service"
+    "category": "wine-language-and-production"
   },
   {
     "question": "What is maceration in winemaking?",
@@ -2591,3 +2591,4 @@ export const WINE_QUIZ_QUESTIONS = [
   ...BASE_WINE_QUESTIONS,
   ...ADDITIONAL_WINE_QUESTIONS
 ];
+
