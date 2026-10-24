@@ -93,10 +93,21 @@ export const generateRoundId = () => {
   return `${Date.now().toString(36)}-${bytes[0].toString(36)}${bytes[1].toString(36)}`;
 };
 
-export const generateGameCode = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return Array.from({ length: 4 }, () => characters[secureRandomInt(characters.length)]).join('');
+export const getGameCodeCandidates = () => {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const digits = '0123456789';
+  const codes = [];
+
+  for (const letter of letters) {
+    for (const digit of digits) {
+      codes.push(`${letter}${digit}`);
+    }
+  }
+
+  return shuffleArray(codes);
 };
+
+export const generateGameCode = () => getGameCodeCandidates()[0];
 
 export const cloneData = (value) => JSON.parse(JSON.stringify(value));
 
