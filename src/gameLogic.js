@@ -261,6 +261,17 @@ export const reconcilePendingAnswerData = (game, pendingAnswer) => {
   return working;
 };
 
+export const getReconciledAnswerUpdate = (game, pendingAnswers = []) => {
+  const reconciled = pendingAnswers.reduce(
+    (currentGame, answer) => reconcilePendingAnswerData(currentGame, answer),
+    game
+  );
+  return {
+    playersById: reconciled.playersById || {},
+    pendingAnswers: reconciled.pendingAnswers || {}
+  };
+};
+
 export const scoreRevealedQuestionData = (game) => {
   const working = cloneData(game);
   const roundId = working.roundId || 'legacy-round';
@@ -303,4 +314,14 @@ export const scoreRevealedQuestionData = (game) => {
   };
   working.revealAnswers = true;
   return working;
+};
+
+export const getRevealedQuestionUpdate = (game) => {
+  const scoredGame = scoreRevealedQuestionData(game);
+  return {
+    playersById: scoredGame.playersById || {},
+    pendingAnswers: scoredGame.pendingAnswers || {},
+    questionResults: scoredGame.questionResults || {},
+    revealAnswers: true
+  };
 };
