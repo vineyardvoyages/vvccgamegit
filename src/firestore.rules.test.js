@@ -203,4 +203,21 @@ describe('game rules', () => {
       questionResults: { 'round-1': { '0': { correctAnswer: 'A', revealedAt: 10 } } }
     }));
   });
+
+  test('the host can reveal a short-code game without rewriting its expiry', async () => {
+    await seedShortGame(
+      'A7',
+      Timestamp.fromMillis(Date.now() + (12 * 60 * 60 * 1000))
+    );
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertSucceeds(updateDoc(doc(db, gamePath('A7')), {
+      playersById: {},
+      pendingAnswers: {},
+      revealAnswers: true,
+      questionResults: {
+        'round-1': { '0': { correctAnswer: 'A', revealedAt: 10 } }
+      }
+    }));
+  });
 });
+
