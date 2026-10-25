@@ -12,14 +12,14 @@ import {
   getTenRandomQuestions,
   generateRoundId,
   getGameCodeCandidates,
-  reconcilePendingAnswerData,
+  getReconciledAnswerUpdate,
   getPlayerRound,
   getPlayerAnswer,
   getPlayerFeedback,
   flattenServerPendingAnswers,
   normalizePlayersById,
   ensurePlayerRound,
-  scoreRevealedQuestionData,
+  getRevealedQuestionUpdate,
   getPlayersForGame,
   getAnswerSubmissionStatus
 } from './gameLogic';
@@ -120,6 +120,7 @@ const App = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [answerSyncStatus, setAnswerSyncStatus] = useState('');
+  const [gameActionError, setGameActionError] = useState('');
   const [isOnline, setIsOnline] = useState(
     () => typeof navigator === 'undefined' || navigator.onLine
   );
@@ -141,11 +142,10 @@ const App = () => {
       const gameFound = await runTransaction(db, async transaction => {
         const snapshot = await transaction.get(gameDocRef);
         if (!snapshot.exists()) return false;
-        const reconciled = answers.reduce(
-          (currentGame, answer) => reconcilePendingAnswerData(currentGame, answer),
-          snapshot.data()
+        transaction.update(
+          gameDocRef,
+          getReconciledAnswerUpdate(snapshot.data(), answers)
         );
-        transaction.set(gameDocRef, reconciled);
         return true;
       });
       if (!gameFound) return false;
@@ -568,6 +568,7 @@ const App = () => {
     setAnswerSelected(false);
     setSelectedAnswer(null);
     setAnswerSyncStatus('');
+    setGameActionError('');
     const nextIndex = gameData.currentQuestionIndex + 1;
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
 
@@ -579,14 +580,14 @@ const App = () => {
         });
       } catch (e) {
         console.error("Error advancing question:", e);
-        setError("Failed to advance question.");
+        setGameActionError("Failed to advance question. Please try again.");
       }
     } else {
       try {
         await updateDoc(gameDocRef, { quizEnded: true });
       } catch (e) {
         console.error("Error ending quiz:", e);
-        setError("Failed to end quiz.");
+        setGameActionError("Failed to end quiz. Please try again.");
       }
     }
   };
@@ -632,16 +633,19 @@ const App = () => {
     }
 
     const gameDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/games`, activeGameId);
+    setGameActionError('');
     try {
       await runTransaction(db, async transaction => {
         const snapshot = await transaction.get(gameDocRef);
         if (!snapshot.exists()) throw new Error('Game no longer exists.');
-        const scoredGame = scoreRevealedQuestionData(snapshot.data());
-        transaction.set(gameDocRef, scoredGame);
+        transaction.update(
+          gameDocRef,
+          getRevealedQuestionUpdate(snapshot.data())
+        );
       });
     } catch (e) {
       console.error("Error revealing answers:", e);
-      setError("Failed to reveal answers.");
+      setGameActionError("Failed to reveal answers. Please try again.");
     }
   }, [activeGameId, gameData, userId]);
 
@@ -1119,6 +1123,12 @@ const App = () => {
                 </button>
               )}
             </div>
+          )}
+
+          {isHost && gameActionError && (
+            <p role="alert" className="rounded-lg bg-red-50 p-3 text-center font-semibold text-red-700 ring-1 ring-red-300">
+              {gameActionError}
+            </p>
           )}
 
           {!isHost && !safeGameData.quizEnded && !safeGameData.revealAnswers && (

@@ -2,6 +2,8 @@ import {
   flattenServerPendingAnswers,
   getAnswerSubmissionStatus,
   getGameCodeCandidates,
+  getReconciledAnswerUpdate,
+  getRevealedQuestionUpdate,
   getTenRandomQuestions,
   isPlayableQuestion,
   normalizePlayersById,
@@ -369,5 +371,36 @@ describe('reconnect scoring', () => {
 
     expect(reconciled.playersById['guest-1'].rounds['round-1'].score).toBe(1);
     expect(retried.playersById['guest-1'].rounds['round-1'].score).toBe(1);
+  });
+
+  test('returns field-only writes that cannot corrupt a short game expiry timestamp', () => {
+    const expiresAt = {
+      seconds: 1792886400,
+      nanoseconds: 0,
+      toMillis: () => 1792886400000
+    };
+    const shortGame = {
+      ...baseGame(),
+      hostId: 'host-1',
+      expiresAt,
+      pendingAnswers: {
+        'round-1': { '0': { 'guest-1': {
+          answer: 'Correct', answeredAt: 10, userName: 'Guest'
+        } } }
+      }
+    };
+
+    const answerUpdate = getReconciledAnswerUpdate(shortGame, [answer]);
+    const revealUpdate = getRevealedQuestionUpdate(shortGame);
+
+    expect(Object.keys(answerUpdate).sort()).toEqual([
+      'pendingAnswers', 'playersById'
+    ]);
+    expect(Object.keys(revealUpdate).sort()).toEqual([
+      'pendingAnswers', 'playersById', 'questionResults', 'revealAnswers'
+    ]);
+    expect(answerUpdate).not.toHaveProperty('expiresAt');
+    expect(revealUpdate).not.toHaveProperty('expiresAt');
+    expect(revealUpdate.revealAnswers).toBe(true);
   });
 });
