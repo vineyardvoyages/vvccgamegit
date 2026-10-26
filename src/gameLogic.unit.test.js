@@ -89,14 +89,15 @@ describe('random question selection', () => {
       question => question.correctAnswer === answer
     );
 
-    expect(questionsWithAnswer('Thomas Jefferson')).toHaveLength(1);
-    expect(questionsWithAnswer('Petit Verdot')).toHaveLength(1);
+    expect(questionsWithAnswer('Thomas Jefferson')).toHaveLength(2);
+    expect(questionsWithAnswer('Petit Verdot')).toHaveLength(2);
     expect(byPrompt("Which fortified wine is produced in northern Portugal's Douro Valley?"))
       .toBeDefined();
     expect(byPrompt('The Douro Valley in Portugal is most famous for being the birthplace of which fortified wine?'))
       .toBeUndefined();
 
     [
+      'Which of the following is one of the three principal grapes used in Champagne?',
       'Which of these is a sparkling wine from Spain?',
       'Which white grape is typically used to make dry, aromatic wines in the Loire Valley, France?',
       'Which region is known for producing high-quality Riesling wines?',
@@ -130,15 +131,16 @@ describe('random question selection', () => {
     expect(generatedText).not.toMatch(/Mount Lebanon|Anti-Lebanon/);
 
     const sparklingProduction = new Set([
-      'tirage', 'autolysis', 'traditional method', 'pétillant naturel'
+      'tirage', 'autolysis', 'traditional method', 'pétillant naturel',
+      'riddling', 'disgorgement', 'dosage', 'tank method (Charmat)'
     ]);
     const sparklingSweetness = new Set([
-      'Brut Nature / Zero Dosage', 'Extra Brut', 'Brut', 'Extra Dry',
+      'Brut Nature (Zero Dosage)', 'Extra Brut', 'Brut', 'Extra Dry',
       'Demi-Sec', 'Doux'
     ]);
     const tastingFormats = new Set([
       'blind tasting', 'horizontal tasting', 'vertical tasting',
-      'double-blind tasting', 'barrel tasting'
+      'double-blind tasting'
     ]);
 
     generated.forEach(question => {
@@ -156,11 +158,12 @@ describe('random question selection', () => {
       }
     });
 
-    expect(questionsWithAnswer('magnum')[0].options).toEqual(expect.arrayContaining([
-      'split / piccolo (187.5 mL)',
-      'demi / half-bottle (375 mL)',
-      'double magnum / Champagne jeroboam (3.0 L)'
-    ]));
+    expect(questionsWithAnswer('magnum')[0].options).toEqual([
+      'demi (half-bottle)',
+      'jeroboam (double magnum)',
+      'magnum',
+      'split (piccolo)'
+    ]);
   });
 
   test('keeps 11 consecutive games free of question repeats', () => {
