@@ -302,6 +302,8 @@ const App = () => {
             setAnswerSyncStatus('Answer saved on this device—syncing…');
           } else if (answer) {
             setAnswerSyncStatus('Answer synced.');
+          } else {
+            setAnswerSyncStatus('');
           }
           saveActiveGame(normalizedGameId, userName);
           flushPendingAnswers(normalizedGameId, userId);

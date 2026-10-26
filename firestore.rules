@@ -86,6 +86,22 @@ service cloud.firestore {
           == resource.data.get('expiresAt', null);
     }
 
+    function canHostRestart() {
+      return request.auth.uid == resource.data.hostId
+        && resource.data.quizEnded == true
+        && request.resource.data.roundId.size() > 0
+        && request.resource.data.roundId != resource.data.roundId
+        && request.resource.data.currentQuestionIndex == 0
+        && request.resource.data.quizEnded == false
+        && request.resource.data.revealAnswers == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'roundId', 'currentQuestionIndex', 'quizEnded', 'revealAnswers',
+          'playersById', 'questions'
+        ])
+        && request.resource.data.playersById.keys().toSet()
+          == resource.data.playersById.keys().toSet();
+    }
+
     function canReuseExpiredShortCode(gameId) {
       return isShortGameId(gameId)
         && resource.data.keys().hasAny(['expiresAt'])
@@ -135,6 +151,7 @@ service cloud.firestore {
               )
             )
           )
+          || canHostRestart()
           || canReuseExpiredShortCode(gameId)
         );
 
