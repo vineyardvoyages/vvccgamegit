@@ -1,4 +1,7 @@
 import {
+  ensurePlayerRound,
+  getPlayerRound,
+  getPlayersForGame,
   flattenServerPendingAnswers,
   getAnswerSubmissionStatus,
   getGameCodeCandidates,
@@ -405,5 +408,46 @@ describe('reconnect scoring', () => {
     expect(answerUpdate).not.toHaveProperty('expiresAt');
     expect(revealUpdate).not.toHaveProperty('expiresAt');
     expect(revealUpdate.revealAnswers).toBe(true);
+  });
+});
+
+
+describe('complete group rounds', () => {
+  test('15 players finish ten questions, retry safely, and start a fresh round', () => {
+    let game = {
+      hostId: 'host', roundId: 'first', currentQuestionIndex: 0,
+      revealAnswers: false, quizEnded: false, playersById: {},
+      pendingAnswers: {}, questionResults: {}, questions: getTenRandomQuestions()
+    };
+    const ids = Array.from({ length: 15 }, (_, i) => `player-${i}`);
+    ids.forEach(id => ensurePlayerRound(game.playersById, id, id, game.roundId));
+    for (let q = 0; q < 10; q += 1) {
+      game = { ...game, currentQuestionIndex: q, revealAnswers: false };
+      expect(getAnswerSubmissionStatus(game, String(q)).answeredCount).toBe(0);
+      const question = game.questions[q];
+      ids.forEach((id, i) => {
+        const answer = {
+          gameId: 'A7', roundId: game.roundId, questionKey: String(q),
+          userId: id, userName: id, answeredAt: 100 + q,
+          answer: i % 2 === 0 ? question.correctAnswer : question.options.find(o => o !== question.correctAnswer)
+        };
+        game = { ...game, ...getReconciledAnswerUpdate(game, [answer, answer]) };
+      });
+      expect(getAnswerSubmissionStatus(game, String(q)).allAnswered).toBe(true);
+      game = { ...game, ...getRevealedQuestionUpdate(game) };
+      game = { ...game, ...getRevealedQuestionUpdate(game) };
+      ids.forEach((id, i) => expect(getPlayerRound(game, id).score).toBe(i % 2 === 0 ? q + 1 : 0));
+    }
+    game.quizEnded = true;
+    expect(getPlayersForGame(game)).toHaveLength(15);
+    const previousQuestions = game.questions;
+    game = { ...game, roundId: 'second', questions: getTenRandomQuestions(previousQuestions), currentQuestionIndex: 0, quizEnded: false, revealAnswers: false };
+    ids.forEach(id => ensurePlayerRound(game.playersById, id, id, game.roundId));
+    expect(game.questions.every(q => !previousQuestions.some(p => questionId(p) === questionId(q)))).toBe(true);
+    ids.forEach(id => {
+      expect(getPlayerRound(game, id).score).toBe(0);
+      expect(getPlayerRound(game, id).answers).toEqual({});
+    });
+    expect(getAnswerSubmissionStatus(game, '0').answeredCount).toBe(0);
   });
 });

@@ -221,3 +221,48 @@ describe('game rules', () => {
   });
 });
 
+
+
+describe('completed-game restart rules', () => {
+  const restart = () => ({
+    roundId: 'round-2', currentQuestionIndex: 0,
+    quizEnded: false, revealAnswers: false,
+    playersById: { 'guest-1': { id: 'guest-1', userName: 'Guest', rounds: { 'round-1': { score: 8 }, 'round-2': { score: 0, answers: {} } } } },
+    questions: newGame('host-1').questions.map(q => ({ ...q, question: `New ${q.question}` }))
+  });
+  const seedCompleted = async () => {
+    await testEnv.withSecurityRulesDisabled(async context => {
+      await setDoc(doc(context.firestore(), gamePath('A7')), newGame('host-1', {
+        quizEnded: true, revealAnswers: true, currentQuestionIndex: 9,
+        playersById: { 'guest-1': { id: 'guest-1', userName: 'Guest', rounds: { 'round-1': { score: 8 } } } },
+        expiresAt: Timestamp.fromMillis(Date.now() + 3600000)
+      }));
+    });
+  };
+  test('host can start fresh questions after completion and preserve the session', async () => {
+    await seedCompleted();
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertSucceeds(updateDoc(doc(db, gamePath('A7')), restart()));
+  });
+  test('guest cannot restart a completed game', async () => {
+    await seedCompleted();
+    const db = testEnv.authenticatedContext('guest-1').firestore();
+    await assertFails(updateDoc(doc(db, gamePath('A7')), restart()));
+  });
+  test('restart cannot replace host identity or extend session expiry', async () => {
+    await seedCompleted();
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertFails(updateDoc(doc(db, gamePath('A7')), { ...restart(), hostId: 'guest-1' }));
+    await assertFails(updateDoc(doc(db, gamePath('A7')), { ...restart(), expiresAt: Timestamp.fromMillis(Date.now() + 7200000) }));
+  });
+  test('restart cannot remove existing players', async () => {
+    await seedCompleted();
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertFails(updateDoc(doc(db, gamePath('A7')), { ...restart(), playersById: {} }));
+  });
+  test('fresh questions cannot replace an unfinished round', async () => {
+    await seedShortGame('A7', Timestamp.fromMillis(Date.now() + 3600000));
+    const db = testEnv.authenticatedContext('host-1').firestore();
+    await assertFails(updateDoc(doc(db, gamePath('A7')), restart()));
+  });
+});
