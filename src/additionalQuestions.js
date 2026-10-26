@@ -111,14 +111,14 @@ const REGION_FACTS = [
   {
     "conceptId": "region:franciacorta, italy",
     "region": "Franciacorta, Italy",
-    "association": "Bottle-fermented Italian sparkling wine made from Chardonnay, Pinot Nero, and Pinot Bianco",
+    "association": "Bottle-fermented sparkling wine made from Chardonnay, Pinot Nero, and Pinot Bianco",
     "explanation": "Franciacorta is an Italian appellation for bottle-fermented sparkling wine.",
     "subGroup": "italy"
   },
   {
     "conceptId": "region:rías baixas, spain",
     "region": "Rías Baixas, Spain",
-    "association": "Albariño-based Atlantic white wine",
+    "association": "Crisp, aromatic Albariño white wine from a cool, rainy coastal climate",
     "explanation": "Rías Baixas in Galicia is strongly associated with Albariño.",
     "subGroup": "iberia"
   },
@@ -146,7 +146,7 @@ const REGION_FACTS = [
   {
     "conceptId": "region:vinho verde, portugal",
     "region": "Vinho Verde, Portugal",
-    "association": "Light, zesty, high-acid white wines—often with a slight spritz—made from grapes like Alvarinho and Loureiro",
+    "association": "Zesty, low-alcohol, high-acid white wines—often with a light spritz—made from grapes such as Alvarinho and Loureiro",
     "explanation": "Vinho Verde is known especially for light, fresh white wines with bright acidity.",
     "subGroup": "iberia"
   },
@@ -167,14 +167,14 @@ const REGION_FACTS = [
   {
     "conceptId": "region:rheingau, germany",
     "region": "Rheingau, Germany",
-    "association": "Structured, ageworthy Riesling ranging from dry to sweet",
+    "association": "Structured, ageworthy Riesling from south-facing riverbanks centered around historic abbey estates",
     "explanation": "The Rheingau is a classic German Riesling region.",
     "subGroup": "central-europe"
   },
   {
     "conceptId": "region:wachau, austria",
     "region": "Wachau, Austria",
-    "association": "Dry Grüner Veltliner and Riesling labeled with terms such as Steinfeder, Federspiel, and Smaragd",
+    "association": "Dry, peppery Grüner Veltliner and mineral Riesling grown on steep stone river terraces",
     "explanation": "The Wachau is known for dry Grüner Veltliner and Riesling.",
     "subGroup": "central-europe"
   },
@@ -328,7 +328,7 @@ const REGION_FACTS = [
   {
     "conceptId": "region:central otago, new zealand",
     "region": "Central Otago, New Zealand",
-    "association": "Pinot Noir from a cool, inland region",
+    "association": "Vibrant Pinot Noir from high-elevation, continental valleys in the Southern Hemisphere",
     "explanation": "Central Otago is the world's southernmost major wine region and is best known for Pinot Noir.",
     "subGroup": "southern-hemisphere"
   },
@@ -377,14 +377,14 @@ const REGION_FACTS = [
   {
     "conceptId": "region:ningxia, china",
     "region": "Ningxia, China",
-    "association": "High-altitude vineyards near the Helan Mountains",
+    "association": "Structured Cabernet Sauvignon and Bordeaux-style blends from irrigated high-desert foothills where vines are buried for winter protection",
     "explanation": "Ningxia has emerged as a major Chinese fine-wine region along the Helan Mountain foothills.",
     "subGroup": "ancient-and-emerging"
   },
   {
     "conceptId": "region:bekaa valley, lebanon",
     "region": "Bekaa Valley, Lebanon",
-    "association": "Historic red blends and white wines from a high-elevation Mediterranean valley",
+    "association": "Historic red blends and white wines from a high-elevation eastern Mediterranean valley",
     "explanation": "The Bekaa Valley is the historic center of Lebanese wine production.",
     "subGroup": "ancient-and-emerging"
   },
@@ -466,14 +466,14 @@ const TERM_FACTS = [
     "term": "solera",
     "definition": "a fractional blending system that mixes younger wine with progressively older wine",
     "explanation": "Repeatedly blending younger wine into older tiers helps maintain a consistent mature house style over time.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "cellar-oxygen-management"
   },
   {
     "conceptId": "term:flor",
     "term": "flor",
     "definition": "a film of yeast that protects some Sherries from oxygen while shaping their flavor",
     "explanation": "Flor consumes oxygen and alcohol-related compounds, helping create the saline, nutty character of biologically aged Sherry.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "cellar-oxygen-management"
   },
   {
     "conceptId": "term:late harvest",
@@ -487,21 +487,21 @@ const TERM_FACTS = [
     "term": "chaptalization",
     "definition": "adding sugar before or during fermentation to raise potential alcohol rather than sweetness",
     "explanation": "Where permitted, the goal is adequate alcohol after fermentation—not making the finished wine taste sweet.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "must-adjustments-and-grape-chemistry"
   },
   {
     "conceptId": "term:acidification",
     "term": "acidification",
     "definition": "adding acid to must or wine to increase freshness and lower pH",
     "explanation": "Winemakers may acidify warm-climate fruit to improve freshness, microbial stability, and balance.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "must-adjustments-and-grape-chemistry"
   },
   {
     "conceptId": "term:deacidification",
     "term": "deacidification",
     "definition": "reducing excessive acidity in must or wine",
     "explanation": "Reducing excessive acidity can make a sharply tart wine more balanced without adding sweetness.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "must-adjustments-and-grape-chemistry"
   },
   {
     "conceptId": "term:whole-cluster fermentation",
@@ -627,28 +627,28 @@ const TERM_FACTS = [
     "term": "reduction",
     "definition": "aromas caused by limited oxygen exposure, sometimes resembling struck match or rotten egg",
     "explanation": "A little reduction may dissipate with air, while severe sulfur aromas can signal a cellar problem.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "cellar-oxygen-management"
   },
   {
     "conceptId": "term:aeration",
     "term": "aeration",
     "definition": "deliberately exposing wine to air",
     "explanation": "Controlled air exposure can open aromas, but excessive oxygen eventually risks oxidation.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "cellar-oxygen-management"
   },
   {
     "conceptId": "term:phenolics",
     "term": "phenolics",
     "definition": "a broad group of compounds including tannins, pigments, and many flavor-related substances",
     "explanation": "Phenolics influence color, bitterness, astringency, and aging behavior, especially in red wine.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "must-adjustments-and-grape-chemistry"
   },
   {
     "conceptId": "term:anthocyanins",
     "term": "anthocyanins",
     "definition": "the pigments responsible for much of a red grape skin's color",
     "explanation": "These red-blue pigments are extracted from skins and interact with tannins as red wine ages.",
-    "subGroup": "cellar-chemistry"
+    "subGroup": "must-adjustments-and-grape-chemistry"
   },
   {
     "conceptId": "term:brut",
@@ -684,21 +684,45 @@ const TERM_FACTS = [
 const TERM_DISTRACTOR_FACTS = [
   {
     conceptId: 'distractor:brut-nature',
-    term: 'Brut Nature / Zero Dosage',
-    definition: 'the driest sparkling-wine category, with little or no added dosage',
+    term: 'Brut Nature (Zero Dosage)',
+    definition: 'a bone-dry sparkling-wine category with no added sugar in the dosage and less than 3 g/L of residual sugar',
     subGroup: 'sparkling-sweetness'
   },
   {
     conceptId: 'distractor:extra-dry',
     term: 'Extra Dry',
-    definition: 'a sparkling-wine category that is sweeter than Brut despite its name',
+    definition: 'an off-dry sparkling-wine category that is slightly sweeter than Brut',
     subGroup: 'sparkling-sweetness'
   },
   {
     conceptId: 'distractor:doux',
     term: 'Doux',
-    definition: 'the sweetest standard sparkling-wine category',
+    definition: 'the sweetest sparkling-wine category, containing more than 50 grams of sugar per liter',
     subGroup: 'sparkling-sweetness'
+  },
+  {
+    conceptId: 'distractor:riddling',
+    term: 'riddling',
+    definition: 'gradually turning and tilting sparkling-wine bottles so yeast sediment collects in the neck',
+    subGroup: 'sparkling-production'
+  },
+  {
+    conceptId: 'distractor:disgorgement',
+    term: 'disgorgement',
+    definition: 'removing collected yeast sediment from the neck of a sparkling-wine bottle',
+    subGroup: 'sparkling-production'
+  },
+  {
+    conceptId: 'distractor:dosage',
+    term: 'dosage',
+    definition: 'adding a small amount of wine and usually sugar after disgorgement to set the final sweetness',
+    subGroup: 'sparkling-production'
+  },
+  {
+    conceptId: 'distractor:tank-method',
+    term: 'tank method (Charmat)',
+    definition: 'a sparkling-wine process in which the second fermentation takes place in a pressurized tank rather than individual bottles',
+    subGroup: 'sparkling-production'
   },
   {
     conceptId: 'distractor:tannin',
@@ -725,15 +749,15 @@ const TERM_DISTRACTOR_FACTS = [
     subGroup: 'tasting-sensory'
   },
   {
-    conceptId: 'distractor:double-blind-tasting',
-    term: 'double-blind tasting',
-    definition: 'evaluating wine with neither its identity nor the possible lineup disclosed',
-    subGroup: 'tasting-format'
+    conceptId: 'distractor:mouthfeel',
+    term: 'mouthfeel',
+    definition: 'the combined tactile sensations a wine creates in the mouth',
+    subGroup: 'tasting-sensory'
   },
   {
-    conceptId: 'distractor:barrel-tasting',
-    term: 'barrel tasting',
-    definition: 'sampling unfinished wine directly from barrel before bottling',
+    conceptId: 'distractor:double-blind-tasting',
+    term: 'double-blind tasting',
+    definition: "a tasting in which neither the server pouring the wine nor the taster knows the wine's identity",
     subGroup: 'tasting-format'
   }
 ];
@@ -767,14 +791,15 @@ const placeAnswer = (correctAnswer, wrongAnswers, conceptId) => {
   return options;
 };
 
-const capitalizeFirst = (value) =>
-  value ? `${value[0].toLocaleUpperCase()}${value.slice(1)}` : value;
+const capitalizeFirst = (str) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
 
 const COMMON_ASSOCIATION_STARTS = new Set([
   'Ageworthy',
   'Alpine',
   'Bottle-fermented',
   'Cool-climate',
+  'Crisp',
   'Dry',
   'Fortified',
   'Fresh',
@@ -789,8 +814,10 @@ const COMMON_ASSOCIATION_STARTS = new Set([
   'Structured',
   'Traditional-method',
   'Traditional',
+  'Vibrant',
   'Volcanic',
-  'White'
+  'White',
+  'Zesty'
 ]);
 
 const formatInlineAssociation = (association) => {
@@ -801,20 +828,10 @@ const formatInlineAssociation = (association) => {
 };
 
 const REGION_PROMPTS = {
-  'Franciacorta, Italy':
-    'Which region is known for bottle-fermented Italian sparkling wine made from Chardonnay, Pinot Nero, and Pinot Bianco?',
-  'Rías Baixas, Spain':
-    'Which region is renowned for intensely aromatic, high-acid white wines centered on Albariño, often showing citrus, stone fruit, and saline notes?',
-  'Vinho Verde, Portugal':
-    'Which region is known for light, zesty, high-acid white wines—often with a slight spritz—made from grapes like Alvarinho and Loureiro?',
-  'Rheingau, Germany':
-    'Which region is renowned for structured, ageworthy Riesling ranging from dry to sweet?',
-  'Wachau, Austria':
-    'Which region is known for dry Grüner Veltliner and Riesling labeled with terms such as Steinfeder, Federspiel, and Smaragd?',
   'Verdicchio dei Castelli di Jesi, Italy':
     'Which Italian appellation is known for crisp Adriatic white wines with citrus, fennel, and a subtle almond note?',
   'Bekaa Valley, Lebanon':
-    'Which historic Middle Eastern valley, home to Roman temple ruins at Baalbek and high-elevation vineyards, anchors its country\'s wine industry?',
+    'Which historic Middle Eastern wine valley—home to ancient Roman temple ruins at Baalbek and renowned estates such as Château Musar—sits at high elevation near the Mediterranean coast?',
   'Savoie, France':
     'Which region is known for light, high-acid whites made from Jacquère, Altesse, and other local grapes?'
 };
@@ -861,7 +878,8 @@ const termPromptLead = {
   'cellar-production': 'A cellar note describes',
   'sparkling-production': 'During sparkling-wine production, a winemaker describes',
   'sparkling-sweetness': 'On a sparkling-wine label, a guest encounters',
-  'cellar-chemistry': 'In the cellar, a winemaker describes',
+  'cellar-oxygen-management': 'In the cellar, a winemaker describes',
+  'must-adjustments-and-grape-chemistry': 'In the cellar, a winemaker describes',
   'tasting-sensory': 'At a guided tasting, the host describes',
   'tasting-format': 'At a guided tasting, the host describes',
   'labels-trade-and-format': 'On a label or trade sheet, a guest encounters',
@@ -900,18 +918,24 @@ const SPECIAL_TERM_CHOICES = {
     }
   },
   magnum: {
+    options: [
+      'demi (half-bottle)',
+      'jeroboam (double magnum)',
+      'magnum',
+      'split (piccolo)'
+    ],
     wrongAnswers: [
-      'split / piccolo (187.5 mL)',
-      'demi / half-bottle (375 mL)',
-      'double magnum / Champagne jeroboam (3.0 L)'
+      'demi (half-bottle)',
+      'jeroboam (double magnum)',
+      'split (piccolo)'
     ],
     explanations: {
-      'split / piccolo (187.5 mL)':
-        'A split or piccolo holds 187.5 mL, one quarter of a standard 750 mL bottle.',
-      'demi / half-bottle (375 mL)':
-        'A demi or half-bottle holds 375 mL, half of a standard bottle.',
-      'double magnum / Champagne jeroboam (3.0 L)':
-        'A double magnum holds 3.0 liters, twice the volume of a magnum.'
+      'demi (half-bottle)':
+        'A demi or half-bottle holds 375 milliliters, equal to half of a standard 750-milliliter bottle.',
+      'jeroboam (double magnum)':
+        'A jeroboam holds 3.0 liters (four standard bottles) in sparkling wine and Burgundy, or 4.5 liters in still Bordeaux.',
+      'split (piccolo)':
+        'A split or piccolo holds 187.5 milliliters, equal to one-quarter of a standard bottle (a single-glass serving).'
     }
   }
 };
@@ -929,11 +953,16 @@ const termQuestions = TERM_FACTS.map((item) => {
     ? special.wrongAnswers
     : distractors.map((candidate) => candidate.term);
   const wrongAnswerExplanations = special
-    ? special.explanations
+    ? Object.fromEntries(
+      Object.entries(special.explanations).map(([answer, explanation]) => [
+        answer,
+        capitalizeFirst(explanation)
+      ])
+    )
     : Object.fromEntries(
       distractors.map((candidate) => [
         candidate.term,
-        `${capitalizeFirst(candidate.term)} means ${candidate.definition}.`
+        capitalizeFirst(`${candidate.term} means ${candidate.definition}.`)
       ])
     );
 
@@ -941,9 +970,12 @@ const termQuestions = TERM_FACTS.map((item) => {
     conceptId: item.conceptId,
     category: 'wine-language-and-production',
     question: `${termPromptLead[item.subGroup]} ${item.definition}. Which term fits?`,
-    options: placeAnswer(item.term, wrongAnswers, item.conceptId),
+    options: special?.options
+      || placeAnswer(item.term, wrongAnswers, item.conceptId),
     correctAnswer: item.term,
-    explanation: `${capitalizeFirst(item.term)} means ${item.definition}. ${item.explanation}`,
+    explanation: capitalizeFirst(
+      `${item.term} means ${item.definition}. ${item.explanation}`
+    ),
     wrongAnswerExplanations
   };
 });
