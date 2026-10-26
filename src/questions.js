@@ -67,7 +67,7 @@ const BASE_WINE_QUESTIONS = [
       "Syrah": "Syrah is central to many Rhône wines but is not one of Champagne's three principal grapes.",
       "Zinfandel": "Zinfandel is strongly associated with California and is not a principal Champagne grape."
     },
-    "category": "tasting-and-service"
+    "category": "world-wine-regions"
   },
   {
     "question": "Which of these wines is typically dry and crisp, often with notes of green apple and citrus?",
@@ -1107,53 +1107,53 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which vineyard practice helps reduce fungal pressure in humid Northern Virginia?",
+    "question": "Why do some Virginia vineyards use wind machines or helicopters on clear, calm nights in April?",
     "options": [
-      "Opening the canopy to improve airflow",
-      "Keeping leaves densely packed around clusters",
-      "Flooding the vineyard before harvest",
-      "Allowing weeds to cover every fruiting zone"
+      "To mix warmer air from an inversion layer down into the vines and prevent spring frost damage",
+      "To blow excess rainwater off ripe grape clusters right before autumn harvest",
+      "To disperse fungal spores out of the vineyard canopy during July",
+      "To pollinate grapevine flowers across adjacent vineyard blocks"
     ],
-    "correctAnswer": "Opening the canopy to improve airflow",
-    "explanation": "Careful canopy management improves airflow and light around grape clusters, helping them dry faster after rain in Virginia's humid growing season.",
+    "correctAnswer": "To mix warmer air from an inversion layer down into the vines and prevent spring frost damage",
+    "explanation": "After bud break in spring, cold air can settle in low pockets on calm nights. Wind machines pull warmer air down from a temperature inversion layer to protect tender young shoots from freezing.",
     "wrongAnswerExplanations": {
-      "Keeping leaves densely packed around clusters": "Dense foliage traps humidity and can increase disease pressure.",
-      "Flooding the vineyard before harvest": "Extra water near harvest can increase disease and dilution risks.",
-      "Allowing weeds to cover every fruiting zone": "Unmanaged growth can restrict airflow and compete with vines rather than protect fruit."
+      "To blow excess rainwater off ripe grape clusters right before autumn harvest": "April is the start of the growing season (bud break), months before autumn harvest.",
+      "To disperse fungal spores out of the vineyard canopy during July": "Fungal management relies on canopy airflow and sprays, not April frost fans.",
+      "To pollinate grapevine flowers across adjacent vineyard blocks": "Grapevines are primarily self-pollinating and flower later in spring."
     },
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "In vineyard site selection, what does a slope's aspect describe?",
+    "question": "What is a common red grape varietal grown in Northern Virginia, known for its deep color and firm tannins?",
     "options": [
-      "The direction the slope faces",
-      "The percentage of clay in the subsoil",
-      "The age of the vines on the slope",
-      "The legal yield limit for the vineyard"
+      "Pinot Noir",
+      "Petit Verdot",
+      "Gamay",
+      "Zinfandel"
     ],
-    "correctAnswer": "The direction the slope faces",
-    "explanation": "Aspect is the compass direction a slope faces. It affects sunlight, warmth, wind exposure, and how quickly a vineyard dries after rain.",
+    "correctAnswer": "Petit Verdot",
+    "explanation": "Petit Verdot, traditionally a blending grape in Bordeaux, has found success in Virginia as a standalone varietal, producing bold, structured wines.",
     "wrongAnswerExplanations": {
-      "The percentage of clay in the subsoil": "Soil composition matters, but it is not what vineyard workers mean by aspect.",
-      "The age of the vines on the slope": "Vine age and slope aspect are separate vineyard characteristics.",
-      "The legal yield limit for the vineyard": "Yield rules may come from an appellation or producer decision, not the slope's aspect."
+      "Pinot Noir": "Pinot Noir produces light-colored wines with soft tannins, opposite of the description.",
+      "Gamay": "Gamay creates light, fruity wines, not deeply colored tannic wines.",
+      "Zinfandel": "Zinfandel isn't commonly grown in Northern Virginia's climate."
     },
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which Virginia AVA surrounds Charlottesville and includes Thomas Jefferson's Monticello?",
+    "question": "Which historical figure is credited with early attempts to grow European grapes in Virginia?",
     "options": [
-      "Monticello AVA",
-      "Middleburg Virginia AVA",
-      "Shenandoah Valley AVA",
-      "Virginia's Eastern Shore AVA"
+      "George Washington",
+      "Thomas Jefferson",
+      "James Madison",
+      "Patrick Henry"
     ],
-    "correctAnswer": "Monticello AVA",
-    "explanation": "The Monticello AVA is centered around Charlottesville in Virginia's Piedmont and takes its name from Thomas Jefferson's nearby home.",
+    "correctAnswer": "Thomas Jefferson",
+    "explanation": "Thomas Jefferson was a passionate advocate for viticulture and made significant efforts to establish European grapevines at Monticello.",
     "wrongAnswerExplanations": {
-      "Middleburg Virginia AVA": "The Middleburg Virginia AVA lies in Northern Virginia around Middleburg, not Charlottesville.",
-      "Shenandoah Valley AVA": "The Shenandoah Valley AVA follows the valley west of the Blue Ridge rather than surrounding Charlottesville.",
-      "Virginia's Eastern Shore AVA": "Virginia's Eastern Shore AVA is on the coastal peninsula between the Chesapeake Bay and Atlantic Ocean."
+      "George Washington": "While Washington was interested in agriculture, Jefferson was more focused on viticulture.",
+      "James Madison": "Madison wasn't particularly associated with early Virginia viticulture efforts.",
+      "Patrick Henry": "Patrick Henry wasn't known for involvement in early Virginia wine growing attempts."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1209,19 +1209,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which historical figure experimented extensively with European wine grapes at Monticello?",
+    "question": "Which Italian viticulturist and neighbor of Thomas Jefferson arrived in Virginia in 1773 to plant European grapevines at Colle, near Monticello?",
     "options": [
-      "Thomas Jefferson",
-      "Benjamin Franklin",
-      "James Madison",
-      "George Mason"
+      "Philip Mazzei",
+      "Dr. Daniel Norborne Norton",
+      "Pascual Harriague",
+      "Agoston Haraszthy"
     ],
-    "correctAnswer": "Thomas Jefferson",
-    "explanation": "Thomas Jefferson pursued viticulture at Monticello and promoted the idea that Virginia could produce fine wine, even though his own experiments struggled.",
+    "correctAnswer": "Philip Mazzei",
+    "explanation": "Jefferson recruited Tuscan horticulturist Philip Mazzei to establish commercial vineyards in Albemarle County in the 1770s before the Revolutionary War interrupted their work.",
     "wrongAnswerExplanations": {
-      "Benjamin Franklin": "Franklin appreciated wine but is not the figure most associated with Monticello's vineyard experiments.",
-      "James Madison": "Madison lived at Montpelier, not Monticello.",
-      "George Mason": "Mason's home was Gunston Hall; Monticello belonged to Jefferson."
+      "Dr. Daniel Norborne Norton": "Dr. Norton cultivated the native Norton grape in Richmond during the 1820s, decades after Mazzei's arrival.",
+      "Pascual Harriague": "Pascual Harriague is credited with establishing Tannat in Uruguay in the 1870s.",
+      "Agoston Haraszthy": "Agoston Haraszthy was a 19th-century pioneer of California viticulture in Sonoma."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1311,19 +1311,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "What does hedging accomplish in a vigorous vineyard canopy?",
+    "question": "What is a common practice in Virginia vineyards to manage humidity and promote air circulation?",
     "options": [
-      "It trims shoot tips to keep growth manageable",
-      "It removes every leaf from the fruiting zone",
-      "It adds sugar to grapes before harvest",
-      "It seals the vineyard floor against rainfall"
+      "Dense planting",
+      "Leaf pulling (canopy management)",
+      "Deep irrigation",
+      "Using plastic covers"
     ],
-    "correctAnswer": "It trims shoot tips to keep growth manageable",
-    "explanation": "Hedging trims long shoot tips so rows remain workable and the canopy does not become excessively tangled or shaded.",
+    "correctAnswer": "Leaf pulling (canopy management)",
+    "explanation": "Canopy management, including leaf pulling, helps improve air circulation around grape clusters, reducing disease risk in humid climates.",
     "wrongAnswerExplanations": {
-      "It removes every leaf from the fruiting zone": "Complete defoliation is not the goal of hedging; hedging trims shoot growth.",
-      "It adds sugar to grapes before harvest": "Adding sugar is a cellar decision called chaptalization, not a vineyard hedging practice.",
-      "It seals the vineyard floor against rainfall": "Hedging concerns vine shoots, not waterproofing the soil."
+      "Dense planting": "Dense planting would reduce air circulation, not improve it.",
+      "Deep irrigation": "Irrigation doesn't directly address air circulation issues.",
+      "Using plastic covers": "Plastic covers would trap humidity, not reduce it."
     },
     "category": "virginia-and-local-terroir"
   },
@@ -1430,19 +1430,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "world-wine-regions"
   },
   {
-    "question": "What type of traditional boat historically carried barrels of Port down the Douro River?",
+    "question": "In Portugal's Douro Valley, which style of Port is aged in smaller wooden barrels to develop golden-brown color and nutty, caramel, and dried-fruit notes?",
     "options": [
-      "Barco rabelo",
-      "Gondola",
-      "Bateau-mouche",
-      "Punt"
+      "Ruby Port",
+      "Tawny Port",
+      "Late Bottled Vintage (LBV) Port",
+      "Vintage Port"
     ],
-    "correctAnswer": "Barco rabelo",
-    "explanation": "Flat-bottomed barcos rabelos historically transported Port barrels from the Douro Valley toward the lodges near Porto and Vila Nova de Gaia.",
+    "correctAnswer": "Tawny Port",
+    "explanation": "Tawny Port is aged oxidatively in wooden casks (pipes), turning a golden-amber color and developing nutty, caramel, and fig flavors.",
     "wrongAnswerExplanations": {
-      "Gondola": "A gondola is associated with Venice rather than the Douro wine trade.",
-      "Bateau-mouche": "A bateau-mouche is a sightseeing boat associated with Paris, not a traditional Port carrier.",
-      "Punt": "A punt is a flat-bottomed recreational boat propelled with a pole, not the named Douro cargo boat."
+      "Ruby Port": "Ruby Port is aged largely in bulk tanks to preserve its bright red color and fresh berry fruit.",
+      "Late Bottled Vintage (LBV) Port": "LBV Port comes from a single harvest year and is aged four to six years in large vats, retaining a dark ruby profile unless labeled otherwise.",
+      "Vintage Port": "Vintage Port is bottled after only about two years in wood and ages primarily in the bottle rather than oxidatively in small casks."
     },
     "category": "world-wine-regions"
   },
@@ -1838,21 +1838,21 @@ const BASE_WINE_QUESTIONS = [
     "category": "world-wine-regions"
   },
   {
-    "question": "Which southwest French appellation is especially associated with white wines made from Petit Manseng and Gros Manseng?",
+    "question": "In 1787, which future US President visited Bordeaux and Southwest France, meticulously cataloging renowned vineyards that influenced Virginia wine history?",
     "options": [
-      "Jurançon",
-      "Madiran",
-      "Cahors",
-      "Fronton"
+      "George Washington",
+      "Thomas Jefferson",
+      "Alexander Hamilton",
+      "John Adams"
     ],
-    "correctAnswer": "Jurançon",
-    "explanation": "Jurançon in southwest France produces dry and sweet white wines, principally from Petit Manseng and Gros Manseng.",
+    "correctAnswer": "Thomas Jefferson",
+    "explanation": "As Minister to France, Jefferson’s tours of Bordeaux and Occitanie convinced him that Virginia could produce world-class wine from the same varietals.",
     "wrongAnswerExplanations": {
-      "Madiran": "Madiran is best known for powerful red wines led by Tannat.",
-      "Cahors": "Cahors is the historic home of Malbec-led red wine.",
-      "Fronton": "Fronton is known for red and rosé wines centered on Négrette."
+      "George Washington": "While he grew grapes, he was more focused on whiskey and general farming.",
+      "Alexander Hamilton": "More focused on urban finance than rural viticulture.",
+      "John Adams": "Preferred cider over wine, according to most historical accounts."
     },
-    "category": "world-wine-regions"
+    "category": "virginia-and-local-terroir"
   },
   {
     "question": "Which red grape gives the wines of Madiran their famously powerful tannic structure?",
@@ -1889,21 +1889,21 @@ const BASE_WINE_QUESTIONS = [
     "category": "world-wine-regions"
   },
   {
-    "question": "What does the vineyard term 'coulure' describe?",
+    "question": "Which Bordeaux varietal is often used in very small percentages to add deep color and spice, a practice mirrored in Loudoun 'Meritage' blends?",
     "options": [
-      "Poor fruit set after flowering",
-      "Sunburn on ripening berries",
-      "Splitting berries after heavy rain",
-      "Uneven color change within a cluster"
+      "Chardonnay",
+      "Petit Verdot",
+      "Pinot Grigio",
+      "Tempranillo"
     ],
-    "correctAnswer": "Poor fruit set after flowering",
-    "explanation": "Coulure occurs when flowers fail to develop into berries, often after cool, wet, or otherwise unfavorable conditions around flowering.",
+    "correctAnswer": "Petit Verdot",
+    "explanation": "Petit Verdot ripens late and provides deep color and firm structure. It is becoming a standalone varietal in Virginia.",
     "wrongAnswerExplanations": {
-      "Sunburn on ripening berries": "Sunburn is heat or light damage to exposed berries, not coulure.",
-      "Splitting berries after heavy rain": "Berry splitting can follow rapid water uptake but is not the flowering-stage problem called coulure.",
-      "Uneven color change within a cluster": "Uneven ripening or color change is described separately; coulure is failed fruit set."
+      "Chardonnay": "A white grape, never used for color in red Bordeaux blends.",
+      "Pinot Grigio": "A white grape used for light, crisp wines.",
+      "Tempranillo": "The main grape of Rioja, Spain, not used in traditional Bordeaux blends."
     },
-    "category": "wine-language-and-production"
+    "category": "virginia-and-local-terroir"
   },
   {
     "question": "Blanquette de Limoux is traditionally cited as an early recorded sparkling wine. What year appears in that historic claim?",
@@ -1957,19 +1957,19 @@ const BASE_WINE_QUESTIONS = [
     "category": "virginia-and-local-terroir"
   },
   {
-    "question": "Which grape, traditionally used in Bordeaux blends, has become a successful stand-alone varietal in Virginia?",
+    "question": "Originally from Southwest France's Madiran region, which thick-skinned, high-tannin red grape has gained a strong following in Virginia for producing bold, ageworthy red wines?",
     "options": [
-      "Petit Verdot",
-      "Riesling",
+      "Tannat",
+      "Gamay",
       "Pinot Grigio",
-      "Gamay"
+      "Barbera"
     ],
-    "correctAnswer": "Petit Verdot",
-    "explanation": "Virginia Petit Verdot produces dark, full-bodied wines with dense fruit, bold tannins, and excellent aging potential.",
+    "correctAnswer": "Tannat",
+    "explanation": "Tannat's thick skins and disease resistance suit Virginia vineyards well, producing deeply colored reds with firm tannins and dark-fruit intensity.",
     "wrongAnswerExplanations": {
-      "Riesling": "Riesling is an aromatic white grape associated especially with Germany and is not a Bordeaux red blending grape.",
-      "Pinot Grigio": "Pinot Grigio is a white grape and is not part of traditional Bordeaux red blends.",
-      "Gamay": "Gamay is the red grape associated with Beaujolais, not Bordeaux blending."
+      "Gamay": "Gamay is the light-bodied, low-tannin red grape of Beaujolais.",
+      "Pinot Grigio": "Pinot Grigio is a white-wine grape variety, not a bold, high-tannin red.",
+      "Barbera": "Barbera is an Italian red grape prized primarily for bright acidity and low tannins rather than heavy tannic grip."
     },
     "category": "virginia-and-local-terroir"
   },
