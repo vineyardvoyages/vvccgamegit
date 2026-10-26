@@ -112,13 +112,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [quizEnded, setQuizEnded] = useState(false);
-  const [feedback, setFeedback] = useState('');
-  const [answerSelected, setAnswerSelected] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [questions, setQuestions] = useState([]);
   const [answerSyncStatus, setAnswerSyncStatus] = useState('');
   const [gameActionError, setGameActionError] = useState('');
   const [isOnline, setIsOnline] = useState(
@@ -245,7 +239,7 @@ const App = () => {
               setActiveGameId(savedGame.gameId);
               setMode('multiplayer');
             } else {
-              setMode(resolvedName ? 'initial' : 'enterName');
+              setMode(resolvedName ? 'multiplayer' : 'enterName');
             }
             setIsAuthReady(true);
             setLoading(false);
@@ -293,9 +287,7 @@ const App = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setGameData(data);
-          setCurrentQuestionIndex(data.currentQuestionIndex || 0);
-          setQuizEnded(data.quizEnded || false);
-          setQuestions(data.questions || []);
+
           setScore(getPlayerRound(data, userId).score || 0);
           const questionKey = String(data.currentQuestionIndex || 0);
           const localPending = getPendingAnswer(
@@ -305,9 +297,7 @@ const App = () => {
             userId
           );
           const answer = localPending?.answer || getPlayerAnswer(data, userId, questionKey);
-          setSelectedAnswer(answer);
-          setAnswerSelected(Boolean(answer));
-          setFeedback(getPlayerFeedback(data, userId, questionKey));
+
           if (docSnap.metadata.hasPendingWrites) {
             setAnswerSyncStatus('Answer saved on this device—syncing…');
           } else if (answer) {
@@ -360,49 +350,13 @@ const App = () => {
       const userProfileRef = doc(db, 'artifacts', firestoreAppId, 'users', userId, 'profile', 'userProfile');
       await setDoc(userProfileRef, { userName: nameInput.trim() }, { merge: true });
       setUserName(nameInput.trim());
-      setMode('initial');
+      setMode('multiplayer');
     } catch (e) {
       console.error("Error saving user name:", e);
       setError("Failed to save your name. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSinglePlayerAnswerClick = (selectedOption) => {
-    if (answerSelected) return;
-
-    setAnswerSelected(true);
-    setSelectedAnswer(selectedOption);
-
-    const currentQuestion = questions[currentQuestionIndex];
-    if (selectedOption === currentQuestion.correctAnswer) {
-      setScore(score + 1);
-      setFeedback('Correct!');
-    } else {
-      setFeedback('Incorrect.');
-    }
-  };
-
-  const handleSinglePlayerNextQuestion = () => {
-    setFeedback('');
-    setAnswerSelected(false);
-    setSelectedAnswer(null);
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      setQuizEnded(true);
-    }
-  };
-
-  const restartSinglePlayerQuiz = () => {
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setQuizEnded(false);
-    setFeedback('');
-    setAnswerSelected(false);
-    setSelectedAnswer(null);
-    setQuestions(getTenRandomQuestions(questions));
   };
 
   const createNewGame = async () => {
@@ -531,9 +485,7 @@ const App = () => {
     };
 
     savePendingAnswer(pendingAnswer);
-    setAnswerSelected(true);
-    setSelectedAnswer(selectedOption);
-    setFeedback('');
+
     setAnswerSyncStatus(
       isOnline ? 'Answer saved—syncing…' : 'Offline—answer saved on this device.'
     );
@@ -564,9 +516,6 @@ const App = () => {
       return;
     }
 
-    setFeedback('');
-    setAnswerSelected(false);
-    setSelectedAnswer(null);
     setAnswerSyncStatus('');
     setGameActionError('');
     const nextIndex = gameData.currentQuestionIndex + 1;
@@ -682,7 +631,7 @@ const App = () => {
           <button
             onClick={() => {
               setError('');
-              setMode('initial');
+              setMode(userName ? 'multiplayer' : 'enterName');
               setActiveGameId(null);
               setGameData(null);
             }}
@@ -719,136 +668,21 @@ const App = () => {
           </button>
         </div>
       );
-    } else if (mode === 'initial') {
-      return (
-        <div className="text-center space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Choose Your Mode</h2>
-          <p className="text-gray-700 text-lg">Welcome, <span className="font-mono text-[#6b2a58]">{userName}</span>!</p>
-          <button
-            onClick={() => {
-              setMode('singlePlayer');
-              setQuestions(getTenRandomQuestions());
-            }}
-            className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-          >
-            Single Player
-          </button>
-          <button
-            onClick={() => setMode('multiplayer')}
-            className="w-full bg-[#9CAC3E] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E]"
-          >
-            Multiplayer
-          </button>
-          <button
-            onClick={() => setMode('enterName')}
-            className="mt-4 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
-          >
-            Edit Name
-          </button>
-        </div>
-      );
-    } else if (mode === 'singlePlayer') {
-      if (!Array.isArray(questions) || questions.length === 0) {
-        return <p className="text-center text-gray-700">Loading questions...</p>;
-      }
-
-      const currentQuestion = questions[currentQuestionIndex];
-      return (
-        <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900 text-center">Single Player Quiz</h2>
-          {!quizEnded ? (
-            <>
-              <div className="bg-[#6b2a58]/10 p-4 rounded-lg shadow-inner">
-                <p className="text-lg font-semibold text-gray-700 mb-2">
-                  Question {currentQuestionIndex + 1} of {questions.length}
-                </p>
-                <p className="text-xl text-gray-800 font-medium">
-                  {currentQuestion.question}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {currentQuestion.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSinglePlayerAnswerClick(option)}
-                    disabled={answerSelected}
-                    className={`w-full p-4 rounded-lg text-left text-lg font-medium transition-all duration-200 ease-in-out ${answerSelected ? option === currentQuestion.correctAnswer ? 'bg-green-100 text-green-800 ring-2 ring-green-500' : option === selectedAnswer ? 'bg-red-100 text-red-800 ring-2 ring-red-500' : 'bg-gray-100 text-gray-600 cursor-not-allowed' : 'bg-[#6b2a58]/20 text-[#6b2a58] hover:bg-[#6b2a58]/30 hover:shadow-md active:bg-[#6b2a58]/40'} ${!answerSelected && 'hover:scale-[1.02]'}`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-
-              {feedback && (
-                <div className="mt-4 p-4 rounded-lg bg-gray-50 shadow-inner">
-                  <p className={`text-lg font-bold ${feedback === 'Correct!' ? 'text-green-600' : 'text-red-600'}`}>
-                    {feedback}
-                  </p>
-                  {feedback === 'Incorrect.' && (
-                    <p className="text-gray-700 mt-2">
-                      <span className="font-semibold">Correct Answer:</span> {currentQuestion.correctAnswer}
-                    </p>
-                  )}
-                  <p className="text-gray-700 mt-2">
-                    <span className="font-semibold">Explanation:</span> {currentQuestion.explanation}
-                  </p>
-                </div>
-              )}
-
-              {answerSelected && (
-                <button
-                  onClick={handleSinglePlayerNextQuestion}
-                  className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold mt-6 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-                >
-                  {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
-                </button>
-              )}
-            </>
-          ) : (
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">Quiz Complete!</h2>
-              <p className="text-2xl text-gray-700">
-                You scored <span className="font-extrabold text-[#6b2a58]">{score}</span> out of <span className="font-extrabold text-[#6b2a58]">{questions.length}</span>!
-              </p>
-              <p className="text-lg text-gray-600">Ready to explore more wines?</p>
-              <button
-                onClick={restartSinglePlayerQuiz}
-                className="bg-[#6b2a58] text-white py-3 px-6 rounded-lg text-xl font-bold mr-4 hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
-              >
-                Play Again
-              </button>
-              <a
-                href="https://www.vineyardvoyages.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl"
-              >
-                Book a Tour Now!
-              </a>
-            </div>
-          )}
-          <button
-            onClick={() => setMode('initial')}
-            className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
-          >
-            Back to Mode Selection
-          </button>
-        </div>
-      );
     } else if (mode === 'multiplayer' && !activeGameId) {
       return (
         <div className="text-center space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Multiplayer Lobby</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Play with Your Group</h2>
           <p className="text-gray-700 text-lg">Your Name: <span className="font-mono text-[#6b2a58] break-all">{userName}</span>!</p>
+          <p className="text-gray-600">Join with the code from your host, or create a game to lead the group.</p>
           <button
             onClick={createNewGame}
             className="w-full bg-[#6b2a58] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#9CAC3E] active:bg-[#486D3E]"
           >
-            Create New Game (Proctor Mode)
+            Create Game (Host)
           </button>
           <div className="flex flex-col md:flex-row gap-4">
             <input
+              aria-label="Game code"
               type="text"
               placeholder="Enter code (example: A7)"
               className="flex-grow p-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-[#6b2a58] text-gray-800"
@@ -863,14 +697,14 @@ const App = () => {
               disabled={!isValidGameCode(gameCodeInput)}
               className="bg-[#9CAC3E] text-white py-3 px-6 rounded-lg text-xl font-bold hover:bg-[#496E3E] transition-colors duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#6b2a58] active:bg-[#486D3E] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Join Game (Player Mode)
+              Join Game
             </button>
           </div>
           <button
-            onClick={() => setMode('initial')}
+            onClick={() => setMode('enterName')}
             className="mt-8 w-full bg-gray-500 text-white py-2 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-200 shadow-md"
           >
-            Back to Mode Selection
+            Edit Name
           </button>
         </div>
       );
@@ -988,7 +822,7 @@ const App = () => {
 
             <button
               onClick={() => {
-                setMode('initial');
+                setMode('multiplayer');
                 setActiveGameId(null);
                 setGameData(null);
                 setAnswerSyncStatus('');
@@ -1267,7 +1101,7 @@ const App = () => {
 
           <button
             onClick={() => {
-              setMode('initial');
+              setMode(userName ? 'multiplayer' : 'enterName');
               setActiveGameId(null);
               setGameData(null);
               setAnswerSyncStatus('');
